@@ -1,7 +1,7 @@
 import SermonService from "../../services/sermon";
 import { NextResponse } from "next/server";
 
-export async function GET(request: Request, { params }: { params: { id: string } }) {
+export async function GET(request: Request, { params }: any ) {
     const sermonService = new SermonService();
     const result = await sermonService.get_sermon(params.id);
     return NextResponse.json(result);
