@@ -33,7 +33,7 @@ async function dbConnect() {
 
   if (!cached.promise) {
     const opts = {
-      bufferCommands: false, // Recommended for serverless environments
+      bufferCommands: true, // Recommended for serverless environments
       dbName: 'cacmtz', // Optional: explicitly set database name
     };
 
