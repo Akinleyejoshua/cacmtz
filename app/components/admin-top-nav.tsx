@@ -3,9 +3,20 @@
 import React, { useRef, useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./admin-top-nav.module.css";
+import { load, save } from "../utils/helpers";
+import { useRouter } from "next/navigation";
 
 export default function AdminTopNav() {
   const navRef = useRef<HTMLDivElement | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    save("admin-path", location.href);
+    const auth = load("admin-auth");
+    if (!auth) {
+      router.push("/admin");
+    }
+  }, [])
 
   // auto-scroll to active link if present
   useEffect(() => {

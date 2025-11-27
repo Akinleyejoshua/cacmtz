@@ -3,19 +3,6 @@
 import { useEffect, useState } from "react";
 import request from "../utils/axios";
 
-type Event = {
-  id: string;
-  title: string;
-  description?: string;
-  date: Date;
-  duration: number; // in minutes
-  location: string;
-  image: string;
-  liveLink?: string;
-  isLive?: boolean;
-};
-
-
 function formatRelativeTime(date: Date): string {
   const now = new Date();
   const diffMs = date.getTime() - now.getTime();
@@ -48,8 +35,6 @@ function formatDuration(minutes: number): string {
   if (hours > 0) return `${hours}h`;
   return `${mins}m`;
 }
-
-
 
 export const useLandingPage = () => {
   const [loading, setLoading] = useState(true);

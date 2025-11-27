@@ -133,3 +133,11 @@ export function convert24hrTo12hr(time24hr: string): string {
 
     return `${hours}:${minutes} ${ampm}`;
 }
+
+export const save = (key: string, value: any) => {
+    localStorage.setItem(key, value);
+}
+
+export const load = (key: string) => {
+    return localStorage.getItem(key);
+}   

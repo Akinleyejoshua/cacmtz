@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
+import { load, save } from "../utils/helpers";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -37,11 +38,11 @@ export default function AdminLoginPage() {
     }
     // simulate authentication call - replace with real API
     try {
-      await new Promise((res) => setTimeout(res, 900));
       // mock success for a demo admin: email contains "admin"
-      if (email.toLowerCase().includes("admin")) {
+      if (email.toLowerCase().includes("gmail")) {
         // redirect to admin dashboard (placeholder)
-        router.push("/admin/dashboard");
+        save("admin-auth", true);
+        router.push(load("admin-path")||"/admin/dashboard");
       } else {
         setError("Invalid credentials. Use an administrator email.");
       }
