@@ -1,11 +1,8 @@
 import Sermon from "../models/sermon";
 import connectDB from "../db";
+connectDB();    
 
 export default class SermonService {
-    constructor() {
-        connectDB();
-    }
-
     async add_sermon(data: any) {
         try {
             const sermon = await Sermon.create(data);
