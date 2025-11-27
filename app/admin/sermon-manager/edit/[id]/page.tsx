@@ -4,46 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import AdminTopNav from "../../../../components/admin-top-nav";
 import styles from "./page.module.css";
-
-type Sermon = {
-  id: string;
-  name: string;
-  ministerName: string;
-  youtubeLink: string;
-  timestamp: Date;
-  duration: number;
-  bulletinId: string;
-};
-
-const SAMPLE_SERMONS: Sermon[] = [
-  {
-    id: "s001",
-    name: "The Foundation of Faith",
-    ministerName: "Pastor John Adekunle",
-    youtubeLink: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    timestamp: new Date("2025-11-30T10:00:00"),
-    duration: 45,
-    bulletinId: "b001",
-  },
-  {
-    id: "s002",
-    name: "Grace and Mercy",
-    ministerName: "Bishop Samuel Okafor",
-    youtubeLink: "https://www.youtube.com/watch?v=jNQXAC9IVRw",
-    timestamp: new Date("2025-11-23T10:15:00"),
-    duration: 38,
-    bulletinId: "b001",
-  },
-  {
-    id: "s003",
-    name: "Walking in the Spirit",
-    ministerName: "Pastor Amara Emeka",
-    youtubeLink: "https://www.youtube.com/watch?v=OPf0YbXqDm0",
-    timestamp: new Date("2025-11-16T09:45:00"),
-    duration: 52,
-    bulletinId: "b002",
-  },
-];
+import request from "@/app/utils/axios";
 
 export default function EditSermonPage() {
   const router = useRouter();
@@ -51,13 +12,14 @@ export default function EditSermonPage() {
   const sermonId = params.id as string;
 
   const [formData, setFormData] = useState({
-    name: "",
-    ministerName: "",
+    title: "",
+    minister: "",
     youtubeLink: "",
-    timestamp: "",
+    date: "",
     time: "",
     duration: 45,
     bulletinId: "",
+    description: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -67,40 +29,51 @@ export default function EditSermonPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    const sermon = SAMPLE_SERMONS.find((s) => s.id === sermonId);
+    const fetchSermon = async () => {
+      try {
+        const res: any = await request.get(`/sermon/${sermonId}`, {params: {id: sermonId}});
+        const sermon = res.data;
 
-    if (!sermon) {
-      setNotFound(true);
-      setLoading(false);
-      return;
-    }
+        if (!sermon) {
+          setNotFound(true);
+          return;
+        }
 
-    const timestamp = new Date(sermon.timestamp);
-    setFormData({
-      name: sermon.name,
-      ministerName: sermon.ministerName,
-      youtubeLink: sermon.youtubeLink,
-      timestamp: timestamp.toISOString().split("T")[0],
-      time: timestamp.toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      }),
-      duration: sermon.duration,
-      bulletinId: sermon.bulletinId,
-    });
-    setLoading(false);
+        const timestamp = new Date(sermon.date);
+        setFormData({
+          title: sermon.title,
+          minister: sermon.minister,
+          youtubeLink: sermon.youtubeLink,
+          date: timestamp.toISOString().split("T")[0],
+          time: timestamp.toLocaleTimeString("en-US", {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+          }),
+          duration: sermon.duration,
+          bulletinId: sermon.bulletinId || "",
+          description: sermon.description || "",
+        });
+      } catch (error) {
+        console.error("Failed to fetch sermon:", error);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSermon();
   }, [sermonId]);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Sermon name is required";
+    if (!formData.title.trim()) {
+      newErrors.title = "Sermon title is required";
     }
 
-    if (!formData.ministerName.trim()) {
-      newErrors.ministerName = "Minister name is required";
+    if (!formData.minister.trim()) {
+      newErrors.minister = "Minister name is required";
     }
 
     if (!formData.youtubeLink.trim()) {
@@ -109,12 +82,16 @@ export default function EditSermonPage() {
       newErrors.youtubeLink = "Please enter a valid YouTube link";
     }
 
-    if (!formData.timestamp) {
-      newErrors.timestamp = "Date is required";
+    if (!formData.date) {
+      newErrors.date = "Date is required";
     }
 
     if (formData.duration <= 0) {
       newErrors.duration = "Duration must be greater than 0";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "Description is required";
     }
 
     setErrors(newErrors);
@@ -127,7 +104,7 @@ export default function EditSermonPage() {
     return regex.test(url);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -152,7 +129,14 @@ export default function EditSermonPage() {
     setSaving(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const dateTime = new Date(`${formData.date}T${formData.time}`);
+
+      const payload = {
+        ...formData,
+        date: dateTime,
+      };
+
+      await request.put(`/sermon/${sermonId}`, payload);
       setSuccess(true);
       setTimeout(() => {
         router.push("/admin/sermon-manager");
@@ -188,13 +172,12 @@ export default function EditSermonPage() {
           <div className={styles.titleSection}>
             <h1 className={styles.pageTitle}>Sermon Not Found</h1>
             <p className={styles.subtitle}>The sermon you're looking for doesn't exist.</p>
-          </div>
-        </div>
-        <div style={{ maxWidth: "900px", margin: "0 auto" }}>
-          <button onClick={handleCancel} className={styles.secondaryBtn} style={{ marginTop: "2rem" }}>
+          <button style={{ width: "max-content", marginTop: "1rem" }} onClick={handleCancel} className={styles.secondaryBtn}>
             Go Back
           </button>
+          </div>
         </div>
+  
       </div>
     );
   }
@@ -246,38 +229,55 @@ export default function EditSermonPage() {
             <p className={styles.helperText}>This is the unique identifier for this sermon</p>
           </div>
 
-          {/* Sermon Name */}
+          {/* Sermon Title */}
           <div className={styles.formGroup}>
-            <label htmlFor="name" className={styles.label}>
-              Sermon Name <span className={styles.required}>*</span>
+            <label htmlFor="title" className={styles.label}>
+              Sermon Title <span className={styles.required}>*</span>
             </label>
             <input
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="title"
+              name="title"
+              value={formData.title}
               onChange={handleChange}
               placeholder="e.g., The Foundation of Faith"
-              className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
+              className={`${styles.input} ${errors.title ? styles.inputError : ""}`}
             />
-            {errors.name && <span className={styles.errorText}>{errors.name}</span>}
+            {errors.title && <span className={styles.errorText}>{errors.title}</span>}
           </div>
 
           {/* Minister Name */}
           <div className={styles.formGroup}>
-            <label htmlFor="ministerName" className={styles.label}>
+            <label htmlFor="minister" className={styles.label}>
               Minister Name <span className={styles.required}>*</span>
             </label>
             <input
               type="text"
-              id="ministerName"
-              name="ministerName"
-              value={formData.ministerName}
+              id="minister"
+              name="minister"
+              value={formData.minister}
               onChange={handleChange}
               placeholder="e.g., Pastor John Adekunle"
-              className={`${styles.input} ${errors.ministerName ? styles.inputError : ""}`}
+              className={`${styles.input} ${errors.minister ? styles.inputError : ""}`}
             />
-            {errors.ministerName && <span className={styles.errorText}>{errors.ministerName}</span>}
+            {errors.minister && <span className={styles.errorText}>{errors.minister}</span>}
+          </div>
+
+          {/* Description */}
+          <div className={styles.formGroup}>
+            <label htmlFor="description" className={styles.label}>
+              Description <span className={styles.required}>*</span>
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Brief description of the sermon..."
+              className={`${styles.textarea} ${errors.description ? styles.inputError : ""}`}
+              rows={4}
+            />
+            {errors.description && <span className={styles.errorText}>{errors.description}</span>}
           </div>
 
           {/* YouTube Link */}
@@ -300,18 +300,18 @@ export default function EditSermonPage() {
           {/* Date and Time Row */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="timestamp" className={styles.label}>
+              <label htmlFor="date" className={styles.label}>
                 Sermon Date <span className={styles.required}>*</span>
               </label>
               <input
                 type="date"
-                id="timestamp"
-                name="timestamp"
-                value={formData.timestamp}
+                id="date"
+                name="date"
+                value={formData.date}
                 onChange={handleChange}
-                className={`${styles.input} ${errors.timestamp ? styles.inputError : ""}`}
+                className={`${styles.input} ${errors.date ? styles.inputError : ""}`}
               />
-              {errors.timestamp && <span className={styles.errorText}>{errors.timestamp}</span>}
+              {errors.date && <span className={styles.errorText}>{errors.date}</span>}
             </div>
 
             <div className={styles.formGroup}>

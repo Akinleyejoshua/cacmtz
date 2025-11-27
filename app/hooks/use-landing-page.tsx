@@ -24,7 +24,6 @@ function formatTime(date: Date): string {
 
 const convertTimeFormat = (date: any) => {
   const split = date.split("-");
-  console.log(split)
   return new Date(split[0], split[1], split[2])
 }
 
@@ -40,21 +39,26 @@ export const useLandingPage = () => {
   const [loading, setLoading] = useState(true);
   const [events, setEvents] = useState([]);
   const [generalSettings, setGeneralSettings] = useState<any>(null);
+  const [latestSermon, setLatestSermon] = useState<any>(null);
 
   const get_events = async () => {
     try {
-      const [eventsRes, generalRes] = await Promise.all([
+      const [eventsRes, generalRes, sermonsRes] = await Promise.all([
         request.get("/get-events"),
-        request.get("/general")
+        request.get("/general"),
+        request.get("/sermon")
       ]);
       setEvents(eventsRes.data);
       setGeneralSettings(generalRes.data);
 
+      if (sermonsRes.data && sermonsRes.data.length > 0) {
+        setLatestSermon(sermonsRes.data[0]);
+      }
 
     } catch (error) {
       console.error("Error fetching landing page data:", error);
     } finally {
-
+      setLoading(false);
     }
   }
 
@@ -62,11 +66,5 @@ export const useLandingPage = () => {
     get_events();
   }, [])
 
-  useEffect(() => {
-    if (events.length > 0 && generalSettings !== null) {
-      setLoading(false);
-    }
-  }, [events, generalSettings])
-
-  return { loading, events, generalSettings, formatRelativeTime, formatTime, formatDuration, convertTimeFormat }
+  return { loading, events, generalSettings, latestSermon, formatRelativeTime, formatTime, formatDuration, convertTimeFormat }
 }

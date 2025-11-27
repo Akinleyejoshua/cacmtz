@@ -4,50 +4,35 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import AdminTopNav from "../../../components/admin-top-nav";
 import styles from "./page.module.css";
-
-type Sermon = {
-  id: string;
-  name: string;
-  ministerName: string;
-  youtubeLink: string;
-  timestamp: Date;
-  duration: number;
-  bulletinId: string;
-};
-
-function generateSermonId(): string {
-  const timestamp = Date.now().toString(36);
-  const randomStr = Math.random().toString(36).substring(2, 5);
-  return `s${timestamp}${randomStr}`.toUpperCase();
-}
+import request from "@/app/utils/axios";
 
 export default function CreateSermonPage() {
   const router = useRouter();
 
   const [formData, setFormData] = useState({
-    name: "",
-    ministerName: "",
+    title: "",
+    minister: "",
     youtubeLink: "",
-    timestamp: new Date().toISOString().split("T")[0],
+    date: new Date().toISOString().split("T")[0],
     time: "10:00",
     duration: 45,
     bulletinId: "",
+    description: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
-  const [generatedId, setGeneratedId] = useState(generateSermonId());
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) {
-      newErrors.name = "Sermon name is required";
+    if (!formData.title.trim()) {
+      newErrors.title = "Sermon title is required";
     }
 
-    if (!formData.ministerName.trim()) {
-      newErrors.ministerName = "Minister name is required";
+    if (!formData.minister.trim()) {
+      newErrors.minister = "Minister name is required";
     }
 
     if (!formData.youtubeLink.trim()) {
@@ -56,12 +41,16 @@ export default function CreateSermonPage() {
       newErrors.youtubeLink = "Please enter a valid YouTube link";
     }
 
-    if (!formData.timestamp) {
-      newErrors.timestamp = "Date is required";
+    if (!formData.date) {
+      newErrors.date = "Date is required";
     }
 
     if (formData.duration <= 0) {
       newErrors.duration = "Duration must be greater than 0";
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = "Description is required";
     }
 
     setErrors(newErrors);
@@ -74,7 +63,7 @@ export default function CreateSermonPage() {
     return regex.test(url);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -99,7 +88,15 @@ export default function CreateSermonPage() {
     setLoading(true);
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      // Combine date and time
+      const dateTime = new Date(`${formData.date}T${formData.time}`);
+
+      const payload = {
+        ...formData,
+        date: dateTime,
+      };
+
+      await request.post("/sermon", payload);
       setSuccess(true);
       setTimeout(() => {
         router.push("/admin/sermon-manager");
@@ -145,63 +142,55 @@ export default function CreateSermonPage() {
         <div className={styles.formSection}>
           <h2 className={styles.sectionTitle}>Sermon Information</h2>
 
-          {/* Sermon ID */}
+          {/* Sermon Title */}
           <div className={styles.formGroup}>
-            <label htmlFor="sermonId" className={styles.label}>
-              Sermon ID <span className={styles.hint}>(Auto-generated)</span>
-            </label>
-            <div className={styles.idDisplay}>
-              <input
-                type="text"
-                id="sermonId"
-                value={generatedId}
-                readOnly
-                className={styles.idInput}
-              />
-              <button
-                type="button"
-                onClick={() => setGeneratedId(generateSermonId())}
-                className={styles.regenerateBtn}
-                title="Generate new ID"
-              >
-                🔄
-              </button>
-            </div>
-            <p className={styles.helperText}>This unique ID will identify the sermon</p>
-          </div>
-
-          {/* Sermon Name */}
-          <div className={styles.formGroup}>
-            <label htmlFor="name" className={styles.label}>
-              Sermon Name <span className={styles.required}>*</span>
+            <label htmlFor="title" className={styles.label}>
+              Sermon Title <span className={styles.required}>*</span>
             </label>
             <input
               type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              id="title"
+              name="title"
+              value={formData.title}
               onChange={handleChange}
               placeholder="e.g., The Foundation of Faith"
-              className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
+              className={`${styles.input} ${errors.title ? styles.inputError : ""}`}
             />
-            {errors.name && <span className={styles.errorText}>{errors.name}</span>}
+            {errors.title && <span className={styles.errorText}>{errors.title}</span>}
           </div>
 
           {/* Minister Name */}
           <div className={styles.formGroup}>
-            <label htmlFor="ministerName" className={styles.label}>
+            <label htmlFor="minister" className={styles.label}>
               Minister Name <span className={styles.required}>*</span>
             </label>
             <input
               type="text"
-              id="ministerName"
-              name="ministerName"
-              value={formData.ministerName}
+              id="minister"
+              name="minister"
+              value={formData.minister}
               onChange={handleChange}
               placeholder="e.g., Pastor John Adekunle"
-              className={`${styles.input} ${errors.ministerName ? styles.inputError : ""}`}
+              className={`${styles.input} ${errors.minister ? styles.inputError : ""}`}
             />
-            {errors.ministerName && <span className={styles.errorText}>{errors.ministerName}</span>}
+            {errors.minister && <span className={styles.errorText}>{errors.minister}</span>}
+          </div>
+
+          {/* Description */}
+          <div className={styles.formGroup}>
+            <label htmlFor="description" className={styles.label}>
+              Description <span className={styles.required}>*</span>
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description}
+              onChange={handleChange}
+              placeholder="Brief description of the sermon..."
+              className={`${styles.textarea} ${errors.description ? styles.inputError : ""}`}
+              rows={4}
+            />
+            {errors.description && <span className={styles.errorText}>{errors.description}</span>}
           </div>
 
           {/* YouTube Link */}
@@ -224,18 +213,18 @@ export default function CreateSermonPage() {
           {/* Date and Time Row */}
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="timestamp" className={styles.label}>
+              <label htmlFor="date" className={styles.label}>
                 Sermon Date <span className={styles.required}>*</span>
               </label>
               <input
                 type="date"
-                id="timestamp"
-                name="timestamp"
-                value={formData.timestamp}
+                id="date"
+                name="date"
+                value={formData.date}
                 onChange={handleChange}
-                className={`${styles.input} ${errors.timestamp ? styles.inputError : ""}`}
+                className={`${styles.input} ${errors.date ? styles.inputError : ""}`}
               />
-              {errors.timestamp && <span className={styles.errorText}>{errors.timestamp}</span>}
+              {errors.date && <span className={styles.errorText}>{errors.date}</span>}
             </div>
 
             <div className={styles.formGroup}>

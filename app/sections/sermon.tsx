@@ -58,12 +58,26 @@ const DEFAULT_SERMON: Sermon = {
 };
 
 interface SermonProps {
-  sermon?: Sermon;
+  sermon?: any; // Using any for now to match backend response structure
   title?: string;
 }
 
-export default function SermonSection({ sermon = DEFAULT_SERMON, title = "Latest Sermon" }: SermonProps) {
-  const youtubeEmbedUrl = `https://www.youtube.com/embed/${sermon.youtubeId}`;
+export default function SermonSection({ sermon, title = "Latest Sermon" }: SermonProps) {
+  // If no sermon is provided, don't render the section (or render default if desired, but user asked for DB data)
+  // For now, let's fall back to default if not provided, OR we can map the DB sermon to the UI structure
+
+  const displaySermon = sermon ? {
+    id: sermon._id,
+    title: sermon.title,
+    speaker: sermon.minister,
+    date: new Date(sermon.date),
+    description: sermon.description,
+    youtubeId: sermon.youtubeLink.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)?.[1] || "",
+    duration: sermon.duration,
+    documents: [] // Backend doesn't have documents yet
+  } : DEFAULT_SERMON;
+
+  const youtubeEmbedUrl = `https://www.youtube.com/embed/${displaySermon.youtubeId}`;
 
   return (
     <section className={styles.section}>
@@ -80,7 +94,7 @@ export default function SermonSection({ sermon = DEFAULT_SERMON, title = "Latest
             <iframe
               className={styles.videoEmbed}
               src={youtubeEmbedUrl}
-              title={sermon.title}
+              title={displaySermon.title}
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
             />
@@ -89,28 +103,28 @@ export default function SermonSection({ sermon = DEFAULT_SERMON, title = "Latest
           {/* Sermon Details */}
           <div className={styles.details}>
             <div className={styles.sermonInfo}>
-              <h3 className={styles.sermonTitle}>{sermon.title}</h3>
-              <p className={styles.sermonSpeaker}>By {sermon.speaker}</p>
+              <h3 className={styles.sermonTitle}>{displaySermon.title}</h3>
+              <p className={styles.sermonSpeaker}>By {displaySermon.speaker}</p>
 
               <div className={styles.meta}>
                 <div className={styles.metaItem}>
                   <span className={styles.metaIcon}>📅</span>
-                  <span className={styles.metaText}>{sermon.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+                  <span className={styles.metaText}>{displaySermon.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
                 </div>
                 <div className={styles.metaItem}>
                   <span className={styles.metaIcon}>⏱️</span>
-                  <span className={styles.metaText}>{sermon.duration} min</span>
+                  <span className={styles.metaText}>{displaySermon.duration} min</span>
                 </div>
               </div>
 
-              <p className={styles.description}>{sermon.description}</p>
+              <p className={styles.description}>{displaySermon.description}</p>
             </div>
 
             {/* Document Links */}
             <div className={styles.documents}>
               <h4 className={styles.documentsTitle}>📚 Resources</h4>
               <div className={styles.documentLinks}>
-                {sermon.documents.map((doc) => (
+                {displaySermon.documents.map((doc: any) => (
                   <a key={doc.id} href={doc.url} target="_blank" rel="noopener noreferrer" className={`${styles.docLink} ${styles[doc.type]}`}>
                     <span className={styles.docIcon}>{doc.icon}</span>
                     <span className={styles.docTitle}>{doc.title}</span>
