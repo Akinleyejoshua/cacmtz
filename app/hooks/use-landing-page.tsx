@@ -64,16 +64,24 @@ export const useLandingPage = () => {
       ]);
       setEvents(eventsRes.data);
       setGeneralSettings(generalRes.data);
+
+
     } catch (error) {
       console.error("Error fetching landing page data:", error);
     } finally {
-      setLoading(false);
+
     }
   }
 
   useEffect(() => {
     get_events();
   }, [])
+
+  useEffect(() => {
+    if (events.length > 0 && generalSettings !== null) {
+      setLoading(false);
+    }
+  }, [events, generalSettings])
 
   return { loading, events, generalSettings, formatRelativeTime, formatTime, formatDuration, convertTimeFormat }
 }

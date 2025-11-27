@@ -88,15 +88,10 @@ const DEFAULT_LOCATION: Location = {
     lat: 6.5244,
     lng: 3.3792,
   },
-  phone: "+234 (0) 123 456 7890",
+  phone: "+234 08036138443",
 };
 
 const DEFAULT_NEWS: NewsAlert[] = [
-  {
-    id: "n1",
-    title: "🔔 Christmas Celebration planning underway - join us!",
-    icon: "📢",
-  },
 ];
 
 // function formatRelativeTime(date: Date): string {
