@@ -1,18 +1,9 @@
 import SermonService from "../../services/sermon";
 import { NextResponse } from "next/server";
 
-// Define the shape of the dynamic parameters
-interface Context {
-  params: {
-    id: string; // Must match the folder name [id]
-  };
-}
-
-
-export async function GET(request: Request, context: Context) {
-    const { id } = context.params;
+export async function GET(request: Request, { params }: { params: { id: string } }) {
     const sermonService = new SermonService();
-    const result = await sermonService.get_sermon(id);
+    const result = await sermonService.get_sermon(params.id);
     return NextResponse.json(result);
 }
 
