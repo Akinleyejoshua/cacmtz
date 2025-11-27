@@ -30,12 +30,12 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
           {sortedEvents.map((event) => (
             <article key={event._id} className={`${styles.card} ${event.isLive ? styles.cardLive : ""}`}>
               <div className={styles.imageContainer}>
-                <img src={event.image} alt={event.name} className={styles.image} />
+                <img src={event.image} alt={event.title} className={styles.image} />
                 {event.isLive && <span className={styles.liveBadge}>🔴 LIVE</span>}
               </div>
 
               <div className={styles.content}>
-                <h3 className={styles.name}>{event.name}</h3>
+                <h3 className={styles.name}>{event.title}</h3>
                 {event.description && <p className={styles.description}>{event.description}</p>}
 
                 <div className={styles.meta}>

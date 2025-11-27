@@ -67,7 +67,10 @@ export default function AboutSection({
   motto = "A Kingdom of God on Earth",
   about = "C.A.C Mount Zion is a vibrant community of believers dedicated to advancing God's kingdom. We are committed to creating an environment where people encounter God's transformative power, grow in their faith journey, and become agents of positive change in their communities.",
   values = DEFAULT_VALUES,
-}: AboutSectionProps) {
+  generalSettings
+}: AboutSectionProps & { generalSettings?: any }) {
+  const displayMotto = generalSettings?.watchword || motto;
+
   return (
     <section id="about" className={styles.section}>
       <div className={styles.container}>
@@ -102,7 +105,7 @@ export default function AboutSection({
           <div className={styles.coreCard}>
             <div className={styles.cardIcon}>🔥</div>
             <h3 className={styles.cardTitle}>Our Motto</h3>
-            <p className={styles.cardContent}>{motto}</p>
+            <p className={styles.cardContent}>{displayMotto}</p>
           </div>
         </div>
 

@@ -10,7 +10,17 @@ export interface IGeneral extends Document {
         twitter: string;
         instagram: string;
         youtube: string;
+        tiktok: string;
+        linkedin: string;
     };
+    contactDetails: {
+        phone: string;
+        email: string;
+        mainLine: string;
+        prayerLine: string;
+    };
+    serviceTime: string;
+    officeHours: string;
     churchAddress: string;
 }
 
@@ -24,7 +34,17 @@ const GeneralSchema: Schema<IGeneral> = new Schema({
         twitter: { type: String, required: false, default: '' },
         instagram: { type: String, required: false, default: '' },
         youtube: { type: String, required: false, default: '' },
+        tiktok: { type: String, required: false, default: '' },
+        linkedin: { type: String, required: false, default: '' },
     },
+    contactDetails: {
+        phone: { type: String, required: false, default: '' },
+        email: { type: String, required: false, default: '' },
+        mainLine: { type: String, required: false, default: '' },
+        prayerLine: { type: String, required: false, default: '' },
+    },
+    serviceTime: { type: String, required: false, default: '' },
+    officeHours: { type: String, required: false, default: '' },
     churchAddress: { type: String, required: false, default: '' },
 });
 

@@ -13,7 +13,7 @@ import Footer from "./sections/footer";
 import AboutSection from "./sections/about";
 
 export default function Home() {
-  const {loading, events} = useLandingPage();
+  const { loading, events, generalSettings } = useLandingPage();
 
   if (loading) return SplashScreen();
 
@@ -22,12 +22,12 @@ export default function Home() {
       <MainHeader />
       <Hero />
       <Banner />
-      <Events events={events}/>
+      <Events events={events} />
       <SermonSection />
       <MinistersSection />
-      <AboutSection />
-      <ContactSection />
-      <Footer />
+      <AboutSection generalSettings={generalSettings} />
+      <ContactSection generalSettings={generalSettings} />
+      <Footer generalSettings={generalSettings} />
 
     </div>
   );

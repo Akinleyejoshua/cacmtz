@@ -26,6 +26,7 @@ type FooterProps = {
   socials?: SocialLink[];
   exploreLinks?: ExploreLink[];
   copyright?: string;
+  generalSettings?: any;
 };
 
 const DEFAULT_SOCIALS: SocialLink[] = [
@@ -55,9 +56,23 @@ export default function Footer({
   socials = DEFAULT_SOCIALS,
   exploreLinks = DEFAULT_EXPLORE_LINKS,
   copyright = `© ${new Date().getFullYear()} ${churchName}. All rights reserved.`,
+  generalSettings
 }: FooterProps) {
   const linksColumn1 = exploreLinks.slice(0, 4);
   const linksColumn2 = exploreLinks.slice(4);
+
+  const displayAddress = generalSettings?.churchAddress || address;
+  const displayPhone = generalSettings?.contactDetails?.phone || phone;
+  const displayEmail = generalSettings?.contactDetails?.email || email;
+
+  const displaySocials = generalSettings ? [
+    { id: "fb", name: "Facebook", icon: "f", url: generalSettings.socialHandles?.facebook || DEFAULT_SOCIALS[0].url },
+    { id: "ig", name: "Instagram", icon: "📷", url: generalSettings.socialHandles?.instagram || DEFAULT_SOCIALS[1].url },
+    { id: "tw", name: "Twitter", icon: "𝕏", url: generalSettings.socialHandles?.twitter || DEFAULT_SOCIALS[2].url },
+    { id: "yt", name: "YouTube", icon: "▶", url: generalSettings.socialHandles?.youtube || DEFAULT_SOCIALS[3].url },
+    ...(generalSettings.socialHandles?.tiktok ? [{ id: "tk", name: "TikTok", icon: "🎵", url: generalSettings.socialHandles.tiktok }] : []),
+    ...(generalSettings.socialHandles?.linkedin ? [{ id: "li", name: "LinkedIn", icon: "in", url: generalSettings.socialHandles.linkedin }] : []),
+  ] : socials;
 
   return (
     <footer className={styles.footer}>
@@ -102,7 +117,7 @@ export default function Footer({
           {/* Contact & Social Section */}
           <div className={styles.column}>
             <h4 className={styles.columnTitle}>Connect</h4>
-            
+
             {/* Contact Info */}
             <div className={styles.contactInfo}>
               <div className={styles.contactItem}>
@@ -110,12 +125,12 @@ export default function Footer({
                 <div className={styles.contactText}>
                   <p className={styles.contactLabel}>Address</p>
                   <a
-                    href={`https://www.google.com/maps?q=${address}`}
+                    href={`https://www.google.com/maps?q=${displayAddress}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.contactValue}
                   >
-                    {address}
+                    {displayAddress}
                   </a>
                 </div>
               </div>
@@ -124,8 +139,8 @@ export default function Footer({
                 <span className={styles.contactIcon}>📞</span>
                 <div className={styles.contactText}>
                   <p className={styles.contactLabel}>Phone</p>
-                  <a href={`tel:${phone}`} className={styles.contactValue}>
-                    {phone}
+                  <a href={`tel:${displayPhone}`} className={styles.contactValue}>
+                    {displayPhone}
                   </a>
                 </div>
               </div>
@@ -134,8 +149,8 @@ export default function Footer({
                 <span className={styles.contactIcon}>✉️</span>
                 <div className={styles.contactText}>
                   <p className={styles.contactLabel}>Email</p>
-                  <a href={`mailto:${email}`} className={styles.contactValue}>
-                    {email}
+                  <a href={`mailto:${displayEmail}`} className={styles.contactValue}>
+                    {displayEmail}
                   </a>
                 </div>
               </div>
@@ -145,7 +160,7 @@ export default function Footer({
             <div className={styles.socialContainer}>
               <p className={styles.followText}>Follow Us</p>
               <div className={styles.socialLinks}>
-                {socials.map((social) => (
+                {displaySocials.map((social: SocialLink) => (
                   <a
                     key={social.id}
                     href={social.url}

@@ -18,7 +18,17 @@ export default function GeneralSettingsPage() {
       twitter: "",
       instagram: "",
       youtube: "",
+      tiktok: "",
+      linkedin: "",
     },
+    contactDetails: {
+      phone: "",
+      email: "",
+      mainLine: "",
+      prayerLine: "",
+    },
+    serviceTime: "",
+    officeHours: "",
     churchAddress: "",
   });
 
@@ -41,13 +51,23 @@ export default function GeneralSettingsPage() {
         setFormData({
           marqueeAlert: settings.marqueeAlert || "",
           watchword: settings.watchword || "",
-          latestEvent: settings.latestEvent || "",
+          latestEvent: settings.latestEvent?._id || settings.latestEvent || "",
           socialHandles: {
             facebook: settings.socialHandles?.facebook || "",
             twitter: settings.socialHandles?.twitter || "",
             instagram: settings.socialHandles?.instagram || "",
             youtube: settings.socialHandles?.youtube || "",
+            tiktok: settings.socialHandles?.tiktok || "",
+            linkedin: settings.socialHandles?.linkedin || "",
           },
+          contactDetails: {
+            phone: settings.contactDetails?.phone || "",
+            email: settings.contactDetails?.email || "",
+            mainLine: settings.contactDetails?.mainLine || "",
+            prayerLine: settings.contactDetails?.prayerLine || "",
+          },
+          serviceTime: settings.serviceTime || "",
+          officeHours: settings.officeHours || "",
           churchAddress: settings.churchAddress || "",
         });
       }
@@ -67,6 +87,15 @@ export default function GeneralSettingsPage() {
         socialHandles: {
           ...prev.socialHandles,
           [socialKey]: value,
+        },
+      }));
+    } else if (name.startsWith("contact.")) {
+      const contactKey = name.split(".")[1];
+      setFormData((prev) => ({
+        ...prev,
+        contactDetails: {
+          ...prev.contactDetails,
+          [contactKey]: value,
         },
       }));
     } else {
@@ -216,6 +245,80 @@ export default function GeneralSettingsPage() {
           </div>
 
           <div className={styles.formGroup}>
+            <label className={styles.label}>Service Time</label>
+            <input
+              type="text"
+              name="serviceTime"
+              value={formData.serviceTime}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="e.g., Sundays at 9:00 AM"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Office Hours</label>
+            <input
+              type="text"
+              name="officeHours"
+              value={formData.officeHours}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="e.g., Mon-Fri 9am - 5pm"
+            />
+          </div>
+
+          <h3 className={styles.sectionTitle}>Contact Details</h3>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Phone Number</label>
+            <input
+              type="text"
+              name="contact.phone"
+              value={formData.contactDetails.phone}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Phone Number"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Email Address</label>
+            <input
+              type="email"
+              name="contact.email"
+              value={formData.contactDetails.email}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Email Address"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Main Line</label>
+            <input
+              type="text"
+              name="contact.mainLine"
+              value={formData.contactDetails.mainLine}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Main Line"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>Prayer Line</label>
+            <input
+              type="text"
+              name="contact.prayerLine"
+              value={formData.contactDetails.prayerLine}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="Prayer Line"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
             <label className={styles.label}>YouTube</label>
             <input
               type="text"
@@ -224,6 +327,30 @@ export default function GeneralSettingsPage() {
               onChange={handleChange}
               className={styles.input}
               placeholder="YouTube URL"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>TikTok</label>
+            <input
+              type="text"
+              name="social.tiktok"
+              value={formData.socialHandles.tiktok}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="TikTok URL"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>LinkedIn</label>
+            <input
+              type="text"
+              name="social.linkedin"
+              value={formData.socialHandles.linkedin}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="LinkedIn URL"
             />
           </div>
 

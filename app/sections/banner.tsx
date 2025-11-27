@@ -159,6 +159,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
         setLocation(prev => ({
           ...prev,
           address: generalSettings.churchAddress,
+          phone: generalSettings.contactDetails?.phone || prev.phone,
         }));
       }
 
@@ -168,6 +169,14 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
         if (generalSettings.socialHandles.twitter) newSocial.find(s => s.id === 'tw')!.url = generalSettings.socialHandles.twitter;
         if (generalSettings.socialHandles.instagram) newSocial.find(s => s.id === 'ig')!.url = generalSettings.socialHandles.instagram;
         if (generalSettings.socialHandles.youtube) newSocial.find(s => s.id === 'yt')!.url = generalSettings.socialHandles.youtube;
+
+        if (generalSettings.socialHandles.tiktok) {
+          newSocial.push({ id: "tk", name: "TikTok", icon: "🎵", url: generalSettings.socialHandles.tiktok });
+        }
+        if (generalSettings.socialHandles.linkedin) {
+          newSocial.push({ id: "li", name: "LinkedIn", icon: "in", url: generalSettings.socialHandles.linkedin });
+        }
+
         setSocial(newSocial);
       }
 
