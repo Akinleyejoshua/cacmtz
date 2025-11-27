@@ -1,0 +1,265 @@
+.section {
+  width: 100%;
+  padding: 56px 20px;
+  background: linear-gradient(180deg, rgba(10, 12, 20, 0.25), rgba(10, 12, 20, 0.06));
+}
+
+.container {
+  max-width: 100%;
+  margin: 0 auto;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.title {
+  font-size: clamp(22px, 3vw, 36px);
+  color: #fff;
+  font-weight: 800;
+  margin: 0 0 6px 0;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0;
+  font-size: 14px;
+}
+
+.tabWrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  width: 100%;
+}
+
+.tabList {
+  display: flex;
+  gap: 10px;
+  flex-wrap: nowrap;
+  align-items: center;
+  /* shrink to fit the tab buttons and stay centered */
+  width: max-content;
+  margin: 0 auto;
+  background: rgba(255,255,255,0.02);
+  padding: 8px;
+  border-radius: 999px;
+  /* border: 1px solid rgba(255,255,255,0.04); */
+  overflow: auto;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 700;
+  font-size: 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 220ms ease;
+  width: max-content;
+}
+
+.tab:hover {
+  transform: translateY(-3px);
+  color: #fff;
+}
+
+.tabCount {
+  background: linear-gradient(90deg, #6b46c1, #b794f4);
+  color: #fff;
+  font-weight: 800;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+.active {
+  background: linear-gradient(90deg, rgba(107, 70, 193, 0.15), rgba(183, 148, 244, 0.08));
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(107, 70, 193, 0.12);
+}
+
+.panels {
+  margin-top: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0 5rem;
+  width: 100%;
+}
+
+
+/* .panelInner {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 15px;
+  line-height: 1.7;
+  padding: 0;
+  margin: 0;
+} */
+
+/* Preview */
+.preview {
+  width: 100%;
+  padding: 16px;
+  overflow-y: auto;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.8;
+}
+
+.preview h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 1rem 0 0.5rem 0;
+  color: #fff;
+  border-bottom: 2px solid rgba(107, 70, 193, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.preview h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0.8rem 0 0.4rem 0;
+  color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(107, 70, 193, 0.2);
+  padding-bottom: 0.4rem;
+}
+
+.preview h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0.6rem 0 0.3rem 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.preview p {
+  margin: 1rem 0;
+  word-wrap: break-word;
+}
+
+.preview strong {
+  font-weight: 700;
+  color: #fff;
+}
+
+.preview em {
+  font-style: italic;
+}
+
+.preview del {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.preview code {
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+.preview pre {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.preview pre code {
+  background: transparent;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.preview blockquote {
+  border-left: 4px solid rgba(107, 70, 193, 0.4);
+  padding-left: 16px;
+  margin: 1rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.preview a {
+  color: #60a5fa;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.preview a:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+.preview ul,
+.preview ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.preview li {
+  margin: 0.5rem 0;
+}
+
+.preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 880px) {
+  .tabList {
+    gap: 8px;
+    padding: 6px;
+    width: 100%;
+  }
+
+  .tab {
+    padding: 8px 10px;
+    font-size: 13px;
+  }
+
+  .tabCount {
+    padding: 3px 6px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    max-width: 92%;
+  }
+
+  .tabList {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding: 6px;
+    width: 100%;
+
+  }
+
+  .panels{
+    padding: 0;
+  }
+
+  .tab {
+    flex: 0 0 auto;
+    width: max-content;
+  }
+}

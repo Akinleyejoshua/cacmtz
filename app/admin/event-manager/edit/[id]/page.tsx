@@ -1,0 +1,385 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import AdminTopNav from "../../../../components/admin-top-nav";
+import styles from "./page.module.css";
+import { useEventManager } from "@/app/hooks/use-event-manager";
+import request from "@/app/utils/axios";
+
+
+interface PageProps {
+  params: {
+    id: string;
+  };
+}
+
+export default function EditEventPage({ }: PageProps) {
+  const {
+    setFormData, formData, events,
+    fileToBase64
+  } = useEventManager();
+  const { id }: any = useParams();
+
+
+  const router = useRouter();
+  const eventData = events.find((item: any) => item._id == id);
+
+
+
+  const get_events = async () => {
+    const res: any = await request.post("/get-event", { id: id });
+    let res_data = res.data;
+    setFormData(res_data)
+  }
+
+  useEffect(() => {
+    get_events();
+  }, [eventData])
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.title.trim()) {
+      newErrors.name = "Event name is required";
+    }
+
+    if (!formData.location.trim()) {
+      newErrors.location = "Location is required";
+    }
+
+    if (!formData.image.trim()) {
+      newErrors.image = "Event image URL is required";
+    }
+
+    if (formData.duration <= 0) {
+      newErrors.duration = "Duration must be greater than 0";
+    }
+
+    if (formData.date < new Date()) {
+      newErrors.date = "Event date cannot be in the past";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+
+    if (type === "checkbox") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: (e.target as HTMLInputElement).checked,
+      }));
+    } else if (type === "number") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: parseInt(value) || 0,
+      }));
+    } else if (name === "date") {
+      setFormData((prev: any) => ({
+        ...prev,
+        date: value,
+        dateTime: new Date(value).getTime(),
+
+      }));
+    } else if (name === "time") {
+      const [hours, minutes, type] = value.split(":");
+      setFormData((prev: any) => ({
+        ...prev,
+        time: `${hours}:${minutes}`,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+
+    // Clear error for this field
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Simulate API call
+      await request.post("/update-event", { data:formData, id });
+
+      router.push("/admin/event-manager");
+
+      setSuccess(true);
+
+    } catch (error) {
+      console.error("Error updating event:", error);
+      setErrors({ submit: "Failed to update event. Please try again." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancel = () => {
+    router.back();
+  };
+
+  const formatDateForInput = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatTimeForInput = (date: Date): string => {
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    return `${hours}:${minutes}`;
+  };
+
+  if (!eventData) {
+    return (
+      <div className={styles.page}>
+        <div className={styles.header}>
+          <h1 className={styles.pageTitle}>Event Not Found</h1>
+          <p className={styles.subtitle}>The event you're trying to edit doesn't exist.</p>
+        </div>
+        <button onClick={handleCancel} className={styles.secondaryBtn}>
+          ← Go Back
+        </button>
+      </div>
+    );
+  }
+
+
+  return (
+    <div className={styles.page}>
+      <AdminTopNav />
+      {/* Header */}
+      <div className={styles.header}>
+        <div className={styles.titleSection}>
+          <h1 className={styles.pageTitle}>Edit Event</h1>
+          <p className={styles.subtitle}>Update event details</p>
+        </div>
+      </div>
+
+      {/* Success Message */}
+      {success && (
+        <div className={styles.successMessage}>
+          <span className={styles.successIcon}>✓</span>
+          <span>Event updated successfully! Redirecting...</span>
+        </div>
+      )}
+
+      {/* Error Message */}
+      {errors.submit && <div className={styles.errorMessage}>{errors.submit}</div>}
+
+      {/* Form */}
+      <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.formSection}>
+          <h2 className={styles.sectionTitle}>Basic Information</h2>
+
+          {/* Event Name */}
+          <div className={styles.formGroup}>
+            <label htmlFor="name" className={styles.label}>
+              Event Name <span className={styles.required}>*</span>
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="title"
+              value={formData?.title}
+              onChange={handleChange}
+              placeholder="Enter event name"
+              className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
+            />
+            {errors.name && <span className={styles.errorText}>{errors.name}</span>}
+          </div>
+
+          {/* Description */}
+          <div className={styles.formGroup}>
+            <label htmlFor="description" className={styles.label}>
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              value={formData.description || ""}
+              onChange={handleChange}
+              placeholder="Enter event description"
+              rows={4}
+              className={styles.textarea}
+            />
+          </div>
+
+          {/* Event Image */}
+          <div className={styles.formGroup}>
+            <label htmlFor="image" className={styles.label}>
+              Event Image URL <span className={styles.required}>*</span>
+            </label>
+            <input
+              type="file"
+              id="image"
+              name="image"
+              // value={formData.image}
+              onChange={async (e: any) => {
+                const file = e.target.files[0];
+                const base64DataURL = await fileToBase64(file);
+                setFormData((prev: any) => ({
+                  ...prev,
+                  image: base64DataURL,
+                }));
+
+              }}
+              // placeholder="https://example.com/image.jpg"
+              className={`${styles.input} ${errors.image ? styles.inputError : ""}`}
+            />
+            {errors.image && <span className={styles.errorText}>{errors.image}</span>}
+            {formData.image && (
+              <div className={styles.imagePreview}>
+                <img src={formData.image} alt="Event preview" className={styles.previewImg} />
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Date & Time Section */}
+        <div className={styles.formSection}>
+          <h2 className={styles.sectionTitle}>Date & Time</h2>
+
+          <div className={styles.formRow}>
+            {/* Date */}
+            <div className={styles.formGroup}>
+              <label htmlFor="date" className={styles.label}>
+                Date <span className={styles.required}>*</span>
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={(formData.date)}
+                onChange={handleChange}
+                className={`${styles.input} ${errors.date ? styles.inputError : ""}`}
+              />
+              {errors.date && <span className={styles.errorText}>{errors.date}</span>}
+            </div>
+
+            {/* Time */}
+            <div className={styles.formGroup}>
+              <label htmlFor="time" className={styles.label}>
+                Time
+              </label>
+              <input
+                type="time"
+                id="time"
+                name="time"
+                value={(formData.time)}
+                onChange={handleChange}
+                className={styles.input}
+              />
+            </div>
+          </div>
+
+          {/* Duration */}
+          <div className={styles.formGroup}>
+            <label htmlFor="duration" className={styles.label}>
+              Duration (minutes) <span className={styles.required}>*</span>
+            </label>
+            <input
+              type="number"
+              id="duration"
+              name="duration"
+              value={formData.duration}
+              onChange={handleChange}
+              // min="1"
+              // step="15"
+              className={`${styles.input} ${errors.duration ? styles.inputError : ""}`}
+            />
+            {errors.duration && <span className={styles.errorText}>{errors.duration}</span>}
+            <p className={styles.helperText}>
+              Duration: {Math.floor(formData.duration / 60)}h {formData.duration % 60}m
+            </p>
+          </div>
+        </div>
+
+        {/* Location & Links Section */}
+        <div className={styles.formSection}>
+          <h2 className={styles.sectionTitle}>Location & Links</h2>
+
+          {/* Location */}
+          <div className={styles.formGroup}>
+            <label htmlFor="location" className={styles.label}>
+              Location <span className={styles.required}>*</span>
+            </label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              value={formData.location}
+              onChange={handleChange}
+              placeholder="e.g., Main Hall, Virtual, Downtown Area"
+              className={`${styles.input} ${errors.location ? styles.inputError : ""}`}
+            />
+            {errors.location && <span className={styles.errorText}>{errors.location}</span>}
+          </div>
+
+          {/* Live Link */}
+          <div className={styles.formGroup}>
+            <label htmlFor="liveLink" className={styles.label}>
+              Live Stream/Details Link
+            </label>
+            <input
+              type="url"
+              id="liveLink"
+              name="liveLink"
+              value={formData.liveLink || ""}
+              onChange={handleChange}
+              placeholder="https://example.com/live"
+              className={styles.input}
+            />
+          </div>
+
+          {/* Is Live */}
+          <div className={styles.checkboxGroup}>
+            <input
+              type="checkbox"
+              id="isLive"
+              name="isLive"
+              checked={formData.isLive}
+              onChange={handleChange}
+              className={styles.checkbox}
+            />
+            <label htmlFor="isLive" className={styles.checkboxLabel}>
+              Mark as Live Event
+            </label>
+          </div>
+        </div>
+
+        {/* Form Actions */}
+        <div className={styles.formActions}>
+          <button type="button" onClick={handleCancel} className={styles.secondaryBtn} disabled={loading}>
+            Cancel
+          </button>
+          <button type="submit" className={styles.primaryBtn} disabled={loading}>
+            {loading ? "Updating..." : "Update Event"}
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}

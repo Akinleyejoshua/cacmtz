@@ -1,0 +1,521 @@
+.page {
+  padding: 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2.5rem;
+  gap: 2rem;
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.pageTitle {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+}
+
+.btn {
+  padding: 12px 24px;
+  background: linear-gradient(90deg, #6b46c1, #b794f4);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 200ms ease;
+  white-space: nowrap;
+  box-shadow: 0 8px 16px rgba(107, 70, 193, 0.24);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(107, 70, 193, 0.32);
+}
+
+/* Controls Section */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 12px;
+  font-size: 16px;
+  pointer-events: none;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.searchInput {
+  width: 100%;
+  padding: 12px 16px 12px 40px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #fff;
+  font-size: 14px;
+  transition: all 200ms ease;
+}
+
+.searchInput::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.searchInput:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(107, 70, 193, 0.4);
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+.clearBtn {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  transition: color 200ms ease;
+}
+
+.clearBtn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.filterGroup {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.filterSelect {
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 200ms ease;
+  min-width: 150px;
+}
+
+.filterSelect:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.filterSelect:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(107, 70, 193, 0.4);
+  box-shadow: 0 0 0 3px rgba(107, 70, 193, 0.1);
+}
+
+.filterSelect option {
+  background: #1a1a2e;
+  color: #fff;
+}
+
+/* Results Info */
+.resultsInfo {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: 1.5rem;
+  padding: 0 0.5rem;
+}
+
+.resultsInfo strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 700;
+}
+
+/* Table Section */
+.tableWrapper {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 3rem;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background: rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.7);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tableRow {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  transition: all 200ms ease;
+}
+
+.tableRow:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.table td {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.nameCell {
+  width: 250px;
+}
+
+.eventName {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.thumbnail {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.eventTitle {
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+  font-size: 14px;
+}
+
+.eventDesc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 2px 0 0 0;
+}
+
+.dateTime {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.date {
+  font-weight: 600;
+  color: #fff;
+}
+
+.time {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Badge Styles */
+.badge {
+  display: inline-block;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.badgeLive {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+}
+
+.badgeUpcoming {
+  background: rgba(59, 130, 246, 0.15);
+  color: #93c5fd;
+}
+
+.badgePast {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+}
+
+/* Actions */
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actionBtn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 150ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.actionBtn:hover {
+  background: rgba(107, 70, 193, 0.2);
+  transform: scale(1.1);
+}
+
+/* Empty State */
+.emptyState {
+  padding: 3rem 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin: 0 0 1rem 0;
+}
+
+.emptyText {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0 0 0.5rem 0;
+}
+
+.emptySubtext {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0 0 1.5rem 0;
+}
+
+.emptyBtn {
+  display: inline-block;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #6b46c1, #b794f4);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 200ms ease;
+}
+
+.emptyBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(107, 70, 193, 0.24);
+}
+
+/* Quick Navigation Section */
+.quickNavSection {
+  margin-top: 3rem;
+}
+
+.quickNavTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 1.5rem 0;
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.navCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 200ms ease;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+}
+
+.navCard:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(107, 70, 193, 0.3);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(107, 70, 193, 0.1);
+}
+
+.navCardIcon {
+  font-size: 32px;
+}
+
+.navCardTitle {
+  font-weight: 700;
+  color: #fff;
+  font-size: 14px;
+}
+
+.navCardDesc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Responsive */
+@media (max-width: 980px) {
+  .page {
+    padding: 1.5rem;
+  }
+
+  .header {
+    flex-direction: column;
+    margin-bottom: 2rem;
+  }
+
+  .pageTitle {
+    font-size: 24px;
+  }
+
+  .nameCell {
+    width: auto;
+  }
+
+  .cardGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: 1rem;
+  }
+
+  .pageTitle {
+    font-size: 20px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .controls {
+    gap: 1rem;
+  }
+
+  .filterGroup {
+    gap: 0.75rem;
+  }
+
+  .filterSelect {
+    min-width: 120px;
+    font-size: 13px;
+    padding: 8px 10px;
+  }
+
+  .table {
+    font-size: 12px;
+  }
+
+  .table th,
+  .table td {
+    padding: 10px 8px;
+  }
+
+  .thumbnail {
+    width: 32px;
+    height: 32px;
+  }
+
+  .eventTitle {
+    font-size: 13px;
+  }
+
+  .eventDesc {
+    font-size: 11px;
+  }
+
+  .actions {
+    gap: 6px;
+  }
+
+  .actionBtn {
+    width: 28px;
+    height: 28px;
+    font-size: 12px;
+  }
+
+  .cardGrid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 0.75rem;
+  }
+
+  .navCard {
+    padding: 1rem;
+    gap: 0.5rem;
+  }
+
+  .navCardIcon {
+    font-size: 24px;
+  }
+
+  .navCardTitle {
+    font-size: 13px;
+  }
+
+  .navCardDesc {
+    font-size: 11px;
+  }
+
+  /* Hide description on very small screens for table */
+  .eventDesc {
+    display: none;
+  }
+}

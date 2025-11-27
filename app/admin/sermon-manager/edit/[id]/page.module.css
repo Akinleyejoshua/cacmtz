@@ -1,0 +1,201 @@
+/* Scoped styles for editing a sermon (dark-mode admin) */
+.page {
+  min-height: 100vh;
+  background: linear-gradient(180deg, rgba(10,11,13,0.6), rgba(6,7,8,0.85));
+  color: #e6eef8;
+  padding: 1.5rem 1rem 3rem;
+}
+
+.header {
+  max-width: 1100px;
+  margin: 0 auto 1.25rem;
+  padding: 1rem 0;
+}
+
+.loadingSpinner {
+  padding: 1rem 1.25rem;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.03);
+  border-radius: 8px;
+  color: #cfe9ff;
+}
+
+.titleSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.subtitle {
+  margin: 0;
+  color: #bcd6ff;
+  font-size: 0.95rem;
+}
+
+.successMessage {
+  max-width: 1100px;
+  margin: 0.5rem auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(90deg, rgba(24,128,72,0.12), rgba(24,128,72,0.06));
+  border: 1px solid rgba(24,128,72,0.18);
+  color: #c8f3d1;
+  padding: 0.7rem 1rem;
+  border-radius: 8px;
+}
+
+.successIcon {
+  background: rgba(24,128,72,0.18);
+  color: #eaffef;
+  border-radius: 999px;
+  padding: 0.25rem 0.5rem;
+  font-weight: 700;
+}
+
+.errorMessage {
+  max-width: 1100px;
+  margin: 0.5rem auto;
+  background: rgba(220,38,38,0.06);
+  border: 1px solid rgba(220,38,38,0.14);
+  color: #ffd7d7;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+}
+
+.form {
+  max-width: 1100px;
+  margin: 1rem auto 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 1.25rem;
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+}
+
+.formSection {
+  margin-bottom: 1rem;
+}
+
+.sectionTitle {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.05rem;
+  color: #f6fbff;
+}
+
+.formGroup {
+  margin-bottom: 0.85rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.9rem;
+  color: #cfe9ff;
+  margin-bottom: 0.35rem;
+}
+
+.hint {
+  font-size: 0.8rem;
+  color: #9fbbe6;
+  margin-left: 0.5rem;
+}
+
+.required {
+  color: #ffb4b4;
+  margin-left: 0.25rem;
+}
+
+.idInput {
+  background: rgba(0,0,0,0.35);
+  color: #e6f4ff;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 0.5rem 0.6rem;
+  border-radius: 6px;
+}
+
+.helperText {
+  margin: 0.35rem 0 0 0;
+  font-size: 0.82rem;
+  color: #98b6db;
+}
+
+.input {
+  background: rgba(255,255,255,0.02);
+  color: #e7f2ff;
+  border: 1px solid rgba(255,255,255,0.04);
+  padding: 0.55rem 0.75rem;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.input:focus {
+  border-color: rgba(124, 58, 237, 0.9);
+  box-shadow: 0 0 0 4px rgba(124,58,237,0.08);
+}
+
+.inputError {
+  border-color: rgba(220,38,38,0.9);
+  box-shadow: 0 0 0 4px rgba(220,38,38,0.06);
+}
+
+.errorText {
+  margin-top: 0.35rem;
+  color: #ffd6d6;
+  font-size: 0.82rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.primaryBtn {
+  background: linear-gradient(90deg, #7c3aed, #5b21b6);
+  color: white;
+  padding: 0.6rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.primaryBtn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.secondaryBtn {
+  background: transparent;
+  color: #cfe9ff;
+  border: 1px solid rgba(255,255,255,0.06);
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+@media (max-width: 800px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .pageTitle {
+    font-size: 1.3rem;
+  }
+}

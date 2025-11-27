@@ -1,0 +1,406 @@
+.editorContainer {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  overflow: hidden;
+  height: 20rem;
+}
+
+/* Toolbar */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-wrap: wrap;
+}
+
+.toolButtons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.toolButton {
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.toolButton:hover {
+  background: rgba(107, 70, 193, 0.15);
+  border-color: rgba(107, 70, 193, 0.3);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.toolButton:active {
+  transform: translateY(0);
+  background: rgba(107, 70, 193, 0.25);
+}
+
+/* View Toggle */
+.viewToggle {
+  display: flex;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.viewBtn {
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 150ms ease;
+  white-space: nowrap;
+}
+
+.viewBtn:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.viewBtn.active {
+  background: linear-gradient(90deg, rgba(107, 70, 193, 0.2), rgba(183, 148, 244, 0.2));
+  border-color: rgba(107, 70, 193, 0.3);
+  color: #fff;
+  box-shadow: 0 0 8px rgba(107, 70, 193, 0.1);
+}
+
+/* Editor Content */
+.editorContent {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.textarea {
+  width: 100%;
+  padding: 16px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.9);
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  resize: none;
+  overflow-y: auto;
+  outline: none;
+}
+
+.textarea::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.textarea:focus {
+  background: rgba(107, 70, 193, 0.05);
+}
+
+/* Preview */
+.preview {
+  width: 100%;
+  padding: 16px;
+  overflow-y: auto;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.8;
+}
+
+.preview h1 {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 1rem 0 0.5rem 0;
+  color: #fff;
+  border-bottom: 2px solid rgba(107, 70, 193, 0.3);
+  padding-bottom: 0.5rem;
+}
+
+.preview h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0.8rem 0 0.4rem 0;
+  color: rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid rgba(107, 70, 193, 0.2);
+  padding-bottom: 0.4rem;
+}
+
+.preview h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0.6rem 0 0.3rem 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.preview p {
+  margin: 1rem 0;
+  word-wrap: break-word;
+}
+
+.preview strong {
+  font-weight: 700;
+  color: #fff;
+}
+
+.preview em {
+  font-style: italic;
+}
+
+.preview del {
+  text-decoration: line-through;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.preview code {
+  padding: 2px 6px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  font-family: "Monaco", "Menlo", "Ubuntu Mono", "Consolas", monospace;
+  font-size: 12px;
+  color: #fbbf24;
+}
+
+.preview pre {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 12px 16px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.preview pre code {
+  background: transparent;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.preview blockquote {
+  border-left: 4px solid rgba(107, 70, 193, 0.4);
+  padding-left: 16px;
+  margin: 1rem 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-style: italic;
+}
+
+.preview a {
+  color: #60a5fa;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+
+.preview a:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+.preview ul,
+.preview ol {
+  margin: 1rem 0;
+  padding-left: 2rem;
+}
+
+.preview li {
+  margin: 0.5rem 0;
+}
+
+.preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.charCount {
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.info {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Scrollbar Styling */
+.textarea::-webkit-scrollbar,
+.preview::-webkit-scrollbar {
+  width: 8px;
+}
+
+.textarea::-webkit-scrollbar-track,
+.preview::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.textarea::-webkit-scrollbar-thumb,
+.preview::-webkit-scrollbar-thumb {
+  background: rgba(107, 70, 193, 0.3);
+  border-radius: 4px;
+}
+
+.textarea::-webkit-scrollbar-thumb:hover,
+.preview::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 70, 193, 0.5);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .toolbar {
+    padding: 10px 12px;
+    gap: 0.75rem;
+  }
+
+  .toolButtons {
+    gap: 4px;
+  }
+
+  .toolButton {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .editorContent {
+    min-height: 300px;
+  }
+
+  .textarea,
+  .preview {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .preview h1 {
+    font-size: 24px;
+  }
+
+  .preview h2 {
+    font-size: 20px;
+  }
+
+  .preview h3 {
+    font-size: 18px;
+  }
+
+  .footer {
+    padding: 8px 12px;
+    font-size: 11px;
+    flex-direction: column;
+    gap: 4px;
+    text-align: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    padding: 8px 10px;
+    gap: 0.5rem;
+  }
+
+  .toolButtons {
+    gap: 3px;
+    width: 100%;
+  }
+
+  .toolButton {
+    flex: 1 1 calc(50% - 1.5px);
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+
+  .viewToggle {
+    width: 100%;
+    order: 3;
+  }
+
+  .viewBtn {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+
+  .editorContent {
+    min-height: 250px;
+  }
+
+  .textarea,
+  .preview {
+    padding: 10px;
+    font-size: 12px;
+  }
+
+  .preview h1 {
+    font-size: 20px;
+    margin: 0.8rem 0 0.4rem 0;
+  }
+
+  .preview h2 {
+    font-size: 18px;
+    margin: 0.6rem 0 0.3rem 0;
+  }
+
+  .preview h3 {
+    font-size: 16px;
+    margin: 0.4rem 0 0.2rem 0;
+  }
+
+  .preview p {
+    margin: 0.8rem 0;
+  }
+
+  .preview code {
+    font-size: 11px;
+    padding: 1px 4px;
+  }
+
+  .preview blockquote {
+    padding-left: 12px;
+    margin: 0.8rem 0;
+  }
+
+  .preview ul,
+  .preview ol {
+    padding-left: 1.5rem;
+  }
+
+  .preview li {
+    margin: 0.3rem 0;
+  }
+
+  .footer {
+    gap: 2px;
+  }
+
+  .info {
+    font-size: 10px;
+  }
+}
