@@ -10,7 +10,7 @@ export const SplashScreen = () => {
                 {/* Icon/Logo in the middle */}
                 <div className={styles.iconWrapper}>
                     <div className={styles.icon}>
-                        <Image style={{borderRadius: '50%'}} src={Logo} alt="Logo" width={140} height={140} />
+                        <Image style={{borderRadius: '10px'}} src={Logo} alt="Logo" width={140} height={140} />
                     </div>
                     <div className={styles.loadingSpinner}></div>
                 </div>
