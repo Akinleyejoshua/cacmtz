@@ -43,7 +43,7 @@ export default function GalleryPage() {
                     {loading ? (
                         <div className={styles.loading}>Loading gallery...</div>
                     ) : items.length > 0 ? (
-                        <div className={styles.grid}>
+                        <div className={styles.grid} id='gallery'>
                             {items.map((item) => (
                                 <div key={item._id} className={styles.card}>
                                     <Image
