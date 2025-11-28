@@ -8,41 +8,50 @@ import { FaSearch, FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEn
 
 interface MinistersSectionProps {
     ministers: Minister[];
+    showSearch?: boolean;
+    title?: string;
+    subtitle?: string;
 }
 
-export default function MinistersSection({ ministers }: MinistersSectionProps) {
+export default function MinistersSection({
+    ministers,
+    showSearch = true,
+    title = "Our Ministers",
+    subtitle = "Meet the dedicated leaders serving our community with passion and grace."
+}: MinistersSectionProps) {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredMinisters = useMemo(() => {
+        if (!showSearch) return ministers;
         return ministers.filter(minister =>
             minister.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             minister.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
             minister.department.toLowerCase().includes(searchTerm.toLowerCase())
         );
-    }, [ministers, searchTerm]);
+    }, [ministers, searchTerm, showSearch]);
 
     return (
         <section className={styles.section}>
             <div className={styles.container}>
                 <div className={styles.header}>
-                    <h2 className={styles.title}>Our Ministers</h2>
-                    <p className={styles.subtitle}>
-                        Meet the dedicated leaders serving our community with passion and grace.
-                    </p>
+                    <h2 className={styles.title}>{title}</h2>
+                    {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
                 </div>
 
-                <div className={styles.searchContainer}>
-                    <div className={styles.searchInputWrapper}>
-                        <FaSearch className={styles.searchIcon} />
-                        <input
-                            type="text"
-                            placeholder="Search ministers by name, role, or department..."
-                            className={styles.searchInput}
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+                {showSearch && (
+                    <div className={styles.searchContainer}>
+                        <div className={styles.searchInputWrapper}>
+                            <FaSearch className={styles.searchIcon} />
+                            <input
+                                type="text"
+                                placeholder="Search ministers by name, role, or department..."
+                                className={styles.searchInput}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
                 <div className={styles.grid}>
                     {filteredMinisters.length > 0 ? (
@@ -60,7 +69,9 @@ export default function MinistersSection({ ministers }: MinistersSectionProps) {
                                 </div>
                                 <div className={styles.content}>
                                     <div className={styles.headerInfo}>
-                                        <span className={styles.role}>{minister.position}</span>
+                                        <div className={styles.roleBadge}>
+                                            <span className={styles.role}>{minister.position}</span>
+                                        </div>
                                         <h3 className={styles.name}>{minister.name}</h3>
                                         <p className={styles.department}>{minister.department}</p>
                                     </div>

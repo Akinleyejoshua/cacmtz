@@ -11,8 +11,10 @@ import ContactSection from "./sections/contact";
 import Footer from "./sections/footer";
 import AboutSection from "./sections/about";
 
+import MinistersSection from "./sections/ministers";
+
 export default function Home() {
-  const { loading, events, generalSettings, latestSermon } = useLandingPage();
+  const { loading, events, generalSettings, latestSermon, ministers } = useLandingPage();
 
   if (loading) return SplashScreen();
 
@@ -23,6 +25,12 @@ export default function Home() {
       <Banner />
       <Events events={events} />
       <SermonSection sermon={latestSermon} />
+      <MinistersSection
+        ministers={ministers.slice(0, 8)}
+        showSearch={false}
+        title="Meet Our Ministers"
+        subtitle="Dedicated leaders serving our community"
+      />
       <AboutSection generalSettings={generalSettings} />
       <ContactSection generalSettings={generalSettings} />
       <Footer generalSettings={generalSettings} />

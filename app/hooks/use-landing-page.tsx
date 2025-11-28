@@ -1,4 +1,4 @@
-// "use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import request from "../utils/axios";
@@ -40,16 +40,19 @@ export const useLandingPage = () => {
   const [events, setEvents] = useState([]);
   const [generalSettings, setGeneralSettings] = useState<any>(null);
   const [latestSermon, setLatestSermon] = useState<any>(null);
+  const [ministers, setMinisters] = useState<any[]>([]);
 
   const get_events = async () => {
     try {
-      const [eventsRes, generalRes, sermonsRes] = await Promise.all([
+      const [eventsRes, generalRes, sermonsRes, ministersRes] = await Promise.all([
         request.get("/get-events"),
         request.get("/general"),
-        request.get("/sermon")
+        request.get("/sermon"),
+        request.get("/ministers")
       ]);
       setEvents(eventsRes.data);
       setGeneralSettings(generalRes.data);
+      setMinisters(ministersRes.data);
 
       if (sermonsRes.data && sermonsRes.data.length > 0) {
         setLatestSermon(sermonsRes.data[0]);
@@ -66,5 +69,5 @@ export const useLandingPage = () => {
     get_events();
   }, [])
 
-  return { loading, events, generalSettings, latestSermon, formatRelativeTime, formatTime, formatDuration, convertTimeFormat }
+  return { loading, events, generalSettings, latestSermon, ministers, formatRelativeTime, formatTime, formatDuration, convertTimeFormat }
 }

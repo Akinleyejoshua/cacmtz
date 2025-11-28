@@ -23,10 +23,10 @@
     font-weight: 800;
     color: var(--foreground);
     margin-bottom: 1.5rem;
-    background: linear-gradient(135deg, var(--foreground) 0%, var(--muted-foreground) 100%);
+    /* background: linear-gradient(135deg, var(--foreground) 0%, var(--muted-foreground) 100%); */
     background-clip: text;
     -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    /* -webkit-text-fill-color: transparent; */
     letter-spacing: -0.03em;
     line-height: 1.1;
 }
