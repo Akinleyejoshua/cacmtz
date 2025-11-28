@@ -7,6 +7,7 @@ import styles from "./main-header.module.css";
 import { AiOutlineHome, AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import Logo from "../../public/src/img/brand/logo.jpg"
 import Image from "next/image";
+import { FaPhotoFilm } from "react-icons/fa6";
 
 export const MainHeader = () => {
     const [open, setOpen] = useState(false);
@@ -108,6 +109,12 @@ export const MainHeader = () => {
                         </svg>
                         <span>Profile</span>
                     </Link>
+
+                     <Link href="/gallery" className={`${styles.navLink} ${pathname === "/profile" ? styles.active : ""}`} onClick={() => setOpen(false)}>
+                        <FaPhotoFilm/>
+                        <span>Gallery</span>
+                    </Link>
+
 
                     <Link href="/#contact" className={`${styles.navLink} ${pathname.includes("contact") ? styles.active : ""}`} onClick={() => setOpen(false)}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
