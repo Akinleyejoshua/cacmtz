@@ -1,7 +1,7 @@
 /* Scoped styles for editing a sermon (dark-mode admin) */
 .page {
   min-height: 100vh;
-  background: linear-gradient(180deg, rgba(10,11,13,0.6), rgba(6,7,8,0.85));
+  background: linear-gradient(180deg, rgba(10, 11, 13, 0.6), rgba(6, 7, 8, 0.85));
   color: #e6eef8;
   padding: 1.5rem 1rem 3rem;
 }
@@ -14,8 +14,8 @@
 
 .loadingSpinner {
   padding: 1rem 1.25rem;
-  background: rgba(255,255,255,0.03);
-  border: 1px solid rgba(255,255,255,0.03);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.03);
   border-radius: 8px;
   color: #cfe9ff;
 }
@@ -45,15 +45,15 @@
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  background: linear-gradient(90deg, rgba(24,128,72,0.12), rgba(24,128,72,0.06));
-  border: 1px solid rgba(24,128,72,0.18);
+  background: linear-gradient(90deg, rgba(24, 128, 72, 0.12), rgba(24, 128, 72, 0.06));
+  border: 1px solid rgba(24, 128, 72, 0.18);
   color: #c8f3d1;
   padding: 0.7rem 1rem;
   border-radius: 8px;
 }
 
 .successIcon {
-  background: rgba(24,128,72,0.18);
+  background: rgba(24, 128, 72, 0.18);
   color: #eaffef;
   border-radius: 999px;
   padding: 0.25rem 0.5rem;
@@ -63,8 +63,8 @@
 .errorMessage {
   max-width: 1100px;
   margin: 0.5rem auto;
-  background: rgba(220,38,38,0.06);
-  border: 1px solid rgba(220,38,38,0.14);
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.14);
   color: #ffd7d7;
   padding: 0.65rem 1rem;
   border-radius: 8px;
@@ -73,11 +73,11 @@
 .form {
   max-width: 1100px;
   margin: 1rem auto 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(255, 255, 255, 0.04);
   padding: 1.25rem;
   border-radius: 10px;
-  box-shadow: 0 6px 18px rgba(2,6,23,0.45);
+  box-shadow: 0 6px 18px rgba(2, 6, 23, 0.45);
 }
 
 .formSection {
@@ -114,9 +114,9 @@
 }
 
 .idInput {
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
   color: #e6f4ff;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   padding: 0.5rem 0.6rem;
   border-radius: 6px;
 }
@@ -128,9 +128,9 @@
 }
 
 .input {
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   color: #e7f2ff;
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   padding: 0.55rem 0.75rem;
   border-radius: 6px;
   outline: none;
@@ -139,12 +139,12 @@
 
 .input:focus {
   border-color: rgba(124, 58, 237, 0.9);
-  box-shadow: 0 0 0 4px rgba(124,58,237,0.08);
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.08);
 }
 
 .inputError {
-  border-color: rgba(220,38,38,0.9);
-  box-shadow: 0 0 0 4px rgba(220,38,38,0.06);
+  border-color: rgba(220, 38, 38, 0.9);
+  box-shadow: 0 0 0 4px rgba(220, 38, 38, 0.06);
 }
 
 .errorText {
@@ -184,7 +184,7 @@
 .secondaryBtn {
   background: transparent;
   color: #cfe9ff;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   padding: 0.55rem 0.9rem;
   border-radius: 8px;
   cursor: pointer;

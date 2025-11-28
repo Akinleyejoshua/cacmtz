@@ -22,6 +22,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-icons": "^5.5.0",
+    "react-multi-carousel": "^2.8.6",
     "timers": "^0.1.1",
     "tls": "^0.0.1",
     "zustand": "^5.0.8"

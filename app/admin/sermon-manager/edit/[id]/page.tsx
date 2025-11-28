@@ -31,7 +31,7 @@ export default function EditSermonPage() {
   useEffect(() => {
     const fetchSermon = async () => {
       try {
-        const res: any = await request.get(`/sermon/${sermonId}`, {params: {id: sermonId}});
+        const res: any = await request.get(`/sermon/${sermonId}`, { params: { id: sermonId } });
         const sermon = res.data;
 
         if (!sermon) {
@@ -172,12 +172,12 @@ export default function EditSermonPage() {
           <div className={styles.titleSection}>
             <h1 className={styles.pageTitle}>Sermon Not Found</h1>
             <p className={styles.subtitle}>The sermon you're looking for doesn't exist.</p>
-          <button style={{ width: "max-content", marginTop: "1rem" }} onClick={handleCancel} className={styles.secondaryBtn}>
-            Go Back
-          </button>
+            <button style={{ width: "max-content", marginTop: "1rem" }} onClick={handleCancel} className={styles.secondaryBtn}>
+              Go Back
+            </button>
           </div>
         </div>
-  
+
       </div>
     );
   }

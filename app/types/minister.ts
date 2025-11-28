@@ -1,0 +1,18 @@
+export interface Minister {
+    _id: string;
+    name: string;
+    position: string;
+    department: string;
+    email?: string;
+    phone?: string;
+    bio?: string;
+    image?: string;
+    socialLinks?: {
+        facebook?: string;
+        twitter?: string;
+        instagram?: string;
+        linkedin?: string;
+    };
+    createdAt: string;
+    updatedAt: string;
+}

@@ -1,4 +1,4 @@
-/* Scoped styles for editing a minister (dark-mode admin) */
+/* Scoped styles for adding a minister (dark-mode admin) */
 .page {
     min-height: 100vh;
     /* background: linear-gradient(180deg, rgba(10, 11, 13, 0.6), rgba(6, 7, 8, 0.85)); */
@@ -192,12 +192,6 @@
     padding: 1rem;
     border-radius: 8px;
     margin-bottom: 1.5rem;
-}
-
-.loadingSpinner {
-    color: #b794f4;
-    font-size: 1.25rem;
-    font-weight: 600;
 }
 
 @media (max-width: 768px) {

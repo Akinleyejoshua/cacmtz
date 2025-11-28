@@ -7,7 +7,6 @@ import Hero from "./components/hero";
 import Events from "./sections/events";
 import Banner from "./sections/banner";
 import SermonSection from "./sections/sermon";
-import MinistersSection from "./sections/ministers";
 import ContactSection from "./sections/contact";
 import Footer from "./sections/footer";
 import AboutSection from "./sections/about";
@@ -24,7 +23,6 @@ export default function Home() {
       <Banner />
       <Events events={events} />
       <SermonSection sermon={latestSermon} />
-      <MinistersSection />
       <AboutSection generalSettings={generalSettings} />
       <ContactSection generalSettings={generalSettings} />
       <Footer generalSettings={generalSettings} />

@@ -1,16 +1,13 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
-import AdminTopNav from "../../../../components/admin-top-nav";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import AdminTopNav from "../../../components/admin-top-nav";
 import styles from "./page.module.css";
 import request from "@/app/utils/axios";
 
-export default function EditMinisterPage() {
+export default function CreateMinisterPage() {
     const router = useRouter();
-    const params = useParams();
-    const ministerId = params.id as string;
-
     const [formData, setFormData] = useState({
         name: "",
         position: "",
@@ -28,47 +25,8 @@ export default function EditMinisterPage() {
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
-    const [notFound, setNotFound] = useState(false);
-
-    useEffect(() => {
-        const fetchMinister = async () => {
-            try {
-                const res: any = await request.get(`/ministers/${ministerId}`);
-                const minister = res.data;
-
-                if (!minister) {
-                    setNotFound(true);
-                    return;
-                }
-
-                setFormData({
-                    name: minister.name,
-                    position: minister.position,
-                    department: minister.department,
-                    email: minister.email || "",
-                    phone: minister.phone || "",
-                    bio: minister.bio || "",
-                    image: minister.image || "",
-                    socialLinks: {
-                        facebook: minister.socialLinks?.facebook || "",
-                        twitter: minister.socialLinks?.twitter || "",
-                        instagram: minister.socialLinks?.instagram || "",
-                        linkedin: minister.socialLinks?.linkedin || "",
-                    },
-                });
-            } catch (error) {
-                console.error("Failed to fetch minister:", error);
-                setNotFound(true);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchMinister();
-    }, [ministerId]);
 
     const validateForm = (): boolean => {
         const newErrors: Record<string, string> = {};
@@ -90,8 +48,9 @@ export default function EditMinisterPage() {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type, files } = e.target as HTMLInputElement;
-         if (type === "file" && files && files[0]) {
+        const target = e.target as HTMLInputElement;
+        const { name, value, files, type } = target;
+        if (type === "file" && files && files[0]) {
             const file = files[0];
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -104,7 +63,6 @@ export default function EditMinisterPage() {
             reader.readAsDataURL(file);
             return;
         }
-
         if (name.startsWith("social_")) {
             const socialKey = name.replace("social_", "");
             setFormData((prev) => ({
@@ -120,7 +78,6 @@ export default function EditMinisterPage() {
                 [name]: value,
             }));
         }
-
         if (errors[name]) {
             setErrors((prev) => ({
                 ...prev,
@@ -136,53 +93,25 @@ export default function EditMinisterPage() {
             return;
         }
 
-        setSaving(true);
+        setLoading(true);
 
         try {
-            await request.put(`/ministers/${ministerId}`, formData);
+            await request.post("/ministers", formData);
             setSuccess(true);
             setTimeout(() => {
                 router.push("/admin/ministers-manager");
             }, 1000);
         } catch (error) {
-            console.error("Error updating minister:", error);
-            setErrors({ submit: "Failed to update minister. Please try again." });
+            console.error("Error creating minister:", error);
+            setErrors({ submit: "Failed to create minister. Please try again." });
         } finally {
-            setSaving(false);
+            setLoading(false);
         }
     };
 
     const handleCancel = () => {
         router.back();
     };
-
-    if (loading) {
-        return (
-            <div className={styles.page}>
-                <AdminTopNav />
-                <div className={styles.header}>
-                    <div className={styles.loadingSpinner}>Loading minister...</div>
-                </div>
-            </div>
-        );
-    }
-
-    if (notFound) {
-        return (
-            <div className={styles.page}>
-                <AdminTopNav />
-                <div className={styles.header}>
-                    <div className={styles.titleSection}>
-                        <h1 className={styles.pageTitle}>Minister Not Found</h1>
-                        <p className={styles.subtitle}>The minister you're looking for doesn't exist.</p>
-                        <button style={{ width: "max-content", marginTop: "1rem" }} onClick={handleCancel} className={styles.secondaryBtn}>
-                            Go Back
-                        </button>
-                    </div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className={styles.page}>
@@ -192,10 +121,8 @@ export default function EditMinisterPage() {
                 {/* Header */}
                 <div className={styles.header}>
                     <div className={styles.titleSection}>
-                        <h1 className={styles.pageTitle}>Edit Minister</h1>
-                        <p className={styles.subtitle}>
-                            Update minister: <span style={{ fontFamily: "monospace", fontWeight: "bold" }}>{ministerId}</span>
-                        </p>
+                        <h1 className={styles.pageTitle}>Add New Minister</h1>
+                        <p className={styles.subtitle}>Add a new minister to the church leadership</p>
                     </div>
                 </div>
 
@@ -203,7 +130,7 @@ export default function EditMinisterPage() {
                 {success && (
                     <div className={styles.successMessage}>
                         <span className={styles.successIcon}>✓</span>
-                        <span>Minister updated successfully! Redirecting...</span>
+                        <span>Minister created successfully! Redirecting...</span>
                     </div>
                 )}
 
@@ -316,8 +243,8 @@ export default function EditMinisterPage() {
                                 rows={4}
                             />
                         </div>
-
-                         {/* Image Upload */}
+                    </div>
+                    {/* Image Upload */}
                     <div className={styles.formGroup}>
                         <label htmlFor="image" className={styles.label}>Profile Image</label>
                         <input
@@ -328,7 +255,6 @@ export default function EditMinisterPage() {
                             onChange={handleChange}
                             className={styles.input}
                         />
-                    </div>
                     </div>
 
                     {/* Social Media */}
@@ -394,11 +320,11 @@ export default function EditMinisterPage() {
 
                     {/* Form Actions */}
                     <div className={styles.formActions}>
-                        <button type="button" onClick={handleCancel} className={styles.secondaryBtn} disabled={saving}>
+                        <button type="button" onClick={handleCancel} className={styles.secondaryBtn} disabled={loading}>
                             Cancel
                         </button>
-                        <button type="submit" className={styles.primaryBtn} disabled={saving}>
-                            {saving ? "Saving..." : "Save Changes"}
+                        <button type="submit" className={styles.primaryBtn} disabled={loading}>
+                            {loading ? "Creating..." : "Create Minister"}
                         </button>
                     </div>
                 </form>

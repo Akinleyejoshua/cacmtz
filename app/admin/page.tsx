@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
       if (email.toLowerCase().includes("gmail")) {
         // redirect to admin dashboard (placeholder)
         save("admin-auth", true);
-        router.push(load("admin-path")||"/admin/dashboard");
+        router.push(load("admin-path")||"/admin/general");
       } else {
         setError("Invalid credentials. Use an administrator email.");
       }
