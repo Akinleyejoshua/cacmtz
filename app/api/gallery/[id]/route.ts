@@ -4,9 +4,10 @@ import GalleryItem from '../../models/gallery';
 
 export async function DELETE(
     request: Request,
-    { params }: any
+    props: { params: Promise<{ id: string }> }
 ) {
     try {
+        const params = await props.params;
         const deletedItem = await deleteGalleryItem(params.id);
         if (!deletedItem) {
             return NextResponse.json({ error: 'Gallery item not found' }, { status: 404 });
@@ -20,9 +21,10 @@ export async function DELETE(
 
 export async function PUT(
     request: Request,
-    { params }: any
+    props: { params: Promise<{ id: string }> }
 ) {
     try {
+        const params = await props.params;
         const body = await request.json();
         const { title, category, imageUrl } = body;
 
