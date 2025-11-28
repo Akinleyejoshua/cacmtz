@@ -85,9 +85,10 @@
 }
 
 .active {
-  background: linear-gradient(90deg, rgba(107, 70, 193, 0.15), rgba(183, 148, 244, 0.08));
+  /* background: linear-gradient(90deg, rgba(107, 70, 193, 0.15), rgba(183, 148, 244, 0.08)); */
   color: #fff;
   box-shadow: 0 8px 24px rgba(107, 70, 193, 0.12);
+  background-color: var(--button-bg);
 }
 
 .panels {

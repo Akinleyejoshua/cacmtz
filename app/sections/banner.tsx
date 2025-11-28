@@ -85,8 +85,8 @@ const DEFAULT_LOCATION: Location = {
   city: "",
   country: "",
   coordinates: {
-    lat: 6.5244,
-    lng: 3.3792,
+    lat: 6.652483,
+    lng: 3.364273,
   },
   phone: "+234 08036138443",
 };
