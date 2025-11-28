@@ -48,6 +48,10 @@ header *, footer *, #hero *, #gallery *{
   color: white !important;
 }
 
+#admin *{
+  color: black !important;
+}
+
 a {
   color: inherit;
   text-decoration: none;

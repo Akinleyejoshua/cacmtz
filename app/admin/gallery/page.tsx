@@ -111,7 +111,7 @@ export default function GalleryManager() {
     };
 
     return (
-        <main className={styles.page}>
+        <main className={styles.page} id='admin-gallery'>
             <AdminTopNav />
 
             <div className={styles.header}>

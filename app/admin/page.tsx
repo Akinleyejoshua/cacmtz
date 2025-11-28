@@ -54,7 +54,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <main className={styles.page}>
+    <main className={styles.page} id="admin">
       <div className={styles.card} role="main">
         <header className={styles.header}>
           <h1 className={styles.title}>Admin Login</h1>
