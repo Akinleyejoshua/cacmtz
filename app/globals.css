@@ -40,6 +40,7 @@ body {
   scroll-behavior: smooth;
   color: rgba(0, 0, 0, 0.692) !important;
     -webkit-tap-highlight-color: transparent;
+    /* font-size: 14px !important; */
 
 }
 
