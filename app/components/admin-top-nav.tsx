@@ -41,6 +41,7 @@ export default function AdminTopNav() {
     // { href: "/admin/donations", label: "Donations" },
     { href: "/admin/bulletin-manager", label: "Bulletins" },
     { href: "/admin/profile-manager", label: "Profile" },
+    { href: "/admin/gallery", label: "Gallery" },
     // { href: "/admin/settings", label: "Settings" },
   ];
 
