@@ -108,7 +108,7 @@ export const formatRelativeTime = (timestampMs: any): string => {
 
 export function convert24hrTo12hr(time24hr: string): string {
     const parts = time24hr?.split(':');
-    if (parts.length !== 2) {
+    if (parts?.length !== 2) {
         return 'Invalid Time Format';
     }
 
