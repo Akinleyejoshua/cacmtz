@@ -28,7 +28,7 @@ export interface IGeneral extends Document {
 const GeneralSchema: Schema<IGeneral> = new Schema({
     marqueeAlert: { type: String, required: false, default: '' },
     watchword: { type: String, required: false, default: '' },
-    latestEvent: { type: Schema.Types.ObjectId, required: false },
+    latestEvent: { type: Schema.Types.ObjectId, ref: 'Event', required: false },
     socialHandles: {
         facebook: { type: String, required: false, default: '' },
         twitter: { type: String, required: false, default: '' },
