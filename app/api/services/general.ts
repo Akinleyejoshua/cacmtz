@@ -4,10 +4,7 @@ dbConnect();
 
 class GeneralService {
     get_general = async () => {
-        let general: any = await General.findOne().populate('latestEvent');
-        if (!general) {
-            general = await General.create({});
-        }
+        let general: any = await General.findOne();
         return general;
     }
 
