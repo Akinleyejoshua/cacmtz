@@ -4,7 +4,7 @@
   align-items: center;
   justify-content: center;
   padding: 40px 20px;
-  background: linear-gradient(180deg, rgba(10,12,20,0.3), rgba(10,12,20,0.05));
+  /* background: linear-gradient(180deg, rgba(10,12,20,0.3), rgba(10,12,20,0.05)); */
 }
 
 .card {
