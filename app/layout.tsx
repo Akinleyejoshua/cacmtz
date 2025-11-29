@@ -14,6 +14,9 @@ const bricolage = Bricolage_Grotesque({
 export const metadata: Metadata = {
   title: "Christ Apostolic Church Mount Zion Ojodu",
   description: "Kingdom Zonal HeadQuarters",
+  openGraph: {
+    images: './src/img/brand/logo.png', // e.g., '/og-image.jpg'
+  },
 };
 
 export default function RootLayout({
