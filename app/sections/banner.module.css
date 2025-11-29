@@ -402,7 +402,7 @@
 
 @media (max-width: 480px) {
   .section {
-    padding: 20px 12px;
+    padding: 0px 0px;
   }
 
   .watchword {
