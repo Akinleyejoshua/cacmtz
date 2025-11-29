@@ -2,6 +2,24 @@
 
 import React, { useState, useRef } from "react";
 import styles from "./editor.module.css";
+// Importing icons
+import {
+  FaBold,
+  FaItalic,
+  FaStrikethrough,
+  FaHeading,
+  FaQuoteRight,
+  FaLink,
+  FaImage,
+  FaListUl,
+  FaListOl,
+  FaCode,
+  FaVideo,
+  FaTable,
+} from "react-icons/fa";
+import { MdHorizontalRule, MdPreview, MdEdit } from "react-icons/md";
+import { GoTasklist } from "react-icons/go";
+import { BiCodeBlock } from "react-icons/bi";
 
 interface EditorProps {
   placeholder?: string;
@@ -14,7 +32,7 @@ export default function Editor({
   placeholder = "Enter your content here... Use markdown formatting",
   defaultValue = "",
   onContentChange,
-  height = "400px",
+  height = "500px",
 }: EditorProps) {
   const [content, setContent] = useState(defaultValue);
   const [preview, setPreview] = useState(false);
@@ -26,13 +44,19 @@ export default function Editor({
     onContentChange(newContent);
   };
 
-  const insertMarkdown = (before: string, after: string = "", placeholder: string = "text") => {
+  const insertMarkdown = (
+    before: string,
+    after: string = "",
+    placeholderText: string = ""
+  ) => {
     const textarea = textareaRef.current;
     if (!textarea) return;
 
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
-    const selectedText = content.substring(start, end) || placeholder;
+    
+    // If text is selected, use it; otherwise use the placeholder
+    const selectedText = content.substring(start, end) || placeholderText;
     const beforeText = content.substring(0, start);
     const afterText = content.substring(end);
 
@@ -40,76 +64,97 @@ export default function Editor({
     setContent(newContent);
     onContentChange(newContent);
 
-    // Restore cursor position
+    // Restore cursor position and focus
     setTimeout(() => {
-      textarea.selectionStart = start + before.length;
-      textarea.selectionEnd = start + before.length + selectedText.length;
       textarea.focus();
+      // If we inserted a placeholder (no selection), select the placeholder text
+      if (start === end && placeholderText) {
+         textarea.setSelectionRange(
+           start + before.length,
+           start + before.length + placeholderText.length
+         );
+      } else {
+         // Just place cursor after insertion
+         textarea.setSelectionRange(
+           start + before.length + selectedText.length + after.length,
+           start + before.length + selectedText.length + after.length
+         );
+      }
     }, 0);
   };
 
   const markdownTools = [
-    { label: "B", title: "Bold", insert: "**", after: "**" },
-    { label: "I", title: "Italic", insert: "_", after: "_" },
-    { label: "S", title: "Strikethrough", insert: "~~", after: "~~" },
-    { label: "H1", title: "Heading 1", insert: "# ", after: "" },
-    { label: "H2", title: "Heading 2", insert: "## ", after: "" },
-    { label: "H3", title: "Heading 3", insert: "### ", after: "" },
-    { label: "Code", title: "Inline Code", insert: "`", after: "`" },
-    { label: "Quote", title: "Blockquote", insert: "> ", after: "" },
-    { label: "Link", title: "Link", insert: "[", after: "](url)" },
-    { label: "Image", title: "Image", insert: "![alt](", after: ")" },
-    { label: "List", title: "Unordered List", insert: "- ", after: "" },
-    { label: "Number", title: "Ordered List", insert: "1. ", after: "" },
+    { icon: <FaBold />, title: "Bold", insert: "**", after: "**", placeholder: "bold text" },
+    { icon: <FaItalic />, title: "Italic", insert: "_", after: "_", placeholder: "italic text" },
+    { icon: <FaStrikethrough />, title: "Strikethrough", insert: "~~", after: "~~", placeholder: "text" },
+    { icon: <MdHorizontalRule />, title: "Horizontal Rule", insert: "\n---\n", after: "", placeholder: "" },
+    { icon: <FaHeading />, title: "Heading (H2)", insert: "## ", after: "", placeholder: "Heading" },
+    { icon: <FaCode />, title: "Inline Code", insert: "`", after: "`", placeholder: "code" },
+    { icon: <BiCodeBlock />, title: "Code Block", insert: "```\n", after: "\n```", placeholder: "code block" },
+    { icon: <FaQuoteRight />, title: "Blockquote", insert: "> ", after: "", placeholder: "quote" },
+    { icon: <FaLink />, title: "Link", insert: "[", after: "](url)", placeholder: "link text" },
+    { icon: <FaImage />, title: "Image", insert: "![", after: "](https://example.com/image.png)", placeholder: "alt text" },
+    { icon: <FaVideo />, title: "Video", insert: "[[video: ", after: "]]", placeholder: "https://example.com/video.mp4" },
+    { icon: <FaTable />, title: "Table", insert: "\n| Header 1 | Header 2 |\n| -------- | -------- |\n| Cell 1   | Cell 2   |\n", after: "", placeholder: "" },
+    { icon: <FaListUl />, title: "Unordered List", insert: "- ", after: "", placeholder: "item" },
+    { icon: <FaListOl />, title: "Ordered List", insert: "1. ", after: "", placeholder: "item" },
+    { icon: <GoTasklist />, title: "Task List", insert: "- [ ] ", after: "", placeholder: "task" },
   ];
 
   const renderMarkdown = (text: string): string => {
     let html = text;
 
-    // Escape HTML
+    // 1. Escape HTML (Security)
     html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-    // Code blocks
+    // -----------------------------------------------------------------------
+    // IMAGE FORMATTER
+    // -----------------------------------------------------------------------
+    // Pattern: ![Alt Text](URL)
+    // $1 = Alt Text, $2 = URL
+    html = html.replace(
+      /!\[([^\]]*)\]\(([^\)]+)\)/g, 
+      '<img src="$2" alt="$1" class="markdown-image" />'
+    );
+
+    // -----------------------------------------------------------------------
+    // VIDEO FORMATTER (Custom Syntax)
+    // -----------------------------------------------------------------------
+    // Pattern: [[video: URL]]
+    // $1 = URL
+    html = html.replace(
+      /\[\[video:\s*([^\]]+)\]\]/g,
+      '<div class="video-wrapper"><video controls src="$1" class="markdown-video">Your browser does not support the video tag.</video></div>'
+    );
+
+    // ... rest of the formatters (Bold, headers, etc) ...
+    
+    // Code Blocks
     html = html.replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>");
-
-    // Inline code
-    html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-
+    // Inline Code
+    html = html.replace(/`([^`]+)`/g, "<code class='inline-code'>$1</code>");
     // Bold
     html = html.replace(/\*\*([^\*]+)\*\*/g, "<strong>$1</strong>");
-
     // Italic
     html = html.replace(/_([^_]+)_/g, "<em>$1</em>");
-
     // Strikethrough
     html = html.replace(/~~([^~]+)~~/g, "<del>$1</del>");
-
-    // Headers
+    // Horizontal Rule
+    html = html.replace(/^---$/gm, "<hr />");
+    // Headings
     html = html.replace(/^### (.*?)$/gm, "<h3>$1</h3>");
     html = html.replace(/^## (.*?)$/gm, "<h2>$1</h2>");
     html = html.replace(/^# (.*?)$/gm, "<h1>$1</h1>");
-
-    // Blockquotes
+    // Blockquote
     html = html.replace(/^> (.*?)$/gm, "<blockquote>$1</blockquote>");
-
-    // Links
-    html = html.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-
-    // Images
-    html = html.replace(/!\[([^\]]*)\]\(([^\)]+)\)/g, '<img src="$2" alt="$1" style="max-width: 100%; height: auto;" />');
-
+    // Links (Must be AFTER images, or it might break image syntax)
+    html = html.replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+    
     // Line breaks
-    html = html.replace(/\n\n/g, "</p><p>");
-    html = "<p>" + html + "</p>";
-    html = html.replace(/<p><\/p>/g, "");
-
-    // Lists
-    html = html.replace(/^- (.*?)$/gm, "<li>$1</li>");
-    html = html.replace(/(<li>.*?<\/li>)/, "<ul>$1</ul>");
-    html = html.replace(/^1\. (.*?)$/gm, "<li>$1</li>");
+    html = html.replace(/\n/g, "<br />");
 
     return html;
-  };
+};
 
   return (
     <div className={styles.editorContainer}>
@@ -121,10 +166,10 @@ export default function Editor({
               key={index}
               className={styles.toolButton}
               title={tool.title}
-              onClick={() => insertMarkdown(tool.insert, tool.after)}
+              onClick={() => insertMarkdown(tool.insert, tool.after, tool.placeholder)}
               type="button"
             >
-              {tool.label}
+              {tool.icon}
             </button>
           ))}
         </div>
@@ -136,7 +181,7 @@ export default function Editor({
             type="button"
             title="Edit mode"
           >
-            ✏️ Edit
+            <MdEdit style={{ marginRight: "4px" }} /> Edit
           </button>
           <button
             className={`${styles.viewBtn} ${preview ? styles.active : ""}`}
@@ -144,7 +189,7 @@ export default function Editor({
             type="button"
             title="Preview mode"
           >
-            👁️ Preview
+            <MdPreview style={{ marginRight: "4px" }} /> Preview
           </button>
         </div>
       </div>
@@ -161,7 +206,7 @@ export default function Editor({
           />
         ) : (
           <div
-            className={styles.preview}
+            className={`${styles.preview} markdown-body`}
             dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
           />
         )}
