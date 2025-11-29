@@ -290,7 +290,7 @@
   }
 
   .editorContent {
-    min-height: 300px;
+    min-height: 100px !important;
   }
 
   .textarea,
@@ -403,4 +403,37 @@
   .info {
     font-size: 10px;
   }
+}
+
+@media (max-width: 480px) {
+  .toolbar {
+    padding: 10px;
+    /* gap: 0.5rem; */
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
+  .toolButtons {
+    gap: 3px;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  .toolButton {
+    flex: 0 0 auto; 
+    padding: 6px 8px;
+    font-size: 10px;
+  }
+  
+  .viewToggle {
+    width: 100%;
+    order: 3;
+  }
+
+  .viewBtn {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
 }
