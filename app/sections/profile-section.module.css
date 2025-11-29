@@ -1,7 +1,7 @@
 .section {
   width: 100%;
   padding: 56px 20px;
-  background: linear-gradient(180deg, rgba(10, 12, 20, 0.25), rgba(10, 12, 20, 0.06));
+  /* background: linear-gradient(180deg, rgba(10, 12, 20, 0.25), rgba(10, 12, 20, 0.06)); */
 }
 
 .container {
