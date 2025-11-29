@@ -1,9 +1,11 @@
 import General from "../models/general";
+import Event, { IEvent } from '../models/event';
 import dbConnect from "../db";
 dbConnect();
 
 class GeneralService {
     get_general = async () => {
+        let latestEvent: IEvent | null = await Event.findOne().sort({ createdAt: -1 });
         let general: any = await General.findOne().populate('latestEvent');
         if (!general) {
             general = await General.create({});
