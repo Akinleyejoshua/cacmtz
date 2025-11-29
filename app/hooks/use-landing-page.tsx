@@ -22,11 +22,6 @@ function formatTime(date: Date): string {
   return date.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
 }
 
-const convertTimeFormat = (date: any) => {
-  const split = date.split("-");
-  return new Date(split[0], split[1], split[2])
-}
-
 function formatDuration(minutes: number): string {
   const hours = Math.floor(minutes / 60);
   const mins = minutes % 60;
@@ -69,5 +64,5 @@ export const useLandingPage = () => {
     get_events();
   }, [])
 
-  return { loading, events, generalSettings, latestSermon, ministers, formatRelativeTime, formatTime, formatDuration, convertTimeFormat }
+  return { loading, events, generalSettings, latestSermon, ministers, formatRelativeTime, formatTime, formatDuration }
 }
