@@ -42,7 +42,7 @@ const DEFAULT_SLIDES: Slide[] = [
 	},
 ];
 
-export default function Hero({ slides = DEFAULT_SLIDES, interval = 10000 }: { slides?: Slide[]; interval?: number }) {
+export default function Hero({ slides = DEFAULT_SLIDES, interval = 40000 }: { slides?: Slide[]; interval?: number }) {
 	const [index, setIndex] = useState(0);
 	const [paused, setPaused] = useState(false);
 	const timeoutRef = useRef<number | null>(null);
