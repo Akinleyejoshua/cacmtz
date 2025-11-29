@@ -122,7 +122,7 @@ export const MainHeader = () => {
                         <span>Gallery</span>
                     </Link>
 
-                    <Link href="/gallery" className={`${styles.navLink} ${pathname === "/profile" ? styles.active : ""}`} onClick={() => setOpen(false)}>
+                    <Link href="/sermons" className={`${styles.navLink} ${pathname === "/profile" ? styles.active : ""}`} onClick={() => setOpen(false)}>
                         <FaMicrophone />
                         <span>Sermons</span>
                     </Link>
