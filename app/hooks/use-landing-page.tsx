@@ -61,7 +61,9 @@ export const useLandingPage = () => {
     } catch (error) {
       console.error("Error fetching landing page data:", error);
     } finally {
-      setLoading(false);
+      setTimeout(() => {
+        setLoading(false);
+      }, 4000);
     }
   }
 
