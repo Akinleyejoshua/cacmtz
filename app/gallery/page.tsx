@@ -7,8 +7,11 @@ import Footer from "../sections/footer";
 import styles from './gallery.module.css';
 import { GalleryItem } from '../types/gallery';
 import request from '../utils/axios';
+import { useLandingPage } from '../hooks/use-landing-page';
 
 export default function GalleryPage() {
+  const { generalSettings } = useLandingPage();
+
     const [items, setItems] = useState<GalleryItem[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -72,7 +75,7 @@ export default function GalleryPage() {
                 </div>
             </main>
 
-            <Footer />
+      <Footer generalSettings={generalSettings} />
         </div>
     );
 }
