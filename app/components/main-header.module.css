@@ -172,6 +172,7 @@
 .navLink.active {
     color: var(--accent-primary);
     font-weight: 600;
+    background-color: var(--glass-hover);
 }
 
 .activeDot {

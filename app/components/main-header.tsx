@@ -82,26 +82,26 @@ export const MainHeader = () => {
                         <AiOutlineClose size={24} />
                     </button>
 
-                    <Link href="/" className={`${styles.navLink}`} onClick={() => setOpen(false)}>
+                    <Link href="/" className={`${styles.navLink} ${pathname === "/" ? styles.active : ""}`} onClick={() => setOpen(false)}>
                         <AiOutlineHome className={styles.navIcon} />
                         <span>Home</span>
                     </Link>
                     {pathname == "/" && <>
-                        <Link href="/#events" className={`${styles.navLink} ${pathname.includes("events") ? styles.active : ""}`} onClick={() => setOpen(false)}>
+                        <Link href="/#events" className={`${styles.navLink} ${pathname.includes("#events") ? styles.active : ""}`} onClick={() => setOpen(false)}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="1.5" />
                                 <path d="M16 2v4M8 2v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                             </svg>
                             <span>Events</span>
                         </Link>
-                        <Link href="/#about" className={`${styles.navLink}`} onClick={() => setOpen(false)}>
+                        <Link href="/#about" className={`${styles.navLink} ${pathname.includes("#about") ? styles.active : ""}`} onClick={() => setOpen(false)}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M17 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                                 <circle cx="12" cy="7" r="4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                             <span>About</span>
                         </Link>
-                        <Link href="/#contact" className={`${styles.navLink} ${pathname.includes("contact") ? styles.active : ""}`} onClick={() => setOpen(false)}>
+                        <Link href="/#contact" className={`${styles.navLink} ${pathname.includes("#contact") ? styles.active : ""}`} onClick={() => setOpen(false)}>
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
@@ -117,12 +117,12 @@ export const MainHeader = () => {
                         <span>Profile</span>
                     </Link>
 
-                    <Link href="/gallery" className={`${styles.navLink} ${pathname === "/profile" ? styles.active : ""}`} onClick={() => setOpen(false)}>
+                    <Link href="/gallery" className={`${styles.navLink} ${pathname === "/gallery" ? styles.active : ""}`} onClick={() => setOpen(false)}>
                         <FaPhotoFilm />
                         <span>Gallery</span>
                     </Link>
 
-                    <Link href="/sermons" className={`${styles.navLink} ${pathname === "/profile" ? styles.active : ""}`} onClick={() => setOpen(false)}>
+                    <Link href="/sermons" className={`${styles.navLink} ${pathname === "/sermons" ? styles.active : ""}`} onClick={() => setOpen(false)}>
                         <FaMicrophone />
                         <span>Sermons</span>
                     </Link>
