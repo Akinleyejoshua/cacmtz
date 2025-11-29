@@ -46,7 +46,7 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                   </div>
                   <div className={styles.metaItem}>
                     <span className={styles.metaLabel}>🕐 Time</span>
-                    <span className={styles.metaValue}>{(event.date)}</span>
+                    <span className={styles.metaValue}>{(event.time)}</span>
                   </div>
                   <div className={styles.metaItem}>
                     <span className={styles.metaLabel}>⏱️ Duration</span>
