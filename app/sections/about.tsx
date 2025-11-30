@@ -64,12 +64,11 @@ export default function AboutSection({
   subtitle = "Know Our Purpose and Direction",
   vision = "To be a beacon of hope and transformation, spreading the gospel of Jesus Christ and impacting lives across generations",
   mission = "To glorify God through passionate worship, comprehensive discipleship, and servant-hearted ministry that transforms individuals and communities",
-  motto = "A Kingdom of God on Earth",
+  motto = "Steadfasting in the ministry of kingdom prayer and the word.",
   about = "C.A.C Mount Zion is a vibrant community of believers dedicated to advancing God's kingdom. We are committed to creating an environment where people encounter God's transformative power, grow in their faith journey, and become agents of positive change in their communities.",
   values = DEFAULT_VALUES,
-  generalSettings
 }: AboutSectionProps & { generalSettings?: any }) {
-  const displayMotto = generalSettings?.watchword || motto;
+  const displayMotto = motto;
 
   return (
     <section id="about" className={styles.section}>
