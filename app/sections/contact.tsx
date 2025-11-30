@@ -2,6 +2,7 @@
 
 import React from "react";
 import styles from "./contact.module.css";
+import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
 
 type ContactInfo = {
   id: string;
@@ -14,8 +15,9 @@ type ContactInfo = {
 type SocialLink = {
   id: string;
   name: string;
-  icon: string;
+  icon: React.ReactNode;
   url: string;
+  color: string;
 };
 
 const DEFAULT_CONTACTS: ContactInfo[] = [
@@ -62,10 +64,10 @@ const DEFAULT_CONTACTS: ContactInfo[] = [
 ];
 
 const DEFAULT_SOCIALS: SocialLink[] = [
-  { id: "fb", name: "Facebook", icon: "f", url: "https://facebook.com/cacmountzion" },
-  { id: "ig", name: "Instagram", icon: "📷", url: "https://instagram.com/cacmountzion" },
-  { id: "tw", name: "Twitter", icon: "𝕏", url: "https://twitter.com/cacmountzion" },
-  { id: "yt", name: "YouTube", icon: "▶", url: "https://youtube.com/@cacmountzion" },
+  { id: "fb", name: "Facebook", icon: <FaFacebookF />, url: "https://facebook.com/cacmountzion", color: "#1877F2" },
+  { id: "ig", name: "Instagram", icon: <FaInstagram />, url: "https://instagram.com/cacmountzion", color: "#E4405F" },
+  { id: "tw", name: "Twitter", icon: <FaTwitter />, url: "https://twitter.com/cacmountzion", color: "#1DA1F2" },
+  { id: "yt", name: "YouTube", icon: <FaYoutube />, url: "https://youtube.com/@cacmountzion", color: "#FF0000" },
 ];
 
 interface ContactSectionProps {
@@ -121,12 +123,14 @@ export default function ContactSection({ contacts = DEFAULT_CONTACTS, socials = 
   ] : contacts;
 
   const displaySocials = generalSettings ? [
-    { id: "fb", name: "Facebook", icon: "f", url: generalSettings.socialHandles?.facebook || DEFAULT_SOCIALS[0].url },
-    { id: "ig", name: "Instagram", icon: "📷", url: generalSettings.socialHandles?.instagram || DEFAULT_SOCIALS[1].url },
-    { id: "tw", name: "Twitter", icon: "𝕏", url: generalSettings.socialHandles?.twitter || DEFAULT_SOCIALS[2].url },
-    { id: "yt", name: "YouTube", icon: "▶", url: generalSettings.socialHandles?.youtube || DEFAULT_SOCIALS[3].url },
-    ...(generalSettings.socialHandles?.tiktok ? [{ id: "tk", name: "TikTok", icon: "🎵", url: generalSettings.socialHandles.tiktok }] : []),
-    ...(generalSettings.socialHandles?.linkedin ? [{ id: "li", name: "LinkedIn", icon: "in", url: generalSettings.socialHandles.linkedin }] : []),
+    { id: "fb", name: "Facebook", icon: <FaFacebookF />, url: generalSettings.socialHandles?.facebook || DEFAULT_SOCIALS[0].url, color: "#1877F2" },
+    { id: "ig", name: "Instagram", icon: <FaInstagram />, url: generalSettings.socialHandles?.instagram || DEFAULT_SOCIALS[1].url, color: "#E4405F" },
+    { id: "tw", name: "Twitter", icon: <FaTwitter />, url: generalSettings.socialHandles?.twitter || DEFAULT_SOCIALS[2].url, color: "#1DA1F2" },
+    { id: "yt", name: "YouTube", icon: <FaYoutube />, url: generalSettings.socialHandles?.youtube || DEFAULT_SOCIALS[3].url, color: "#FF0000" },
+    ...(generalSettings.socialHandles?.soundCloud ? [{ id: "sc", name: "SoundCloud", icon: <FaSoundcloud />, url: generalSettings.socialHandles.soundCloud, color: "#FF5500" }] : []),
+    ...(generalSettings.socialHandles?.whatsapp ? [{ id: "wa", name: "WhatsApp", icon: <FaWhatsapp />, url: generalSettings.socialHandles.whatsapp, color: "#25D366" }] : []),
+    ...(generalSettings.socialHandles?.tiktok ? [{ id: "tk", name: "TikTok", icon: <FaTiktok />, url: generalSettings.socialHandles.tiktok, color: "#000000" }] : []),
+    ...(generalSettings.socialHandles?.linkedin ? [{ id: "li", name: "LinkedIn", icon: <FaLinkedinIn />, url: generalSettings.socialHandles.linkedin, color: "#0A66C2" }] : []),
   ] : socials;
 
   return (
@@ -162,7 +166,7 @@ export default function ContactSection({ contacts = DEFAULT_CONTACTS, socials = 
             <h3 className={styles.socialTitle}>Follow Us</h3>
             <div className={styles.socialLinks}>
               {displaySocials.map((social: SocialLink) => (
-                <a key={social.id} href={social.url} target="_blank" rel="noopener noreferrer" className={styles.socialLink} title={social.name} aria-label={`Follow us on ${social.name}`}>
+                <a key={social.id} href={social.url} target="_blank" rel="noopener noreferrer" className={styles.socialLink} title={social.name} aria-label={`Follow us on ${social.name}`} style={{ color: social.color }}>
                   <span className={styles.socialIcon}>{social.icon}</span>
                 </a>
               ))}

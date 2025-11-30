@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./banner.module.css";
 import { useLandingPage } from "../hooks/use-landing-page";
 import { formatRelativeTime, convert24hrTo12hr } from "../utils/helpers";
+import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
 
 type Event = {
   id: string;
@@ -43,34 +44,53 @@ type Location = {
 type SocialMedia = {
   id: string;
   name: string;
-  icon: string;
+  icon: React.ReactNode;
   url: string;
+  color: string;
 };
 
 const DEFAULT_SOCIAL: SocialMedia[] = [
   {
     id: "fb",
     name: "Facebook",
-    icon: "f",
+    icon: <FaFacebookF />,
     url: "https://facebook.com/cacmountzion",
+    color: "#1877F2",
   },
   {
     id: "ig",
     name: "Instagram",
-    icon: "📷",
+    icon: <FaInstagram />,
     url: "https://instagram.com/cacmountzion",
+    color: "#E4405F",
   },
   {
     id: "tw",
     name: "Twitter",
-    icon: "𝕏",
+    icon: <FaTwitter />,
     url: "https://twitter.com/cacmountzion",
+    color: "#1DA1F2",
   },
   {
     id: "yt",
     name: "YouTube",
-    icon: "▶",
+    icon: <FaYoutube />,
     url: "https://youtube.com/@cacmountzion",
+    color: "#FF0000",
+  },
+  {
+    id: "sc",
+    name: "SoundCloud",
+    icon: <FaSoundcloud />,
+    url: "https://soundcloud.com/cacmountzion",
+    color: "#FF5500",
+  },
+  {
+    id: "wa",
+    name: "WhatsApp",
+    icon: <FaWhatsapp />,
+    url: "https://wa.me/2348036138443",
+    color: "#25D366",
   },
 ];
 
@@ -164,23 +184,6 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
       }
 
       if (generalSettings.socialHandles) {
-        const newSocial = [...DEFAULT_SOCIAL];
-        if (generalSettings.socialHandles.facebook) newSocial.find(s => s.id === 'fb')!.url = generalSettings.socialHandles.facebook;
-        if (generalSettings.socialHandles.twitter) newSocial.find(s => s.id === 'tw')!.url = generalSettings.socialHandles.twitter;
-        if (generalSettings.socialHandles.instagram) newSocial.find(s => s.id === 'ig')!.url = generalSettings.socialHandles.instagram;
-        if (generalSettings.socialHandles.youtube) newSocial.find(s => s.id === 'yt')!.url = generalSettings.socialHandles.youtube;
-
-        if (generalSettings.socialHandles.tiktok) {
-          newSocial.push({ id: "tk", name: "TikTok", icon: "🎵", url: generalSettings.socialHandles.tiktok });
-        }
-        if (generalSettings.socialHandles.linkedin) {
-          newSocial.push({ id: "li", name: "LinkedIn", icon: "in", url: generalSettings.socialHandles.linkedin });
-        }
-
-        setSocial(newSocial);
-      }
-
-      if (generalSettings.latestEvent) {
         const evt = generalSettings.latestEvent;
         // Check if dateTime exists (added by user in previous turn), otherwise fallback to date/time fields
         let eventDate = new Date();
@@ -273,6 +276,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
                     className={styles.socialLink}
                     title={link.name}
                     aria-label={`Follow us on ${link.name}`}
+                    style={{ color: link.color }}
                   >
                     <span className={styles.socialIcon}>{link.icon}</span>
                   </a>

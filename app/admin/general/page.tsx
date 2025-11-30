@@ -20,6 +20,8 @@ export default function GeneralSettingsPage() {
       youtube: "",
       tiktok: "",
       linkedin: "",
+      whatsapp: "",
+      soundCloud: "",
     },
     contactDetails: {
       phone: "",
@@ -59,6 +61,8 @@ export default function GeneralSettingsPage() {
             youtube: settings.socialHandles?.youtube || "",
             tiktok: settings.socialHandles?.tiktok || "",
             linkedin: settings.socialHandles?.linkedin || "",
+            whatsapp: settings.socialHandles?.whatsapp || "",
+            soundCloud: settings.socialHandles?.soundCloud || "",
           },
           contactDetails: {
             phone: settings.contactDetails?.phone || "",
@@ -217,6 +221,30 @@ export default function GeneralSettingsPage() {
               onChange={handleChange}
               className={styles.input}
               placeholder="Facebook URL"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>WhatsApp</label>
+            <input
+              type="text"
+              name="social.whatsapp"
+              value={formData.socialHandles.whatsapp}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="WhatsApp URL"
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label className={styles.label}>SoundCloud</label>
+            <input
+              type="text"
+              name="social.soundCloud"
+              value={formData.socialHandles.soundCloud}
+              onChange={handleChange}
+              className={styles.input}
+              placeholder="SoundCloud URL"
             />
           </div>
 

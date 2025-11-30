@@ -12,6 +12,8 @@ export interface IGeneral extends Document {
         youtube: string;
         tiktok: string;
         linkedin: string;
+        soundCloud: string;
+        whatsapp: string;
     };
     contactDetails: {
         phone: string;
@@ -36,6 +38,11 @@ const GeneralSchema: Schema<IGeneral> = new Schema({
         youtube: { type: String, required: false, default: '' },
         tiktok: { type: String, required: false, default: '' },
         linkedin: { type: String, required: false, default: '' },
+        soundCloud: { type: String, required: false, default: '' },
+        whatsapp: { type: String, required: false, default: '' },
+        // other fields
+        mainLine: { type: String, required: false, default: '' },
+        prayerLine: { type: String, required: false, default: '' },
     },
     contactDetails: {
         phone: { type: String, required: false, default: '' },
