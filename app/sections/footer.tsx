@@ -75,7 +75,7 @@ export default function Footer({
     { id: "tw", name: "Twitter", icon: <FaTwitter />, url: generalSettings.socialHandles?.twitter || DEFAULT_SOCIALS[2].url, color: "#1DA1F2" },
     { id: "yt", name: "YouTube", icon: <FaYoutube />, url: generalSettings.socialHandles?.youtube || DEFAULT_SOCIALS[3].url, color: "#FF0000" },
     ...(generalSettings.socialHandles?.soundCloud ? [{ id: "sc", name: "SoundCloud", icon: <FaSoundcloud />, url: generalSettings.socialHandles.soundCloud, color: "#FF5500" }] : []),
-    ...(generalSettings.socialHandles?.whatsapp ? [{ id: "wa", name: "WhatsApp", icon: <FaWhatsapp />, url: generalSettings.socialHandles.whatsapp, color: "#25D366" }] : []),
+    // ...(generalSettings.socialHandles?.whatsapp ? [{ id: "wa", name: "WhatsApp", icon: <FaWhatsapp />, url: generalSettings.socialHandles.whatsapp, color: "#25D366" }] : []),
     ...(generalSettings.socialHandles?.tiktok ? [{ id: "tk", name: "TikTok", icon: <FaTiktok />, url: generalSettings.socialHandles.tiktok, color: "#000000" }] : []),
     ...(generalSettings.socialHandles?.linkedin ? [{ id: "li", name: "LinkedIn", icon: <FaLinkedinIn />, url: generalSettings.socialHandles.linkedin, color: "#0A66C2" }] : []),
   ] : socials;

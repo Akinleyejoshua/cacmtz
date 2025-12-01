@@ -5,6 +5,7 @@ import styles from "./banner.module.css";
 import { useLandingPage } from "../hooks/use-landing-page";
 import { formatRelativeTime, convert24hrTo12hr } from "../utils/helpers";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
+// Removed redundant import
 
 type Event = {
   id: string;
@@ -85,13 +86,6 @@ const DEFAULT_SOCIAL: SocialMedia[] = [
     url: "https://soundcloud.com/cacmountzion",
     color: "#FF5500",
   },
-  {
-    id: "wa",
-    name: "WhatsApp",
-    icon: <FaWhatsapp />,
-    url: "https://wa.me/2348036138443",
-    color: "#25D366",
-  },
 ];
 
 const DEFAULT_WATCHWORD: Watchword = {
@@ -152,10 +146,54 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
   const [news, setNews] = useState<NewsAlert[]>(propNews || DEFAULT_NEWS);
   const [location, setLocation] = useState<Location>(propLocation || DEFAULT_LOCATION);
   const [social, setSocial] = useState<SocialMedia[]>(propSocial || DEFAULT_SOCIAL);
+  const [socialsLoading, setSocialsLoading] = useState<boolean>(false);
   const [nextEvent, setNextEvent] = useState<Event | null>(null);
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Fetch socials from API if not provided via props
+  useEffect(() => {
+    if (propSocial) return; // skip if socials passed as prop
+    setSocialsLoading(true);
+    fetch('/api/general')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.socialHandles) {
+          const handles = data.socialHandles;
+          const mapped: SocialMedia[] = [];
+          if (handles.facebook) {
+            mapped.push({ id: 'fb', name: 'Facebook', icon: <FaFacebookF />, url: handles.facebook, color: '#1877F2' });
+          }
+          if (handles.instagram) {
+            mapped.push({ id: 'ig', name: 'Instagram', icon: <FaInstagram />, url: handles.instagram, color: '#E4405F' });
+          }
+          if (handles.twitter) {
+            mapped.push({ id: 'tw', name: 'Twitter', icon: <FaTwitter />, url: handles.twitter, color: '#1DA1F2' });
+          }
+          if (handles.youtube) {
+            mapped.push({ id: 'yt', name: 'YouTube', icon: <FaYoutube />, url: handles.youtube, color: '#FF0000' });
+          }
+          if (handles.soundCloud) {
+            mapped.push({ id: 'sc', name: 'SoundCloud', icon: <FaSoundcloud />, url: handles.soundCloud, color: '#FF5500' });
+          }
+          if (handles.whatsapp) {
+            mapped.push({ id: 'wa', name: 'WhatsApp', icon: <FaWhatsapp />, url: handles.whatsapp, color: '#25D366' });
+          }
+          if (handles.tiktok) {
+            mapped.push({ id: 'tt', name: 'TikTok', icon: <FaTiktok />, url: handles.tiktok, color: '#000000' });
+          }
+          if (handles.linkedin) {
+            mapped.push({ id: 'li', name: 'LinkedIn', icon: <FaLinkedinIn />, url: handles.linkedin, color: '#0A66C2' });
+          }
+          setSocial(mapped);
+        }
+      })
+      .catch(() => {
+        // keep default socials on error
+      })
+      .finally(() => setSocialsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -267,20 +305,24 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
 
               {/* Social Media Links */}
               <div className={styles.socialLinks}>
-                {social.map((link) => (
-                  <a
-                    key={link.id}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.socialLink}
-                    title={link.name}
-                    aria-label={`Follow us on ${link.name}`}
-                    style={{ color: link.color }}
-                  >
-                    <span className={styles.socialIcon}>{link.icon}</span>
-                  </a>
-                ))}
+                {socialsLoading ? (
+                  <span>Loading socials...</span>
+                ) : (
+                  social.map((link) => (
+                    <a
+                      key={link.id}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={styles.socialLink}
+                      title={link.name}
+                      aria-label={`Follow us on ${link.name}`}
+                      style={{ color: link.color }}
+                    >
+                      <span className={styles.socialIcon}>{link.icon}</span>
+                    </a>
+                  ))
+                )}
               </div>
             </div>
           </div>
