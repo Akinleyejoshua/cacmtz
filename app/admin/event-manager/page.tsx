@@ -4,13 +4,13 @@ import Link from "next/link";
 import AdminTopNav from "../../components/admin-top-nav";
 import styles from "./page.module.css";
 import { useEventManager } from "@/app/hooks/use-event-manager";
-import { convert24hrTo12hr } from "@/app/utils/helpers";
+import { convert24hrTo12hr, formatRelativeTime } from "@/app/utils/helpers";
 
 export default function EventManagerPage() {
   const {
     events, formatDuration,
     getEventStatus, searchQuery, filterStatus, sortBy, setSearchQuery, setFilterStatus, setSortBy,
-    del_event
+    del_event, formatDate
   } = useEventManager();
 
   return (
@@ -106,7 +106,7 @@ export default function EventManagerPage() {
                     </td>
                     <td>
                       <div className={styles.dateTime}>
-                        <span className={styles.date}>{(event.date)}</span>
+                        <span className={styles.date}>{formatRelativeTime(new Date(event.date))}</span>
                         <span className={styles.time}>{convert24hrTo12hr(event.time)}</span>
                       </div>
                     </td>

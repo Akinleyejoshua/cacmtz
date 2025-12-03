@@ -269,7 +269,7 @@ export default function EditEventPage({ }: PageProps) {
                 Date <span className={styles.required}>*</span>
               </label>
               <input
-                type="date"
+                type="datetime-local"
                 id="date"
                 name="date"
                 value={(formData.date)}
