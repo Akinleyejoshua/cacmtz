@@ -361,9 +361,6 @@
 }
 
 @media (max-width: 640px) {
-  .section {
-    padding: 28px 16px;
-  }
 
   .content {
     gap: 16px;

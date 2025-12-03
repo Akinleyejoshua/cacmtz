@@ -189,13 +189,13 @@
     }
 }
 
-@media (max-width:520px) {
+@media (max-width:640px) {
     .hero {
         min-height: 52vh
     }
 
     .title {
-        font-size: 22px
+        font-size: 34px
     }
 
     .subtitle {
