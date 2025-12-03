@@ -59,7 +59,7 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                 </div>
 
                 <div className={styles.footer}>
-                  <div className={styles.countdown}>{formatRelativeTime(event.date)}</div>
+                  <div className={styles.countdown}>{formatRelativeTime(new Date(event.date))}</div>
                   {event.liveLink && (
                     <Link href={event.liveLink} className={styles.liveBtn}>
                       {event.isLive ? "Join Live" : "Learn More"}
