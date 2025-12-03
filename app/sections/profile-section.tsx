@@ -42,7 +42,6 @@ export default function ProfileSection({
             }
         };
 
-        setActive(0)
         window.addEventListener("keydown", handleKey);
         return () => window.removeEventListener("keydown", handleKey);
     }, [active, tabList.length]);
