@@ -251,7 +251,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
         });
       }
       sessionStorage.setItem("landingPageLoaded", "true")
-      alert()
+    
     }
   }, [generalSettings]);
 

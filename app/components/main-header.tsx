@@ -70,7 +70,6 @@ export const MainHeader = () => {
     //         if (landingPageLoaded == "true" && landingPageBannerLoaded == "true") {
     //             clearInterval(time);
     //             setLoading(false)
-    //             alert()
     //         }
     //     } catch (err) {
 
