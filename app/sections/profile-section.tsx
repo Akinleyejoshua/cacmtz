@@ -41,6 +41,8 @@ export default function ProfileSection({
                 tabsRef.current[(active - 1 + tabList.length) % tabList.length]?.focus();
             }
         };
+
+        setActive(0)
         window.addEventListener("keydown", handleKey);
         return () => window.removeEventListener("keydown", handleKey);
     }, [active, tabList.length]);
