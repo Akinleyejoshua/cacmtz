@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./banner.module.css";
 import { useLandingPage } from "../hooks/use-landing-page";
-import { formatRelativeTime, convert24hrTo12hr } from "../utils/helpers";
+import { formatRelativeTime, convert24hrTo12hr, save } from "../utils/helpers";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
 // Removed redundant import
 
@@ -95,7 +95,7 @@ const DEFAULT_WATCHWORD: Watchword = {
 
 const DEFAULT_LOCATION: Location = {
   name: "C.A.C Mount Zion",
-  address: "41, Igbehinadun Street, Off Saabo",
+  address: "41, Igbehinadun Street, Off Saabo, Ojodu, Lagos State, Nigeria",
   city: "",
   country: "Nigeria",
   coordinates: {
@@ -250,6 +250,8 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
           liveLink: evt.liveLink,
         });
       }
+      sessionStorage.setItem("landingPageLoaded", "true")
+      alert()
     }
   }, [generalSettings]);
 
@@ -406,7 +408,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
                 <div className={styles.locationDetails}>
                   <div className={styles.locationAddress}>
                     <p className={styles.addressLine}>{location.address}</p>
-                    <p className={styles.addressLine}>{location.city}, {location.country}</p>
+                    {/* <p className={styles.addressLine}>{location.city}, {location.country}</p> */}
                   </div>
 
                   {location.phone && (

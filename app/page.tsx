@@ -1,7 +1,6 @@
 "use client"
 
 import { useLandingPage } from "./hooks/use-landing-page";
-import { SplashScreen } from "./components/splash-screen";
 import MainHeader from "./components/main-header";
 import Hero from "./components/hero";
 import Events from "./sections/events";
@@ -14,9 +13,7 @@ import AboutSection from "./sections/about";
 import MinistersSection from "./sections/ministers";
 
 export default function Home() {
-  const { loading, events, generalSettings, latestSermon, ministers } = useLandingPage();
-
-  // if (loading) return SplashScreen();
+  const { events, generalSettings, latestSermon, ministers } = useLandingPage();
 
   return (
     <div>

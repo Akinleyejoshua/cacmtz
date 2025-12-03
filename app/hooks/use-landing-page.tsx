@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import request from "../utils/axios";
+import { save } from "../utils/helpers";
 
 function formatRelativeTime(date: Date): string {
   const now = new Date();
@@ -57,6 +58,7 @@ export const useLandingPage = () => {
       console.error("Error fetching landing page data:", error);
     } finally {
       setLoading(false);
+      sessionStorage.setItem("landingPageLoaded", "true")
     }
   }
 

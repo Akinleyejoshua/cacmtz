@@ -7,10 +7,12 @@ import Footer from "../sections/footer";
 import MinistersSection from "../sections/ministers";
 import request from "../utils/axios";
 import { Minister } from "../types/minister";
+import { useLandingPage } from "../hooks/use-landing-page";
 
 export default function Home() {
     const [loading, setLoading] = useState(true);
     const [ministers, setMinisters] = useState<Minister[]>([]);
+    const {generalSettings} = useLandingPage();
 
     useEffect(() => {
         const fetchMinisters = async () => {
@@ -33,7 +35,7 @@ export default function Home() {
         <div>
             <MainHeader />
             <MinistersSection ministers={ministers} />
-            <Footer />
+            <Footer generalSettings={generalSettings}/>
         </div>
     );
 }

@@ -9,6 +9,8 @@ import Logo from "../../public/src/img/brand/logo.jpg"
 import Image from "next/image";
 import { FaPhotoFilm } from "react-icons/fa6";
 import { FaMicrophone } from "react-icons/fa";
+import { SplashScreen } from "./splash-screen";
+import { load } from "../utils/helpers";
 
 export const MainHeader = () => {
     const [open, setOpen] = useState(false);
@@ -53,6 +55,31 @@ export const MainHeader = () => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
+
+    // const [loading, setLoading] = useState(true);
+    // const [timing, setTiming]: any = useState(0);
+
+    // let time = setInterval(() => {
+    //     setTiming(time);
+
+    //     try {
+    //         const landingPageLoaded: any = sessionStorage.getItem("landinPageLoaded")
+    //         const landingPageBannerLoaded: any = sessionStorage.getItem("landingPageBannerLoaded")
+
+    //         // console.log(landingPageBannerLoaded)
+    //         if (landingPageLoaded == "true" && landingPageBannerLoaded == "true") {
+    //             clearInterval(time);
+    //             setLoading(false)
+    //             alert()
+    //         }
+    //     } catch (err) {
+
+    //     }
+
+
+    // }, 1000)
+
+    // if (loading) return <SplashScreen />
 
     return (
         <header ref={headerRef} className={`${styles.header} ${scrolled ? styles.scrolled : ""}`}>
