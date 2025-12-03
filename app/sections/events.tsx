@@ -41,7 +41,7 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                 <div className={styles.meta}>
                   <div className={styles.metaItem}>
                     <span className={styles.metaLabel}>📅 Date</span>
-                    <span className={styles.metaValue}>{event.date}</span>
+                    <span className={styles.metaValue}>{event.date.split("T")[0]}</span>
                     {/* <span className={styles.metaValue}>{event.date.toLocaleDateString()}</span> */}
                   </div>
                   <div className={styles.metaItem}>
