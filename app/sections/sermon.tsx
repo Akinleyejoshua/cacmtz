@@ -86,8 +86,12 @@ export default function SermonSection({ sermon, title = "Latest Sermon" }: Sermo
         <div className={styles.header}>
           <h2 className={styles.title}>{title}</h2>
           <p className={styles.subtitle}>Listen to the latest message from our pulpit</p>
+          <br></br>
+          {!sermon && <small>Loading...</small>}
+          
         </div>
 
+        {sermon && 
         <div className={styles.content}>
           {/* Video Container */}
           <div className={styles.videoWrapper}>
@@ -139,7 +143,11 @@ export default function SermonSection({ sermon, title = "Latest Sermon" }: Sermo
             </Link>
           </div>
         </div>
-      </div>
+
+        
+        }
+
+              </div>
     </section>
   );
 }

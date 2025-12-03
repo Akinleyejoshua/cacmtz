@@ -25,7 +25,7 @@ export default function ProfileSection({
     subtitle = "Explore pages below",
     profiles,
 }: ProfileSectionProps) {
-   const defaultTabs = profiles
+    const defaultTabs = profiles
     const tabList = tabs && tabs.length ? tabs : defaultTabs;
     const [active, setActive] = useState(Math.min(Math.max(initialIndex, 0), tabList.length - 1));
     const tabsRef = useRef<Array<HTMLButtonElement | null>>([]);
@@ -51,43 +51,54 @@ export default function ProfileSection({
                 <div className={styles.header}>
                     <h2 className={styles.title}>{title}</h2>
                     <p className={styles.subtitle}>{subtitle}</p>
+                    <br></br>
+                    {profiles.length == 0 && <small>Loading...</small>}
+
                 </div>
 
-                <div className={styles.tabWrapper}>
-                    <div role="tablist" aria-label="Profile tabs" className={styles.tabList}>
-                        {tabList.map((t:any, i:any) => (
-                            <button
-                                key={t._id}
-                                // ref={(el) => (tabsRef.current[i] = el)}
-                                role="tab"
-                                id={`tab-${t.id}`}
-                                aria-controls={`panel-${t.id}`}
-                                aria-selected={active === i}
-                                tabIndex={active === i ? 0 : -1}
-                                className={`${styles.tab} ${active === i ? styles.active : ""}`}
-                                onClick={() => setActive(i)}
-                            >
-                                <span className={styles.tabTitle}>{t.title}</span>
-                                {/* <span className={styles.tabCount}>{i + 1}</span> */}
-                            </button>
-                        ))}
-                    </div>
+                {profiles.length > 0 &&
 
-                    <div className={styles.panels}>
-                        {tabList.map((t:any, i:any) => (
-                            <div
-                                key={t._id}
-                                id={`panel-${t.id}`}
-                                role="tabpanel"
-                                aria-labelledby={`tab-${t.id}`}
-                                hidden={active !== i}
-                                className={styles.panel}
-                            >
-                                <div className={styles.preview} dangerouslySetInnerHTML={{__html: renderMarkdown(t.content)}}></div>
+                    <>
+                        <div className={styles.tabWrapper}>
+                            <div role="tablist" aria-label="Profile tabs" className={styles.tabList}>
+                                {tabList.map((t: any, i: any) => (
+                                    <button
+                                        key={t._id}
+                                        // ref={(el) => (tabsRef.current[i] = el)}
+                                        role="tab"
+                                        id={`tab-${t.id}`}
+                                        aria-controls={`panel-${t.id}`}
+                                        aria-selected={active === i}
+                                        tabIndex={active === i ? 0 : -1}
+                                        className={`${styles.tab} ${active === i ? styles.active : ""}`}
+                                        onClick={() => setActive(i)}
+                                    >
+                                        <span className={styles.tabTitle}>{t.title}</span>
+                                        {/* <span className={styles.tabCount}>{i + 1}</span> */}
+                                    </button>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                </div>
+
+                            <div className={styles.panels}>
+                                {tabList.map((t: any, i: any) => (
+                                    <div
+                                        key={t._id}
+                                        id={`panel-${t.id}`}
+                                        role="tabpanel"
+                                        aria-labelledby={`tab-${t.id}`}
+                                        hidden={active !== i}
+                                        className={styles.panel}
+                                    >
+                                        <div className={styles.preview} dangerouslySetInnerHTML={{ __html: renderMarkdown(t.content) }}></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                    </>
+
+
+                }
             </div>
         </section>
     );

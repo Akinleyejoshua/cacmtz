@@ -62,9 +62,9 @@ const DEFAULT_VALUES: Value[] = [
 export default function AboutSection({
   title = "About C.A.C Mount Zion",
   subtitle = "Know Our Purpose and Direction",
-  vision = "To be a beacon of hope and transformation, spreading the gospel of Jesus Christ and impacting lives across generations",
-  mission = "To glorify God through passionate worship, comprehensive discipleship, and servant-hearted ministry that transforms individuals and communities",
-  motto = "Steadfasting in the ministry of kingdom prayer and the word.",
+  vision = "Upon Mount Zion shall be deliverance and there shall be holiness and the house of Jacob shall possess their possession Obadiah 1:17.",
+  mission = "Witnessing Gospel of Christ kingdom to the world and perfecting the saints Act:28:31; Eph:4:12",
+  motto = "But we give ourselves continually to kingdom prayers and the ministry of the words:Act:6:4.",
   about = "C.A.C Mount Zion is a vibrant community of believers dedicated to advancing God's kingdom. We are committed to creating an environment where people encounter God's transformative power, grow in their faith journey, and become agents of positive change in their communities.",
   values = DEFAULT_VALUES,
 }: AboutSectionProps & { generalSettings?: any }) {
@@ -111,8 +111,12 @@ export default function AboutSection({
         {/* Values Section */}
         <div className={styles.valuesSection}>
           <h2 className={styles.valuesTitle}>Our Core Values</h2>
-          <p className={styles.valuesSubtitle}>The principles that guide our actions and decisions</p>
-
+          <p className={styles.valuesSubtitle}>
+            You are welcome to the city of zion,
+            Where prayer is our business, the Word of God is our
+            priority, Gospel of christ and the kingdom of heaven
+            is our message. Testimonies are the result.
+            [ act 6:4,28:31, Isaiah 52:7:]</p>
           <div className={styles.valuesGrid}>
             {values.map((value) => (
               <div key={value.id} className={styles.valueCard}>

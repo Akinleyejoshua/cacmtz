@@ -143,6 +143,9 @@ export default function ContactSection({ contacts = DEFAULT_CONTACTS, socials = 
 
         <div className={styles.mainContent}>
           {/* Contact Info Cards */}
+
+          {generalSettings ?
+          <>
           <div className={styles.contactGrid}>
             {displayContacts.map((contact: ContactInfo) => (
               <div key={contact.id} className={styles.contactCard}>
@@ -172,7 +175,12 @@ export default function ContactSection({ contacts = DEFAULT_CONTACTS, socials = 
               ))}
             </div>
           </div>
-        </div>
+        
+          
+          </>
+          
+          : <small>Loading...</small>}
+          </div>
       </div>
     </section>
   );

@@ -8,7 +8,7 @@ import styles from './gallery.module.css';
 import { GalleryItem } from '../types/gallery';
 import request from '../utils/axios';
 import { useLandingPage } from '../hooks/use-landing-page';
-import { SplashScreen } from '../components/splash-screen';
+// import { SplashScreen } from '../components/splash-screen';
 
 export default function GalleryPage() {
   const { generalSettings, loading:generalLoading } = useLandingPage();
@@ -30,7 +30,7 @@ export default function GalleryPage() {
 
         fetchGallery();
     }, []);
-  if (generalLoading) return SplashScreen();
+//   if (generalLoading) return SplashScreen();
 
     return (
         <div className={styles.pageWrapper}>

@@ -125,90 +125,99 @@ export default function Footer({
             <h4 className={styles.columnTitle}>Connect</h4>
 
             {/* Contact Info */}
-            <div className={styles.contactInfo}>
-              <div className={styles.contactItem}>
-                <span className={styles.contactIcon}>📍</span>
-                <div className={styles.contactText}>
-                  <p className={styles.contactLabel}>Address</p>
-                  <a
-                    href={`https://www.google.com/maps?q=${displayAddress}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.contactValue}
-                  >
-                    {displayAddress}
-                  </a>
-                </div>
-              </div>
-
-              <div className={styles.contactItem}>
-                <span className={styles.contactIcon}>📞</span>
-                <div className={styles.contactText}>
-                  <p className={styles.contactLabel}>Phone</p>
-                  <a href={`tel:${displayPhone}`} className={styles.contactValue}>
-                    {displayPhone}
-                  </a>
-                </div>
-              </div>
-
-              <div className={styles.contactItem}>
-                <span className={styles.contactIcon}>✉️</span>
-                <div className={styles.contactText}>
-                  <p className={styles.contactLabel}>Email</p>
-                  <a href={`mailto:${displayEmail}`} className={styles.contactValue}>
-                    {displayEmail}
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            {/* Social Links */}
-            <div className={styles.socialContainer}>
-              <p className={styles.followText}>Follow Us</p>
-              <div className={styles.socialLinks}>
-                {displaySocials.map((social: SocialLink) => (
-                  <a
-                    key={social.id}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.socialLink}
-                  >
-                    <span className={styles.socialIcon} style={{ color: social.color }}>
-                      {social.icon}
-                    </span>
-                  </a>
-                ))}
-              </div>
-              {/* Divider */}
-              <div className={styles.divider} />
-
-              {/* Copyright & Bottom Section */}
-              
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className={styles.bottomSection}>
-                <div className={styles.container}>
-                  <div className={styles.bottomContent}>
-                    <p className={styles.copyright}>{copyright}</p>
-                    <div className={styles.bottomLinks}>
-                      <a href="/privacy" className={styles.bottomLink}>
-                        Privacy Policy
+            {generalSettings?.contactDetails ?
+              <>
+                <div className={styles.contactInfo}>
+                  <div className={styles.contactItem}>
+                    <span className={styles.contactIcon}>📍</span>
+                    <div className={styles.contactText}>
+                      <p className={styles.contactLabel}>Address</p>
+                      <a
+                        href={`https://www.google.com/maps?q=${displayAddress}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.contactValue}
+                      >
+                        {displayAddress}
                       </a>
-                      <span className={styles.separator}>•</span>
-                      <a href="/terms" className={styles.bottomLink}>
-                        Terms of Service
+                    </div>
+                  </div>
+
+                  <div className={styles.contactItem}>
+                    <span className={styles.contactIcon}>📞</span>
+                    <div className={styles.contactText}>
+                      <p className={styles.contactLabel}>Phone</p>
+                      <a href={`tel:${displayPhone}`} className={styles.contactValue}>
+                        {displayPhone}
                       </a>
-                      <span className={styles.separator}>•</span>
-                      <a href="/sitemap" className={styles.bottomLink}>
-                        Sitemap
+                    </div>
+                  </div>
+
+                  <div className={styles.contactItem}>
+                    <span className={styles.contactIcon}>✉️</span>
+                    <div className={styles.contactText}>
+                      <p className={styles.contactLabel}>Email</p>
+                      <a href={`mailto:${displayEmail}`} className={styles.contactValue}>
+                        {displayEmail}
                       </a>
                     </div>
                   </div>
                 </div>
-              </div>
+
+                {/* Social Links */}
+
+                <div className={styles.socialContainer}>
+                  <p className={styles.followText}>Follow Us</p>
+                  <div className={styles.socialLinks}>
+                    {displaySocials.map((social: SocialLink) => (
+                      <a
+                        key={social.id}
+                        href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.socialLink}
+                      >
+                        <span className={styles.socialIcon} style={{ color: social.color }}>
+                          {social.icon}
+                        </span>
+                      </a>
+                    ))}
+                  </div>
+                  {/* Divider */}
+                  <div className={styles.divider} />
+
+                  {/* Copyright & Bottom Section */}
+
+                </div>
+
+
+              </>
+
+              : <small>loading...</small>
+            }
+          </div>
+        </div>
+      </div>
+      <div className={styles.bottomSection}>
+        <div className={styles.container}>
+          <div className={styles.bottomContent}>
+            <p className={styles.copyright}>{copyright}</p>
+            <div className={styles.bottomLinks}>
+              <a href="/privacy" className={styles.bottomLink}>
+                Privacy Policy
+              </a>
+              <span className={styles.separator}>•</span>
+              <a href="/terms" className={styles.bottomLink}>
+                Terms of Service
+              </a>
+              <span className={styles.separator}>•</span>
+              <a href="/sitemap" className={styles.bottomLink}>
+                Sitemap
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </footer>
   );
 }

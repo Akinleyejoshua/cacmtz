@@ -95,14 +95,14 @@ const DEFAULT_WATCHWORD: Watchword = {
 
 const DEFAULT_LOCATION: Location = {
   name: "C.A.C Mount Zion",
-  address: "",
+  address: "41, Igbehinadun Street, Off Saabo",
   city: "",
-  country: "",
+  country: "Nigeria",
   coordinates: {
     lat: 6.652483,
     lng: 3.364273,
   },
-  phone: "+234 08036138443",
+  phone: "+23408036138443",
 };
 
 const DEFAULT_NEWS: NewsAlert[] = [
@@ -142,10 +142,15 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
   const [currentTime, setCurrentTime] = useState<string>("");
   const [currentDate, setCurrentDate] = useState<string>("");
 
-  const [watchword, setWatchword] = useState<Watchword>(propWatchword || DEFAULT_WATCHWORD);
-  const [news, setNews] = useState<NewsAlert[]>(propNews || DEFAULT_NEWS);
-  const [location, setLocation] = useState<Location>(propLocation || DEFAULT_LOCATION);
-  const [social, setSocial] = useState<SocialMedia[]>(propSocial || DEFAULT_SOCIAL);
+  // const [watchword, setWatchword] = useState<Watchword>(propWatchword || DEFAULT_WATCHWORD);
+  // const [news, setNews] = useState<NewsAlert[]>(propNews || DEFAULT_NEWS);
+  // const [location, setLocation] = useState<Location>(propLocation || DEFAULT_LOCATION);
+  // const [social, setSocial] = useState<SocialMedia[]>(propSocial || DEFAULT_SOCIAL);
+
+  const [watchword, setWatchword]: any = useState(propWatchword || null);
+  const [news, setNews]: any = useState(propNews || []);
+  const [location, setLocation]: any = useState(propLocation || DEFAULT_LOCATION);
+  const [social, setSocial]: any = useState(propSocial || null);
   const [socialsLoading, setSocialsLoading] = useState<boolean>(false);
   const [nextEvent, setNextEvent] = useState<Event | null>(null);
 
@@ -214,7 +219,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
       }
 
       if (generalSettings.churchAddress) {
-        setLocation(prev => ({
+        setLocation((prev: any) => ({
           ...prev,
           address: generalSettings.churchAddress,
           phone: generalSettings.contactDetails?.phone || prev.phone,
@@ -284,7 +289,8 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
       {/* News Alert Marquee */}
       <div className={styles.newsMarquee}>
         <div className={styles.marqueeContent}>
-          {news.map((item, idx) => (
+          {news.length === 0 && "Loading..."}
+          {news.map((item: any, idx: any) => (
             <span key={item.id} className={styles.newsItem}>
               {item.title}
               {idx < news.length - 1 && <span className={styles.separator}>•</span>}
@@ -293,6 +299,8 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
         </div>
       </div>
 
+
+
       <div className={styles.container}>
         <div className={styles.content}>
           {/* Watchword Section */}
@@ -300,15 +308,17 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
             <div className={styles.watchwordIcon}>✨</div>
             <div className={styles.watchwordContent}>
               <h2 className={styles.watchwordLabel}>Yearly Watchword</h2>
-              <small className={styles.watchwordText}>"{watchword.text}"</small>
-              <p className={styles.watchwordReference}>{watchword.reference}</p>
+              {watchword == null ? <small>Loading...</small> :
+                <small className={styles.watchwordText}>"{watchword.text}"</small>
+              }
+              {/* <p className={styles.watchwordReference}>{watchword.reference}</p> */}
 
               {/* Social Media Links */}
               <div className={styles.socialLinks}>
-                {socialsLoading ? (
+                {social == null ? (
                   <span>Loading socials...</span>
                 ) : (
-                  social.map((link) => (
+                  social.map((link: any) => (
                     <a
                       key={link.id}
                       href={link.url}
@@ -378,40 +388,50 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
         {/* Location Card */}
         <div className={styles.locationSection}>
           <div className={styles.locationCard}>
-            <div className={styles.locationHeader}>
-              <h3 className={styles.locationTitle}>📍 {location.name}</h3>
-              {mounted && (
-                <div className={styles.clockBox}>
-                  <div className={styles.digitalClock}>{currentTime}</div>
-                  <div className={styles.currentDate}>{currentDate}</div>
+
+
+            {location == null ? <small>Loading...</small> :
+              <>
+
+                <div className={styles.locationHeader}>
+                  <h3 className={styles.locationTitle}>📍 {location.name}</h3>
+                  {mounted && (
+                    <div className={styles.clockBox}>
+                      <div className={styles.digitalClock}>{currentTime}</div>
+                      <div className={styles.currentDate}>{currentDate}</div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
 
-            <div className={styles.locationDetails}>
-              <div className={styles.locationAddress}>
-                <p className={styles.addressLine}>{location.address}</p>
-                {/* <p className={styles.addressLine}>{location.city}, {location.country}</p> */}
-              </div>
+                <div className={styles.locationDetails}>
+                  <div className={styles.locationAddress}>
+                    <p className={styles.addressLine}>{location.address}</p>
+                    <p className={styles.addressLine}>{location.city}, {location.country}</p>
+                  </div>
 
-              {location.phone && (
-                <div className={styles.locationPhone}>
-                  <span className={styles.phoneIcon}>📞</span>
-                  <a href={`tel:${location.phone}`} className={styles.phoneLink}>
-                    {location.phone}
+                  {location.phone && (
+                    <div className={styles.locationPhone}>
+                      <span className={styles.phoneIcon}>📞</span>
+                      <a href={`tel:${location.phone}`} className={styles.phoneLink}>
+                        {location.phone}
+                      </a>
+                    </div>
+                  )}
+
+                  <a
+                    href={`https://www.google.com/maps?q=${location.coordinates.lat},${location.coordinates.lng}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.mapsBtn}
+                  >
+                    🗺️ View on Google Maps
                   </a>
                 </div>
-              )}
+              </>
 
-              <a
-                href={`https://www.google.com/maps?q=${location.coordinates.lat},${location.coordinates.lng}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.mapsBtn}
-              >
-                🗺️ View on Google Maps
-              </a>
-            </div>
+            }
+
+
           </div>
         </div>
       </div>

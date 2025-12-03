@@ -16,7 +16,7 @@ import MinistersSection from "./sections/ministers";
 export default function Home() {
   const { loading, events, generalSettings, latestSermon, ministers } = useLandingPage();
 
-  if (loading) return SplashScreen();
+  // if (loading) return SplashScreen();
 
   return (
     <div>
