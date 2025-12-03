@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Bricolage_Grotesque } from 'next/font/google';
+import { Geist, Geist_Mono, } from "next/font/google";
+
 import "./globals.css";
 
 // 1. Configure the font
@@ -8,6 +10,16 @@ const bricolage = Bricolage_Grotesque({
   display: 'swap', // Recommended: prevents FOIT (Flash of Invisible Text)
   // If you use Tailwind or CSS variables:
   variable: '--font-bricolage',
+});
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
 });
 
 
@@ -26,9 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${bricolage.className}`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} ${bricolage.variable}`}>
         {children}
       </body>
     </html>

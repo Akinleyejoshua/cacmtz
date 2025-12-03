@@ -17,7 +17,7 @@ body {
   overflow-x: hidden;
 }
 
-*::-webkit-scrollbar{
+*::-webkit-scrollbar {
   display: none;
 }
 
@@ -32,23 +32,30 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-   font-family: "Bricolage Grotesque", sans-serif;
+  font-family: "Bricolage Grotesque", sans-serif;
   font-optical-sizing: auto;
   font-weight: 100;
   font-style: normal;
-  font-variation-settings:"wdth" 100;
+  font-variation-settings: "wdth" 100;
   scroll-behavior: smooth;
   color: rgba(0, 0, 0, 0.692) !important;
-    -webkit-tap-highlight-color: transparent;
-    /* font-size: 14px !important; */
+  -webkit-tap-highlight-color: transparent;
+  /* font-size: 14px !important; */
+
+  font-family: var(--font-geist-sans);
+  font-family: var(--font-geist-mono);
+  font-family: var(--font-bricolage);
 
 }
 
-header *, footer *, #hero *, #gallery *{
+header *,
+footer *,
+#hero *,
+#gallery * {
   color: white !important;
 }
 
-#admin *{
+#admin * {
   color: black !important;
 }
 
@@ -71,12 +78,12 @@ a {
     --color: white;
   }
 
-  *{
+  * {
     color: white !important;
   }
 
-  #admin *{
-  color: white !important;
-}
+  #admin * {
+    color: white !important;
+  }
 
 }
