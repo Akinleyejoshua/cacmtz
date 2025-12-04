@@ -17,10 +17,6 @@ body {
   overflow-x: hidden;
 }
 
-body{
-  padding-top: 4rem;
-}
-
 *::-webkit-scrollbar {
   display: none;
 }

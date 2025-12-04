@@ -7,6 +7,8 @@
 .container {
   max-width: 100%;
   margin: 0 auto;
+    padding-top: calc(30vh - var(--header-height, 64px));
+
 }
 
 .header {

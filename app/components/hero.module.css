@@ -9,7 +9,7 @@
     position:relative;
     width:100%;
     /* make space for the sticky header so hero content isn't covered */
-    height: calc(94vh - var(--header-height, 64px));
+    height: calc(104vh - var(--header-height, 64px));
     /* height: 100vh; */
     display:block;
     overflow:hidden;
