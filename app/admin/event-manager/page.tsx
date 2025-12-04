@@ -10,7 +10,7 @@ export default function EventManagerPage() {
   const {
     events, formatDuration,
     getEventStatus, searchQuery, filterStatus, sortBy, setSearchQuery, setFilterStatus, setSortBy,
-    del_event, formatDate
+    del_event,
   } = useEventManager();
 
   return (

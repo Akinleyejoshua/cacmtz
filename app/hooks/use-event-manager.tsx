@@ -84,9 +84,9 @@ export const useEventManager = () => {
 
         // Sort
         if (sortBy === "date") {
-            filtered.sort((a: any, b: any) => a.date.getTime() - b.date.getTime());
+            filtered.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime());
         } else {
-            filtered.sort((a: any, b: any) => a.name.localeCompare(b.name));
+            filtered.sort((a: any, b: any) => String(a.name).localeCompare(b.name));
         }
 
         return filtered;
@@ -295,7 +295,7 @@ export const useEventManager = () => {
         setLoading,
         setErrors,
         setFormData,
+        del_event,
 
-        del_event
     }
 }
