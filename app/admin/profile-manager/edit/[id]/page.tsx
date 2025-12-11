@@ -7,6 +7,7 @@ import Editor from "../../../../components/editor";
 import styles from "./page.module.css";
 import { useChurchProfileManager } from "@/app/hooks/use-church-profile-manager";
 import request from "@/app/utils/axios";
+import RichTextEditor from "@/app/components/rich-text-editor";
 
 type Profile = {
   _id: string;
@@ -21,13 +22,13 @@ interface PageProps {
   };
 }
 
-export default function EditProfilePage({  }: PageProps) {
+export default function EditProfilePage({ }: PageProps) {
   const router = useRouter();
-  const {id} = useParams();
-  const {profiles} = useChurchProfileManager();
-  const profileData:any = profiles.find((item:any) => item._id == id)
+  const { id } = useParams();
+  const { profiles } = useChurchProfileManager();
+  const profileData: any = profiles.find((item: any) => item._id == id)
 
-  
+
 
   const [formData, setFormData] = useState<Profile>(
     profileData || {
@@ -40,7 +41,7 @@ export default function EditProfilePage({  }: PageProps) {
 
   useEffect(() => {
     setFormData(profileData)
-}, [profiles])
+  }, [profiles])
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -101,10 +102,10 @@ export default function EditProfilePage({  }: PageProps) {
 
     try {
       // Simulate API call
-      await request.post("/update-church-profile", {id, data: formData})
+      await request.post("/update-church-profile", { id, data: formData })
 
       setSuccess(true);
-             router.push("/admin/profile-manager");
+      router.push("/admin/profile-manager");
 
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -203,11 +204,16 @@ export default function EditProfilePage({  }: PageProps) {
           {errors.content && <span className={styles.errorText}>{errors.content}</span>}
 
           <div style={{ marginTop: "1rem" }}>
-            <Editor
+            {/* <Editor
               placeholder="Write your profile content using markdown..."
               defaultValue={profileData?.content}
               onContentChange={handleContentChange}
               height="500px"
+            /> */}
+
+            <RichTextEditor
+              content={formData.content}
+              onChange={handleContentChange}
             />
           </div>
         </div>
