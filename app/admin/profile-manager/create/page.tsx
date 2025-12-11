@@ -6,6 +6,7 @@ import AdminTopNav from "../../../components/admin-top-nav";
 import Editor from "../../../components/editor";
 import styles from "./page.module.css";
 import { useChurchProfileManager } from "@/app/hooks/use-church-profile-manager";
+import RichTextEditor from "@/app/components/rich-text-editor";
 
 type Profile = {
   id: string;
@@ -101,11 +102,15 @@ export default function CreateProfilePage() {
           {errors.content && <span className={styles.errorText}>{errors.content}</span>}
 
           <div style={{ marginTop: "1rem" }}>
-            <Editor
+            {/* <Editor
               placeholder="Write your profile content using markdown..."
               defaultValue={formData.content}
               onContentChange={handleContentChange}
               height="1000px"
+            /> */}
+            <RichTextEditor
+              content={formData.content}
+              onChange={handleContentChange}
             />
           </div>
         </div>

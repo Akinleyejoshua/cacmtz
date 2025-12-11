@@ -17,9 +17,9 @@ body {
   overflow-x: hidden;
 }
 
-*::-webkit-scrollbar {
+/* *::-webkit-scrollbar {
   display: none;
-}
+} */
 
 body {
   color: var(--foreground);
@@ -41,7 +41,7 @@ body {
   color: rgba(0, 0, 0, 0.8) !important;
   -webkit-tap-highlight-color: transparent;
   /* font-size: 14px !important; */
-
+  /* letter-spacing: 1px; */
   font-family: var(--font-geist-sans);
   font-family: var(--font-geist-mono);
   /* font-family: var(--font-bricolage); */

@@ -10,17 +10,17 @@ import ProfileSection from "../sections/profile-section";
 
 
 export default function Home() {
-  const {profiles} = useChurchProfileManager();
-  const {generalSettings} = useLandingPage();
+  const { profiles } = useChurchProfileManager();
+  const { generalSettings } = useLandingPage();
 
   // if (profiles.length == 0) return SplashScreen();
-
+  
 
   return (
     <div>
-     <MainHeader />
-     <ProfileSection profiles={profiles}/>
-    <Footer generalSettings={generalSettings}/>
+      <MainHeader />
+      <ProfileSection profiles={profiles} />
+      <Footer generalSettings={generalSettings} />
     </div>
   );
 }
