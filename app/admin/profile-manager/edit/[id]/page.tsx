@@ -8,6 +8,7 @@ import styles from "./page.module.css";
 import { useChurchProfileManager } from "@/app/hooks/use-church-profile-manager";
 import request from "@/app/utils/axios";
 import RichTextEditor from "@/app/components/rich-text-editor";
+import { profile } from "console";
 
 type Profile = {
   _id: string;
@@ -212,7 +213,7 @@ export default function EditProfilePage({ }: PageProps) {
             /> */}
 
             <RichTextEditor
-              content={formData.content}
+              content={profileData.content}
               onChange={handleContentChange}
             />
           </div>
