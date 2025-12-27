@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import AdminTopNav from "@/app/components/admin-top-nav";
 import styles from "../../page.module.css";
 import request from "@/app/utils/axios";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 import Editor from "@/app/components/editor";
 
@@ -89,7 +90,7 @@ export default function EditBulletinPage({ params }: { params: { id: string } })
       <div className={styles.page}>
         <AdminTopNav />
         <div className={styles.container}>
-          <div className={styles.loadingState}>Loading bulletin details...</div>
+          <div className={styles.loadingState}><LoadingSpinner size="medium" /></div>
         </div>
       </div>
     );

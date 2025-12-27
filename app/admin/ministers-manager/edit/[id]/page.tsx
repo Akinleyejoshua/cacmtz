@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import AdminTopNav from "../../../../components/admin-top-nav";
 import styles from "./page.module.css";
 import request from "@/app/utils/axios";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 export default function EditMinisterPage() {
     const router = useRouter();
@@ -91,7 +92,7 @@ export default function EditMinisterPage() {
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value, type, files } = e.target as HTMLInputElement;
-         if (type === "file" && files && files[0]) {
+        if (type === "file" && files && files[0]) {
             const file = files[0];
             const reader = new FileReader();
             reader.onloadend = () => {
@@ -161,7 +162,7 @@ export default function EditMinisterPage() {
             <div className={styles.page}>
                 <AdminTopNav />
                 <div className={styles.header}>
-                    <div className={styles.loadingSpinner}>Loading minister...</div>
+                    <div className={styles.loadingSpinner}><LoadingSpinner size="medium" /></div>
                 </div>
             </div>
         );
@@ -317,18 +318,18 @@ export default function EditMinisterPage() {
                             />
                         </div>
 
-                         {/* Image Upload */}
-                    <div className={styles.formGroup}>
-                        <label htmlFor="image" className={styles.label}>Profile Image</label>
-                        <input
-                            type="file"
-                            id="image"
-                            name="image"
-                            accept="image/*"
-                            onChange={handleChange}
-                            className={styles.input}
-                        />
-                    </div>
+                        {/* Image Upload */}
+                        <div className={styles.formGroup}>
+                            <label htmlFor="image" className={styles.label}>Profile Image</label>
+                            <input
+                                type="file"
+                                id="image"
+                                name="image"
+                                accept="image/*"
+                                onChange={handleChange}
+                                className={styles.input}
+                            />
+                        </div>
                     </div>
 
                     {/* Social Media */}

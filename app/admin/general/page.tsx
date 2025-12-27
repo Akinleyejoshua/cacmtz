@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import AdminTopNav from "../../components/admin-top-nav";
 import styles from "./page.module.css";
 import { IEvent } from "../../api/models/event";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 export default function GeneralSettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -142,7 +143,7 @@ export default function GeneralSettingsPage() {
         <div className={styles.container}>
           <div className={styles.header}>
             <h1 className={styles.title}>General</h1>
-            <p className={styles.subtitle}>Loading settings...</p>
+            <p className={styles.subtitle}><LoadingSpinner size="small" /></p>
           </div>
         </div>
       </div>

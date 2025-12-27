@@ -5,6 +5,7 @@ import Link from "next/link";
 import AdminTopNav from "../../components/admin-top-nav";
 import styles from "./page.module.css";
 import request from "@/app/utils/axios";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 type Sermon = {
   _id: string;
@@ -115,7 +116,7 @@ export default function SermonManagerPage() {
 
       {/* Sermons Grid */}
       {loading ? (
-        <div className={styles.loadingState}>Loading sermons...</div>
+        <div className={styles.loadingState}><LoadingSpinner size="medium" /></div>
       ) : filteredSermons.length > 0 ? (
         <div className={styles.sermonsGrid}>
           {filteredSermons.map((sermon) => {

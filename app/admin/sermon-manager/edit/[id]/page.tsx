@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import AdminTopNav from "../../../../components/admin-top-nav";
 import styles from "./page.module.css";
 import request from "@/app/utils/axios";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 export default function EditSermonPage() {
   const router = useRouter();
@@ -158,7 +159,7 @@ export default function EditSermonPage() {
       <div className={styles.page}>
         <AdminTopNav />
         <div className={styles.header}>
-          <div className={styles.loadingSpinner}>Loading sermon...</div>
+          <div className={styles.loadingSpinner}><LoadingSpinner size="medium" /></div>
         </div>
       </div>
     );

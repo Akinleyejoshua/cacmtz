@@ -5,6 +5,7 @@ import Link from "next/link";
 import AdminTopNav from "../../components/admin-top-nav";
 import styles from "./page.module.css";
 import request from "@/app/utils/axios";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 type Bulletin = {
     _id: string;
@@ -122,7 +123,7 @@ export default function BulletinManagerPage() {
 
                 {/* Bulletins Table */}
                 {loading ? (
-                    <div className={styles.loadingState}>Loading bulletins...</div>
+                    <div className={styles.loadingState}><LoadingSpinner size="medium" /></div>
                 ) : filteredBulletins.length > 0 ? (
                     <div className={styles.tableContainer}>
                         <table className={styles.table}>
