@@ -29,7 +29,7 @@ export default function Home() {
         fetchMinisters();
     }, []);
 
-    if (loading) return SplashScreen();
+    if (loading) return <SplashScreen isLoading={loading} />;
 
     return (
         <div>
