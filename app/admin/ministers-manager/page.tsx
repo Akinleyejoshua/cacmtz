@@ -112,13 +112,17 @@ export default function MinistersManagerPage() {
   const handleSaveOrder = async () => {
     setSavingOrder(true);
     try {
-      const orders = ministers.map((m, idx) => ({
+      // Use the actual displayOrder value from each minister (already set by move functions)
+      const orders = ministers.map((m) => ({
         id: m._id,
-        displayOrder: m.displayOrder ?? idx
+        displayOrder: m.displayOrder
       }));
+      console.log("Saving orders:", orders); // Debug log
       await request.post("/ministers/reorder", { orders });
       setHasOrderChanges(false);
       alert("Order saved successfully!");
+      // Refresh to confirm changes persisted
+      await fetchMinisters();
     } catch (error) {
       console.error("Failed to save order:", error);
       alert("Failed to save order");
