@@ -72,30 +72,40 @@ export default function MinistersManagerPage() {
 
   const handleMoveUp = (index: number) => {
     if (index === 0) return;
-    const newMinisters = [...ministers].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-    const currentOrder = newMinisters[index].displayOrder || 0;
-    const prevOrder = newMinisters[index - 1].displayOrder || 0;
+    // Sort by current displayOrder first
+    const sortedMinisters = [...ministers].sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999));
 
-    // Swap display orders
-    newMinisters[index].displayOrder = prevOrder;
-    newMinisters[index - 1].displayOrder = currentOrder;
+    // Swap the items in the array
+    const temp = sortedMinisters[index];
+    sortedMinisters[index] = sortedMinisters[index - 1];
+    sortedMinisters[index - 1] = temp;
 
-    setMinisters(newMinisters);
+    // Reassign sequential display orders based on new positions
+    const reordered = sortedMinisters.map((m, idx) => ({
+      ...m,
+      displayOrder: idx
+    }));
+
+    setMinisters(reordered);
     setHasOrderChanges(true);
   };
 
   const handleMoveDown = (index: number) => {
-    const sortedMinisters = [...ministers].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    const sortedMinisters = [...ministers].sort((a, b) => (a.displayOrder ?? 999) - (b.displayOrder ?? 999));
     if (index === sortedMinisters.length - 1) return;
 
-    const currentOrder = sortedMinisters[index].displayOrder || 0;
-    const nextOrder = sortedMinisters[index + 1].displayOrder || 0;
+    // Swap the items in the array
+    const temp = sortedMinisters[index];
+    sortedMinisters[index] = sortedMinisters[index + 1];
+    sortedMinisters[index + 1] = temp;
 
-    // Swap display orders
-    sortedMinisters[index].displayOrder = nextOrder;
-    sortedMinisters[index + 1].displayOrder = currentOrder;
+    // Reassign sequential display orders based on new positions
+    const reordered = sortedMinisters.map((m, idx) => ({
+      ...m,
+      displayOrder: idx
+    }));
 
-    setMinisters(sortedMinisters);
+    setMinisters(reordered);
     setHasOrderChanges(true);
   };
 
