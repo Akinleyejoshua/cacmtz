@@ -1,27 +1,38 @@
 "use client"
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
 import AdminTopNav from "../../components/admin-top-nav";
 import styles from "./dashboard.module.css";
+import LoadingSpinner from "@/app/components/loading-spinner";
+
+interface TimeSeriesData {
+  date: string;
+  count: number;
+}
+
+interface AnalyticsStats {
+  totalViews: number;
+  todayViews: number;
+  weekViews: number;
+  monthViews: number;
+  uniqueVisitors: number;
+  deviceBreakdown: { mobile: number; desktop: number; tablet: number };
+  timeSeries: TimeSeriesData[];
+  recentVisits: { timestamp: string; pageUrl: string; deviceType: string }[];
+}
 
 type Metric = {
   id: string;
   title: string;
   value: string | number;
-  change?: string; // e.g. +4.2%
+  change?: string;
   spark?: number[];
 };
 
-const MOCK_METRICS: Metric[] = [
-  { id: "visitors", title: "Visitors (30d)", value: 12458, change: "+6.2%", spark: [30,40,38,55,70,66,80,95,120,110,130,125,140] },
-  { id: "new_members", title: "New Members", value: 34, change: "+11%", spark: [1,0,2,1,3,2,4,1,3,2,4,5,6] },
-  { id: "attendance", title: "Avg Attendance", value: 420, change: "-2.1%", spark: [380,400,420,430,410,420,410,415,420,425,418,422,420] },
-  { id: "donations", title: "Donations (30d)", value: "₦1,234,560", change: "+3.8%", spark: [50,60,55,70,90,88,120,110,140,135,150,160,170] },
-];
-
 function Sparkline({ points = [] }: { points?: number[] }) {
   if (!points || points.length === 0) return null;
-  const max = Math.max(...points);
+  const max = Math.max(...points, 1); // Avoid division by zero
   const scaled = points.map((p) => (p / max) * 100);
   return (
     <svg className={styles.spark} viewBox="0 0 100 30" preserveAspectRatio="none">
@@ -29,58 +40,181 @@ function Sparkline({ points = [] }: { points?: number[] }) {
         fill="none"
         stroke="#b794f4"
         strokeWidth={2}
-        points={scaled.map((s, i) => `${(i / (scaled.length - 1)) * 100},${30 - (s / 100) * 28}`).join(" ")}
+        points={scaled.map((s, i) => `${(i / (scaled.length - 1 || 1)) * 100},${30 - (s / 100) * 28}`).join(" ")}
       />
     </svg>
   );
 }
 
+// Calculate percentage change
+function calcChange(current: number, previous: number): string {
+  if (previous === 0) return current > 0 ? "+100%" : "—";
+  const change = ((current - previous) / previous) * 100;
+  const sign = change >= 0 ? "+" : "";
+  return `${sign}${change.toFixed(1)}%`;
+}
+
+// Format large numbers
+function formatNumber(num: number): string {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+  if (num >= 1000) return (num / 1000).toFixed(1) + "K";
+  return num.toString();
+}
+
+// Format relative time
+function formatTimeAgo(timestamp: string): string {
+  const now = new Date();
+  const then = new Date(timestamp);
+  const diffMs = now.getTime() - then.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return then.toLocaleDateString();
+}
+
 export default function AdminDashboardPage() {
+  const [stats, setStats] = useState<AnalyticsStats | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/analytics/stats?days=30");
+        if (!res.ok) throw new Error("Failed to fetch stats");
+        const data = await res.json();
+        setStats(data);
+      } catch (err) {
+        console.error("Error fetching analytics:", err);
+        setError("Failed to load analytics. Make sure the database is connected.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  // Build metrics from stats
+  const metrics: Metric[] = stats ? [
+    {
+      id: "total_views",
+      title: "Total Page Views",
+      value: formatNumber(stats.totalViews),
+      change: "All time",
+      spark: stats.timeSeries.slice(-14).map(d => d.count),
+    },
+    {
+      id: "today",
+      title: "Today",
+      value: stats.todayViews,
+      change: "Live",
+      spark: stats.timeSeries.slice(-7).map(d => d.count),
+    },
+    {
+      id: "week",
+      title: "Last 7 Days",
+      value: formatNumber(stats.weekViews),
+      change: calcChange(
+        stats.timeSeries.slice(-7).reduce((a, b) => a + b.count, 0),
+        stats.timeSeries.slice(-14, -7).reduce((a, b) => a + b.count, 0)
+      ),
+      spark: stats.timeSeries.slice(-7).map(d => d.count),
+    },
+    {
+      id: "month",
+      title: "Last 30 Days",
+      value: formatNumber(stats.monthViews),
+      change: `${stats.uniqueVisitors} unique`,
+      spark: stats.timeSeries.map(d => d.count),
+    },
+  ] : [];
+
   return (
     <main className={styles.page}>
       <AdminTopNav />
       <div className={styles.header}>
         <h1 className={styles.title}>Admin Dashboard</h1>
-        <p className={styles.subtitle}>Overview of visitors, attendance and finances</p>
+        <p className={styles.subtitle}>Real-time analytics and website performance</p>
       </div>
 
-      <section className={styles.metricsGrid}>
-        {MOCK_METRICS.map((m) => (
-          <article key={m.id} className={styles.card} aria-labelledby={`m-${m.id}`}>
-            <div className={styles.cardTop}>
-              <h3 id={`m-${m.id}`} className={styles.metricTitle}>{m.title}</h3>
-              <div className={styles.metricChange}>{m.change}</div>
+      {loading ? (
+        <div style={{ display: "flex", justifyContent: "center", padding: "60px 0" }}>
+          <LoadingSpinner size="large" />
+        </div>
+      ) : error ? (
+        <div style={{ textAlign: "center", padding: "40px", color: "rgba(255,255,255,0.7)" }}>
+          <p>{error}</p>
+          <p style={{ fontSize: "14px", marginTop: "8px" }}>
+            Visit the landing page first to generate some analytics data.
+          </p>
+        </div>
+      ) : (
+        <>
+          <section className={styles.metricsGrid}>
+            {metrics.map((m) => (
+              <article key={m.id} className={styles.card} aria-labelledby={`m-${m.id}`}>
+                <div className={styles.cardTop}>
+                  <h3 id={`m-${m.id}`} className={styles.metricTitle}>{m.title}</h3>
+                  <div className={styles.metricChange}>{m.change}</div>
+                </div>
+
+                <div className={styles.cardBody}>
+                  <div className={styles.metricValue}>{m.value}</div>
+                  <Sparkline points={m.spark} />
+                </div>
+              </article>
+            ))}
+          </section>
+
+          <section className={styles.detailsGrid}>
+            <div className={styles.panel}>
+              <h3 className={styles.panelTitle}>Device Breakdown</h3>
+              <p className={styles.panelNote}>Visitor devices over the last 30 days</p>
+              {stats && (
+                <ul className={styles.smallList}>
+                  <li>🖥️ Desktop: {stats.deviceBreakdown.desktop}</li>
+                  <li>📱 Mobile: {stats.deviceBreakdown.mobile}</li>
+                  <li>📋 Tablet: {stats.deviceBreakdown.tablet}</li>
+                </ul>
+              )}
             </div>
 
-            <div className={styles.cardBody}>
-              <div className={styles.metricValue}>{m.value}</div>
-              <Sparkline points={m.spark} />
+            <div className={styles.panel}>
+              <h3 className={styles.panelTitle}>Quick Actions</h3>
+              <div className={styles.actions}>
+                <Link href="/admin/event-manager/create" className={styles.actionBtn}>Create Event</Link>
+                <Link href="/admin/sermon-manager/create" className={styles.actionBtn}>Add Sermon</Link>
+                <Link href="/admin/general" className={styles.actionBtn}>Settings</Link>
+              </div>
             </div>
-          </article>
-        ))}
-      </section>
+          </section>
 
-      <section className={styles.detailsGrid}>
-        <div className={styles.panel}>
-          <h3 className={styles.panelTitle}>Recent Visitors</h3>
-          <p className={styles.panelNote}>Last 10 visits summary — quick snapshot.</p>
-          <ul className={styles.smallList}>
-            <li>Web: 8,560</li>
-            <li>Mobile: 3,250</li>
-            <li>Referrals: 648</li>
-            <li>Direct: 1,500</li>
-          </ul>
-        </div>
-
-        <div className={styles.panel}>
-          <h3 className={styles.panelTitle}>Quick Actions</h3>
-          <div className={styles.actions}>
-            <button className={styles.actionBtn}>Create Event</button>
-            <button className={styles.actionBtn}>Add Sermon</button>
-            <button className={styles.actionBtn}>Export Reports</button>
-          </div>
-        </div>
-      </section>
+          {/* Recent Visits */}
+          {stats && stats.recentVisits.length > 0 && (
+            <section className={styles.panel} style={{ marginTop: "20px" }}>
+              <h3 className={styles.panelTitle}>Recent Visits</h3>
+              <p className={styles.panelNote}>Last 10 page views</p>
+              <ul className={styles.smallList} style={{ flexDirection: "column", gap: "8px" }}>
+                {stats.recentVisits.map((visit, idx) => (
+                  <li key={idx} style={{ display: "flex", justifyContent: "space-between", width: "100%" }}>
+                    <span>
+                      {visit.deviceType === "mobile" ? "📱" : visit.deviceType === "tablet" ? "📋" : "🖥️"}{" "}
+                      {visit.pageUrl}
+                    </span>
+                    <span style={{ opacity: 0.7 }}>{formatTimeAgo(visit.timestamp)}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </>
+      )}
     </main>
   );
 }

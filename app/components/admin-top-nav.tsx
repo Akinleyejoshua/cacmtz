@@ -33,7 +33,7 @@ export default function AdminTopNav() {
   }, []);
 
   const LINKS = [
-    // { href: "/admin/dashboard", label: "Dashboard" },
+    { href: "/admin/dashboard", label: "Dashboard" },
     { href: "/admin/general", label: "General" },
     { href: "/admin/event-manager", label: "Events" },
     { href: "/admin/sermon-manager", label: "Sermons" },

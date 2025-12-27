@@ -11,6 +11,7 @@ import Footer from "./sections/footer";
 import AboutSection from "./sections/about";
 import MinistersSection from "./sections/ministers";
 import { SplashScreen } from "./components/splash-screen";
+import PageTracker from "./components/page-tracker";
 
 export default function Home() {
   const { loading, events, generalSettings, latestSermon, ministers } = useLandingPage();
@@ -22,6 +23,7 @@ export default function Home() {
 
   return (
     <div>
+      <PageTracker pageUrl="/" />
       <MainHeader />
       <Hero />
       <Banner generalSettings={generalSettings} />
