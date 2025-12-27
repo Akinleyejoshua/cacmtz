@@ -11,6 +11,31 @@ interface EventsProps {
   title?: string;
 }
 
+// Helper function to format recurrence schedule
+function formatRecurrence(event: any): string {
+  if (!event.isRecurring) return "";
+
+  const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const interval = event.recurrenceInterval || 1;
+
+  switch (event.recurrenceType) {
+    case 'daily':
+      return interval === 1 ? 'Every day' : `Every ${interval} days`;
+    case 'weekly':
+      if (event.recurrenceDays && event.recurrenceDays.length > 0) {
+        const days = event.recurrenceDays.map((d: number) => dayNames[d]).join(', ');
+        return interval === 1 ? `Every ${days}` : `Every ${interval} weeks on ${days}`;
+      }
+      return interval === 1 ? 'Every week' : `Every ${interval} weeks`;
+    case 'monthly':
+      return interval === 1 ? 'Every month' : `Every ${interval} months`;
+    case 'yearly':
+      return interval === 1 ? 'Every year' : `Every ${interval} years`;
+    default:
+      return 'Recurring';
+  }
+}
+
 export default function Events({ events, title = "Upcoming Events" }: EventsProps) {
 
   const { formatDuration } = useLandingPage();
@@ -43,11 +68,24 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                     {event.description && <p className={styles.description}>{event.description}</p>}
 
                     <div className={styles.meta}>
-                      <div className={styles.metaItem}>
-                        <span className={styles.metaLabel}>📅 Date</span>
-                        <span className={styles.metaValue}>{event.date.split("T")[0]}</span>
-                        {/* <span className={styles.metaValue}>{event.date.toLocaleDateString()}</span> */}
-                      </div>
+                      {/* Show recurrence schedule for recurring events, otherwise show date */}
+                      {event.isRecurring ? (
+                        <>
+                          <div className={styles.metaItem}>
+                            <span className={styles.metaLabel}>🔄 Schedule</span>
+                            <span className={styles.metaValue}>{formatRecurrence(event)}</span>
+                          </div>
+                          <div className={styles.metaItem}>
+                            <span className={styles.metaLabel}>📅 Next</span>
+                            <span className={styles.metaValue}>{event.date.split("T")[0]}</span>
+                          </div>
+                        </>
+                      ) : (
+                        <div className={styles.metaItem}>
+                          <span className={styles.metaLabel}>📅 Date</span>
+                          <span className={styles.metaValue}>{event.date.split("T")[0]}</span>
+                        </div>
+                      )}
                       <div className={styles.metaItem}>
                         <span className={styles.metaLabel}>🕐 Time</span>
                         <span className={styles.metaValue}>{(event.time)}</span>
