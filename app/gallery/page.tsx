@@ -8,10 +8,10 @@ import styles from './gallery.module.css';
 import { GalleryItem } from '../types/gallery';
 import request from '../utils/axios';
 import { useLandingPage } from '../hooks/use-landing-page';
-// import { SplashScreen } from '../components/splash-screen';
+import LoadingSpinner from '../components/loading-spinner';
 
 export default function GalleryPage() {
-  const { generalSettings, loading:generalLoading } = useLandingPage();
+    const { generalSettings, loading: generalLoading } = useLandingPage();
 
     const [items, setItems] = useState<GalleryItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -30,7 +30,7 @@ export default function GalleryPage() {
 
         fetchGallery();
     }, []);
-//   if (generalLoading) return SplashScreen();
+    //   if (generalLoading) return SplashScreen();
 
     return (
         <div className={styles.pageWrapper}>
@@ -46,7 +46,7 @@ export default function GalleryPage() {
                     </div>
 
                     {loading ? (
-                        <div className={styles.loading}>Loading gallery...</div>
+                        <div className={styles.loading}><LoadingSpinner size="medium" /></div>
                     ) : items.length > 0 ? (
                         <div className={styles.grid} id='gallery'>
                             {items.map((item) => (
@@ -77,7 +77,7 @@ export default function GalleryPage() {
                 </div>
             </main>
 
-      <Footer generalSettings={generalSettings} />
+            <Footer generalSettings={generalSettings} />
         </div>
     );
 }

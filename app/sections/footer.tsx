@@ -3,6 +3,7 @@
 import React from "react";
 import styles from "./footer.module.css";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
+import LoadingSpinner from "../components/loading-spinner";
 
 type SocialLink = {
   id: string;
@@ -193,7 +194,7 @@ export default function Footer({
 
               </>
 
-              : <small>loading...</small>
+              : <LoadingSpinner size="small" />
             }
           </div>
         </div>
