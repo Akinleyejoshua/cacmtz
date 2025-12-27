@@ -7,7 +7,7 @@ import styles from "./main-header.module.css";
 import { AiOutlineHome, AiOutlineMenu, AiOutlineClose } from "react-icons/ai";
 import Logo from "../../public/src/img/brand/logo.jpg"
 import Image from "next/image";
-import { FaPhotoFilm } from "react-icons/fa6";
+import { FaPeopleGroup, FaPhotoFilm } from "react-icons/fa6";
 import { FaMicrophone } from "react-icons/fa";
 import { SplashScreen } from "./splash-screen";
 import { load } from "../utils/helpers";
@@ -148,7 +148,7 @@ export const MainHeader = () => {
                         <span>Gallery</span>
                     </Link>
                      <Link href="/ministers" className={`${styles.navLink} ${pathname === "/gallery" ? styles.active : ""}`} onClick={() => setOpen(false)}>
-                        <FaPhotoFilm />
+                        <FaPeopleGroup />
                         <span>Ministers</span>
                     </Link>
 
