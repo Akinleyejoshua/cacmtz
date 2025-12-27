@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./profile-section.module.css";
 import { renderMarkdown } from "../utils/helpers";
+import LoadingSpinner from "../components/loading-spinner";
 
 type Tab = {
     id: string;
@@ -53,7 +54,7 @@ export default function ProfileSection({
                     <h2 className={styles.title}>{title}</h2>
                     <p className={styles.subtitle}>{subtitle}</p>
                     <br></br>
-                    {profiles.length == 0 && <small>Loading...</small>}
+                    {profiles.length == 0 && <LoadingSpinner size="medium" />}
 
                 </div>
 

@@ -3,6 +3,7 @@
 import React from "react";
 import styles from "./contact.module.css";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
+import LoadingSpinner from "../components/loading-spinner";
 
 type ContactInfo = {
   id: string;
@@ -145,42 +146,42 @@ export default function ContactSection({ contacts = DEFAULT_CONTACTS, socials = 
           {/* Contact Info Cards */}
 
           {generalSettings ?
-          <>
-          <div className={styles.contactGrid}>
-            {displayContacts.map((contact: ContactInfo) => (
-              <div key={contact.id} className={styles.contactCard}>
-                <div className={styles.contactIcon}>{contact.icon}</div>
-                <div className={styles.contactBody}>
-                  <h4 className={styles.contactLabel}>{contact.label}</h4>
-                  {contact.href ? (
-                    <a href={contact.href} className={styles.contactValue} target={contact.id === "address" ? "_blank" : undefined} rel={contact.id === "address" ? "noopener noreferrer" : undefined}>
-                      {contact.value}
+            <>
+              <div className={styles.contactGrid}>
+                {displayContacts.map((contact: ContactInfo) => (
+                  <div key={contact.id} className={styles.contactCard}>
+                    <div className={styles.contactIcon}>{contact.icon}</div>
+                    <div className={styles.contactBody}>
+                      <h4 className={styles.contactLabel}>{contact.label}</h4>
+                      {contact.href ? (
+                        <a href={contact.href} className={styles.contactValue} target={contact.id === "address" ? "_blank" : undefined} rel={contact.id === "address" ? "noopener noreferrer" : undefined}>
+                          {contact.value}
+                        </a>
+                      ) : (
+                        <p className={styles.contactValue}>{contact.value}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Social Links */}
+              <div className={styles.socialSection}>
+                <h3 className={styles.socialTitle}>Follow Us</h3>
+                <div className={styles.socialLinks}>
+                  {displaySocials.map((social: SocialLink) => (
+                    <a key={social.id} href={social.url} target="_blank" rel="noopener noreferrer" className={styles.socialLink} title={social.name} aria-label={`Follow us on ${social.name}`} style={{ color: social.color }}>
+                      <span className={styles.socialIcon}>{social.icon}</span>
                     </a>
-                  ) : (
-                    <p className={styles.contactValue}>{contact.value}</p>
-                  )}
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
 
-          {/* Social Links */}
-          <div className={styles.socialSection}>
-            <h3 className={styles.socialTitle}>Follow Us</h3>
-            <div className={styles.socialLinks}>
-              {displaySocials.map((social: SocialLink) => (
-                <a key={social.id} href={social.url} target="_blank" rel="noopener noreferrer" className={styles.socialLink} title={social.name} aria-label={`Follow us on ${social.name}`} style={{ color: social.color }}>
-                  <span className={styles.socialIcon}>{social.icon}</span>
-                </a>
-              ))}
-            </div>
-          </div>
-        
-          
-          </>
-          
-          : <small>Loading...</small>}
-          </div>
+
+            </>
+
+            : <LoadingSpinner size="medium" />}
+        </div>
       </div>
     </section>
   );

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Minister } from '../types/minister';
 import styles from './ministers.module.css';
 import { FaSearch, FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEnvelope } from 'react-icons/fa';
+import LoadingSpinner from '../components/loading-spinner';
 
 interface MinistersSectionProps {
     ministers: Minister[];
@@ -37,7 +38,7 @@ export default function MinistersSection({
                     <h2 className={styles.title}>{title}</h2>
                     {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
                     <br></br>
-                    {ministers.length == 0 && <small>Loading....</small>}
+                    {ministers.length == 0 && <LoadingSpinner size="medium" />}
                 </div>
 
                 {ministers.length > 0 &&

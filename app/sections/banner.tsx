@@ -5,7 +5,7 @@ import styles from "./banner.module.css";
 import { useLandingPage } from "../hooks/use-landing-page";
 import { formatRelativeTime, convert24hrTo12hr, save } from "../utils/helpers";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
-// Removed redundant import
+import LoadingSpinner from "../components/loading-spinner";
 
 type Event = {
   id: string;
@@ -251,7 +251,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
         });
       }
       sessionStorage.setItem("landingPageLoaded", "true")
-    
+
     }
   }, [generalSettings]);
 
@@ -291,7 +291,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
       {/* News Alert Marquee */}
       <div className={styles.newsMarquee}>
         <div className={styles.marqueeContent}>
-          {news.length === 0 && "Loading..."}
+          {news.length === 0 && <LoadingSpinner size="small" />}
           {news.map((item: any, idx: any) => (
             <span key={item.id} className={styles.newsItem}>
               {item.title}
@@ -310,7 +310,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
             <div className={styles.watchwordIcon}>✨</div>
             <div className={styles.watchwordContent}>
               <h2 className={styles.watchwordLabel}>Yearly Watchword</h2>
-              {watchword == null ? <small>Loading...</small> :
+              {watchword == null ? <LoadingSpinner size="small" /> :
                 <small className={styles.watchwordText}>"{watchword.text}"</small>
               }
               {/* <p className={styles.watchwordReference}>{watchword.reference}</p> */}
@@ -318,7 +318,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
               {/* Social Media Links */}
               <div className={styles.socialLinks}>
                 {social == null ? (
-                  <span>Loading socials...</span>
+                  <LoadingSpinner size="small" />
                 ) : (
                   social.map((link: any) => (
                     <a
@@ -392,7 +392,7 @@ export default function Banner({ watchword: propWatchword, events: propEvents, n
           <div className={styles.locationCard}>
 
 
-            {location == null ? <small>Loading...</small> :
+            {location == null ? <LoadingSpinner size="small" /> :
               <>
 
                 <div className={styles.locationHeader}>

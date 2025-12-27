@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import styles from "./sermon.module.css";
+import LoadingSpinner from "../components/loading-spinner";
 
 type Document = {
   id: string;
@@ -87,67 +88,67 @@ export default function SermonSection({ sermon, title = "Latest Sermon" }: Sermo
           <h2 className={styles.title}>{title}</h2>
           <p className={styles.subtitle}>Listen to the latest message from our pulpit</p>
           <br></br>
-          {!sermon && <small>Loading...</small>}
-          
+          {!sermon && <LoadingSpinner size="medium" />}
+
         </div>
 
-        {sermon && 
-        <div className={styles.content}>
-          {/* Video Container */}
-          <div className={styles.videoWrapper}>
-            <iframe
-              className={styles.videoEmbed}
-              src={youtubeEmbedUrl}
-              title={displaySermon.title}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            />
-          </div>
+        {sermon &&
+          <div className={styles.content}>
+            {/* Video Container */}
+            <div className={styles.videoWrapper}>
+              <iframe
+                className={styles.videoEmbed}
+                src={youtubeEmbedUrl}
+                title={displaySermon.title}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
 
-          {/* Sermon Details */}
-          <div className={styles.details}>
-            <div className={styles.sermonInfo}>
-              <h3 className={styles.sermonTitle}>{displaySermon.title}</h3>
-              <p className={styles.sermonSpeaker}>By {displaySermon.speaker}</p>
+            {/* Sermon Details */}
+            <div className={styles.details}>
+              <div className={styles.sermonInfo}>
+                <h3 className={styles.sermonTitle}>{displaySermon.title}</h3>
+                <p className={styles.sermonSpeaker}>By {displaySermon.speaker}</p>
 
-              <div className={styles.meta}>
-                <div className={styles.metaItem}>
-                  <span className={styles.metaIcon}>📅</span>
-                  <span className={styles.metaText}>{displaySermon.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+                <div className={styles.meta}>
+                  <div className={styles.metaItem}>
+                    <span className={styles.metaIcon}>📅</span>
+                    <span className={styles.metaText}>{displaySermon.date.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</span>
+                  </div>
+                  <div className={styles.metaItem}>
+                    <span className={styles.metaIcon}>⏱️</span>
+                    <span className={styles.metaText}>{displaySermon.duration} min</span>
+                  </div>
                 </div>
-                <div className={styles.metaItem}>
-                  <span className={styles.metaIcon}>⏱️</span>
-                  <span className={styles.metaText}>{displaySermon.duration} min</span>
+
+                <p className={styles.description}>{displaySermon.description}</p>
+              </div>
+
+              {/* Document Links */}
+              <div className={styles.documents}>
+                <h4 className={styles.documentsTitle}>📚 Resources</h4>
+                <div className={styles.documentLinks}>
+                  {displaySermon.documents.map((doc: any) => (
+                    <a key={doc.id} href={doc.url} target="_blank" rel="noopener noreferrer" className={`${styles.docLink} ${styles[doc.type]}`}>
+                      <span className={styles.docIcon}>{doc.icon}</span>
+                      <span className={styles.docTitle}>{doc.title}</span>
+                    </a>
+                  ))}
                 </div>
               </div>
 
-              <p className={styles.description}>{displaySermon.description}</p>
+              {/* Action Button */}
+              <Link href={youtubeEmbedUrl} target="_blank" className={styles.watchBtn}>
+                🎬 Watch Full Video
+              </Link>
             </div>
-
-            {/* Document Links */}
-            <div className={styles.documents}>
-              <h4 className={styles.documentsTitle}>📚 Resources</h4>
-              <div className={styles.documentLinks}>
-                {displaySermon.documents.map((doc: any) => (
-                  <a key={doc.id} href={doc.url} target="_blank" rel="noopener noreferrer" className={`${styles.docLink} ${styles[doc.type]}`}>
-                    <span className={styles.docIcon}>{doc.icon}</span>
-                    <span className={styles.docTitle}>{doc.title}</span>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            {/* Action Button */}
-            <Link href={youtubeEmbedUrl} target="_blank" className={styles.watchBtn}>
-              🎬 Watch Full Video
-            </Link>
           </div>
-        </div>
 
-        
+
         }
 
-              </div>
+      </div>
     </section>
   );
 }
