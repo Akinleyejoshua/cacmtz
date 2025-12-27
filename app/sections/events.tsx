@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import styles from "./events.module.css";
 import { useLandingPage } from "../hooks/use-landing-page";
-import { formatRelativeTime } from "../utils/helpers";
+import { formatRelativeTime, getNextOccurrence } from "../utils/helpers";
 
 interface EventsProps {
   events?: any;
@@ -77,7 +77,7 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                           </div>
                           <div className={styles.metaItem}>
                             <span className={styles.metaLabel}>📅 Next</span>
-                            <span className={styles.metaValue}>{event.date.split("T")[0]}</span>
+                            <span className={styles.metaValue}>{getNextOccurrence(event).toLocaleDateString()}</span>
                           </div>
                         </>
                       ) : (
@@ -101,7 +101,11 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                     </div>
 
                     <div className={styles.footer}>
-                      <div className={styles.countdown}>{formatRelativeTime(new Date(event.date))}</div>
+                      <div className={styles.countdown}>
+                        {event.isRecurring
+                          ? formatRelativeTime(getNextOccurrence(event))
+                          : formatRelativeTime(new Date(event.date))}
+                      </div>
                       {event.liveLink && (
                         <Link href={event.liveLink} className={styles.liveBtn}>
                           {event.isLive ? "Join Live" : "Learn More"}

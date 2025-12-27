@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import styles from "./banner.module.css";
-import { formatRelativeTime, convert24hrTo12hr } from "../utils/helpers";
+import { formatRelativeTime, convert24hrTo12hr, getNextOccurrence } from "../utils/helpers";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
 
 type SocialMedia = {
@@ -90,6 +90,12 @@ export default function Banner({ generalSettings }: BannerProps) {
       time: latestEvent.time,
       isLive: latestEvent.isLive,
       liveLink: latestEvent.liveLink,
+      // Recurrence data
+      isRecurring: latestEvent.isRecurring,
+      recurrenceType: latestEvent.recurrenceType,
+      recurrenceInterval: latestEvent.recurrenceInterval,
+      recurrenceDays: latestEvent.recurrenceDays,
+      recurrenceEndDate: latestEvent.recurrenceEndDate,
     };
   }
 
@@ -168,7 +174,11 @@ export default function Banner({ generalSettings }: BannerProps) {
                   </div>
                   <div className={styles.detailRow}>
                     <span className={styles.detailIcon}>📅</span>
-                    <span className={styles.detailText}>{new Date(nextEvent.date).toLocaleDateString()}</span>
+                    <span className={styles.detailText}>
+                      {nextEvent.isRecurring
+                        ? getNextOccurrence(nextEvent).toLocaleDateString()
+                        : new Date(nextEvent.date).toLocaleDateString()}
+                    </span>
                   </div>
                   <div className={styles.detailRow}>
                     <span className={styles.detailIcon}>📍</span>
@@ -177,8 +187,14 @@ export default function Banner({ generalSettings }: BannerProps) {
                 </div>
 
                 <div className={styles.countdownWrapper}>
-                  <div className={styles.countdownLabel}>Next event</div>
-                  <div className={styles.countdown}>{formatRelativeTime(nextEvent.dateTime)}</div>
+                  <div className={styles.countdownLabel}>
+                    {nextEvent.isRecurring ? 'Next occurrence' : 'Next event'}
+                  </div>
+                  <div className={styles.countdown}>
+                    {nextEvent.isRecurring
+                      ? formatRelativeTime(getNextOccurrence(nextEvent))
+                      : formatRelativeTime(nextEvent.dateTime)}
+                  </div>
                   {nextEvent.isLive && (
                     <a href={nextEvent.liveLink} target="_blank" rel="noopener noreferrer" className={styles.liveButton}>
                       Join Live Stream

@@ -44,7 +44,7 @@ export const renderMarkdown = (text: string): string => {
     html = html.replace(/^1\. (.*?)$/gm, "<li>$1</li>");
 
     return html;
-  };
+};
 
 export const formatRelativeTime = (timestampMs: any): string => {
     // 1. Define time constants in milliseconds
@@ -106,6 +106,83 @@ export const formatRelativeTime = (timestampMs: any): string => {
     }
 }
 
+// Calculate the next occurrence of a recurring event
+export const getNextOccurrence = (event: any): Date => {
+    const now = new Date();
+    const eventDate = new Date(event.date);
+
+    // If not recurring or event is in the future, return the original date
+    if (!event.isRecurring || eventDate > now) {
+        return eventDate;
+    }
+
+    const interval = event.recurrenceInterval || 1;
+    let nextDate = new Date(eventDate);
+
+    switch (event.recurrenceType) {
+        case 'daily':
+            // Calculate how many intervals have passed and get next one
+            while (nextDate <= now) {
+                nextDate.setDate(nextDate.getDate() + interval);
+            }
+            break;
+
+        case 'weekly':
+            if (event.recurrenceDays && event.recurrenceDays.length > 0) {
+                // Find next matching day of week
+                const today = now.getDay();
+                const sortedDays = [...event.recurrenceDays].sort((a: number, b: number) => a - b);
+
+                // Find the next day this week or next week
+                let found = false;
+                for (let weekOffset = 0; weekOffset < 52 && !found; weekOffset++) {
+                    for (const day of sortedDays) {
+                        const candidate = new Date(now);
+                        candidate.setDate(now.getDate() - today + day + (weekOffset * 7 * interval));
+                        candidate.setHours(eventDate.getHours(), eventDate.getMinutes(), 0, 0);
+
+                        if (candidate > now) {
+                            nextDate = candidate;
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                while (nextDate <= now) {
+                    nextDate.setDate(nextDate.getDate() + (7 * interval));
+                }
+            }
+            break;
+
+        case 'monthly':
+            while (nextDate <= now) {
+                nextDate.setMonth(nextDate.getMonth() + interval);
+            }
+            break;
+
+        case 'yearly':
+            while (nextDate <= now) {
+                nextDate.setFullYear(nextDate.getFullYear() + interval);
+            }
+            break;
+
+        default:
+            // Just return original if unknown type
+            break;
+    }
+
+    // Check if we've exceeded the end date
+    if (event.recurrenceEndDate) {
+        const endDate = new Date(event.recurrenceEndDate);
+        if (nextDate > endDate) {
+            return eventDate; // Return original if past end date
+        }
+    }
+
+    return nextDate;
+}
+
 export function convert24hrTo12hr(time24hr: string): string {
     const parts = time24hr?.split(':');
     if (parts?.length !== 2) {
@@ -114,18 +191,18 @@ export function convert24hrTo12hr(time24hr: string): string {
 
     let hours = parseInt(parts[0], 10);
     const minutes = parts[1]; // Keep minutes as string to preserve leading zero if present
-    
+
     // Basic validation
     if (isNaN(hours) || hours < 0 || hours > 23 || minutes.length !== 2 || isNaN(parseInt(minutes, 10))) {
         return 'Invalid Time Value';
     }
 
     const ampm = hours >= 12 ? 'PM' : 'AM';
-    
+
     // Convert 24-hour time to 12-hour format:
     // 0:00 - 11:59 AM
     // 12:00 - 23:59 PM
-    
+
     // 1. Convert 0 (midnight) to 12
     // 2. Convert hours > 12 (13-23) to hours - 12
     hours = hours % 12;
