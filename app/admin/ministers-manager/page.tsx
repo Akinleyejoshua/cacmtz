@@ -15,6 +15,7 @@ type Minister = {
   email: string;
   phone: string;
   bio: string;
+  displayOrder: number;
 };
 
 export default function MinistersManagerPage() {
@@ -22,6 +23,8 @@ export default function MinistersManagerPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterDepartment, setFilterDepartment] = useState("");
+  const [hasOrderChanges, setHasOrderChanges] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
 
   const fetchMinisters = async () => {
     try {
@@ -52,7 +55,7 @@ export default function MinistersManagerPage() {
         const matchesDepartment = !filterDepartment || minister.department === filterDepartment;
         return matchesSearch && matchesDepartment;
       })
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   }, [ministers, searchQuery, filterDepartment]);
 
   const handleDelete = async (id: string) => {
@@ -64,6 +67,53 @@ export default function MinistersManagerPage() {
         console.error("Failed to delete minister:", error);
         alert("Failed to delete minister");
       }
+    }
+  };
+
+  const handleMoveUp = (index: number) => {
+    if (index === 0) return;
+    const newMinisters = [...ministers].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    const currentOrder = newMinisters[index].displayOrder || 0;
+    const prevOrder = newMinisters[index - 1].displayOrder || 0;
+
+    // Swap display orders
+    newMinisters[index].displayOrder = prevOrder;
+    newMinisters[index - 1].displayOrder = currentOrder;
+
+    setMinisters(newMinisters);
+    setHasOrderChanges(true);
+  };
+
+  const handleMoveDown = (index: number) => {
+    const sortedMinisters = [...ministers].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
+    if (index === sortedMinisters.length - 1) return;
+
+    const currentOrder = sortedMinisters[index].displayOrder || 0;
+    const nextOrder = sortedMinisters[index + 1].displayOrder || 0;
+
+    // Swap display orders
+    sortedMinisters[index].displayOrder = nextOrder;
+    sortedMinisters[index + 1].displayOrder = currentOrder;
+
+    setMinisters(sortedMinisters);
+    setHasOrderChanges(true);
+  };
+
+  const handleSaveOrder = async () => {
+    setSavingOrder(true);
+    try {
+      const orders = ministers.map((m, idx) => ({
+        id: m._id,
+        displayOrder: m.displayOrder ?? idx
+      }));
+      await request.post("/ministers/reorder", { orders });
+      setHasOrderChanges(false);
+      alert("Order saved successfully!");
+    } catch (error) {
+      console.error("Failed to save order:", error);
+      alert("Failed to save order");
+    } finally {
+      setSavingOrder(false);
     }
   };
 
@@ -112,6 +162,18 @@ export default function MinistersManagerPage() {
           <Link href="/admin/ministers-manager/create" className={styles.createBtn}>
             + Add Minister
           </Link>
+
+          {/* Save Order Button */}
+          {hasOrderChanges && (
+            <button
+              onClick={handleSaveOrder}
+              className={styles.createBtn}
+              disabled={savingOrder}
+              style={{ marginLeft: '10px', backgroundColor: '#28a745' }}
+            >
+              {savingOrder ? "Saving..." : "💾 Save Order"}
+            </button>
+          )}
         </div>
 
         {/* Ministers Table */}
@@ -122,6 +184,7 @@ export default function MinistersManagerPage() {
             <table className={styles.table}>
               <thead>
                 <tr>
+                  <th>Order</th>
                   <th>ID</th>
                   <th>Name</th>
                   <th>Position</th>
@@ -132,8 +195,43 @@ export default function MinistersManagerPage() {
                 </tr>
               </thead>
               <tbody>
-                {filteredMinisters.map((minister) => (
+                {filteredMinisters.map((minister, index) => (
                   <tr key={minister._id}>
+                    <td className={styles.idCell}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                        <button
+                          onClick={() => handleMoveUp(index)}
+                          disabled={index === 0}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: index === 0 ? 'not-allowed' : 'pointer',
+                            opacity: index === 0 ? 0.3 : 1,
+                            fontSize: '16px'
+                          }}
+                          title="Move up"
+                        >
+                          ⬆️
+                        </button>
+                        <button
+                          onClick={() => handleMoveDown(index)}
+                          disabled={index === filteredMinisters.length - 1}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            cursor: index === filteredMinisters.length - 1 ? 'not-allowed' : 'pointer',
+                            opacity: index === filteredMinisters.length - 1 ? 0.3 : 1,
+                            fontSize: '16px'
+                          }}
+                          title="Move down"
+                        >
+                          ⬇️
+                        </button>
+                        <span style={{ marginLeft: '5px', color: '#666', fontSize: '12px' }}>
+                          #{minister.displayOrder ?? index}
+                        </span>
+                      </div>
+                    </td>
                     <td className={styles.idCell}>
                       <span className={styles.idBadge}>{minister._id.substring(0, 6)}...</span>
                     </td>

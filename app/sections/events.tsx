@@ -35,6 +35,7 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                   <div className={styles.imageContainer}>
                     <img src={event.image} alt={event.title} className={styles.image} />
                     {event.isLive && <span className={styles.liveBadge}>🔴 LIVE</span>}
+                    {event.isRecurring && <span className={styles.liveBadge} style={{ background: '#6366f1', top: event.isLive ? '50px' : '10px' }}>🔄 Recurring</span>}
                   </div>
 
                   <div className={styles.content}>

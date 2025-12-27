@@ -20,6 +20,7 @@ export default function EditMinisterPage() {
         phone: "",
         bio: "",
         image: "",
+        displayOrder: 0,
         socialLinks: {
             facebook: "",
             twitter: "",
@@ -53,6 +54,7 @@ export default function EditMinisterPage() {
                     phone: minister.phone || "",
                     bio: minister.bio || "",
                     image: minister.image || "",
+                    displayOrder: minister.displayOrder || 0,
                     socialLinks: {
                         facebook: minister.socialLinks?.facebook || "",
                         twitter: minister.socialLinks?.twitter || "",
@@ -329,6 +331,25 @@ export default function EditMinisterPage() {
                                 onChange={handleChange}
                                 className={styles.input}
                             />
+                        </div>
+
+                        {/* Display Order */}
+                        <div className={styles.formGroup}>
+                            <label htmlFor="displayOrder" className={styles.label}>
+                                Display Order
+                            </label>
+                            <input
+                                type="number"
+                                id="displayOrder"
+                                name="displayOrder"
+                                value={formData.displayOrder}
+                                onChange={handleChange}
+                                min="0"
+                                placeholder="0"
+                                className={styles.input}
+                                style={{ width: '120px' }}
+                            />
+                            <p className={styles.helperText}>Lower numbers display first. Use this to control the minister hierarchy.</p>
                         </div>
                     </div>
 

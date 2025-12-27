@@ -3,7 +3,7 @@ import connectDB from '../db';
 
 export const getAllMinisters = async (): Promise<IMinister[]> => {
     await connectDB();
-    return await Minister.find({}).sort({ createdAt: -1 });
+    return await Minister.find({}).sort({ displayOrder: 1, createdAt: -1 });
 };
 
 export const getMinisterById = async (id: string): Promise<IMinister | null> => {
@@ -24,4 +24,15 @@ export const updateMinister = async (id: string, data: Partial<IMinister>): Prom
 export const deleteMinister = async (id: string): Promise<IMinister | null> => {
     await connectDB();
     return await Minister.findByIdAndDelete(id);
+};
+
+export const reorderMinisters = async (orders: { id: string; displayOrder: number }[]): Promise<void> => {
+    await connectDB();
+    const bulkOps = orders.map(({ id, displayOrder }) => ({
+        updateOne: {
+            filter: { _id: id },
+            update: { $set: { displayOrder } },
+        },
+    }));
+    await Minister.bulkWrite(bulkOps);
 };

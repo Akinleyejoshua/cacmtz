@@ -257,6 +257,24 @@ export default function CreateMinisterPage() {
                         />
                     </div>
 
+                    {/* Display Order */}
+                    <div className={styles.formGroup}>
+                        <label htmlFor="displayOrder" className={styles.label}>
+                            Display Order
+                        </label>
+                        <input
+                            type="number"
+                            id="displayOrder"
+                            name="displayOrder"
+                            onChange={handleChange}
+                            min="0"
+                            placeholder="0"
+                            className={styles.input}
+                            style={{ width: '120px' }}
+                        />
+                        <p className={styles.helperText}>Lower numbers display first. Use this to control the minister hierarchy.</p>
+                    </div>
+
                     {/* Social Media */}
                     <div className={styles.formSection}>
                         <h2 className={styles.sectionTitle}>Social Media (Optional)</h2>

@@ -55,7 +55,7 @@ export default function CreateEventPage() {
               type="text"
               id="title"
               name="title"
-            
+
               onChange={handleChange}
               placeholder="Enter event name"
               className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
@@ -214,6 +214,141 @@ export default function CreateEventPage() {
               Mark as Live Event
             </label>
           </div>
+        </div>
+
+        {/* Recurrence Configuration Section */}
+        <div className={styles.formSection}>
+          <h2 className={styles.sectionTitle}>Recurrence Configuration</h2>
+
+          {/* Is Recurring Toggle */}
+          <div className={styles.checkboxGroup}>
+            <input
+              type="checkbox"
+              id="isRecurring"
+              name="isRecurring"
+              checked={formData.isRecurring || false}
+              onChange={handleChange}
+              className={styles.checkbox}
+            />
+            <label htmlFor="isRecurring" className={styles.checkboxLabel}>
+              This is a recurring event
+            </label>
+          </div>
+
+          {formData.isRecurring && (
+            <>
+              {/* Recurrence Type */}
+              <div className={styles.formGroup}>
+                <label htmlFor="recurrenceType" className={styles.label}>
+                  Repeat
+                </label>
+                <select
+                  id="recurrenceType"
+                  name="recurrenceType"
+                  value={formData.recurrenceType || 'weekly'}
+                  onChange={handleChange}
+                  className={styles.input}
+                >
+                  <option value="daily">Daily</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly">Yearly</option>
+                </select>
+              </div>
+
+              {/* Recurrence Interval */}
+              <div className={styles.formGroup}>
+                <label htmlFor="recurrenceInterval" className={styles.label}>
+                  Every
+                </label>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <input
+                    type="number"
+                    id="recurrenceInterval"
+                    name="recurrenceInterval"
+                    value={formData.recurrenceInterval || 1}
+                    onChange={handleChange}
+                    min="1"
+                    className={styles.input}
+                    style={{ width: '80px' }}
+                  />
+                  <span>
+                    {formData.recurrenceType === 'daily' && 'day(s)'}
+                    {formData.recurrenceType === 'weekly' && 'week(s)'}
+                    {formData.recurrenceType === 'monthly' && 'month(s)'}
+                    {formData.recurrenceType === 'yearly' && 'year(s)'}
+                  </span>
+                </div>
+              </div>
+
+              {/* Weekly Day Selection */}
+              {formData.recurrenceType === 'weekly' && (
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Repeat on</label>
+                  <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+                    {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day, index) => (
+                      <label key={day} style={{ display: 'flex', alignItems: 'center', gap: '5px', cursor: 'pointer' }}>
+                        <input
+                          type="checkbox"
+                          checked={(formData.recurrenceDays || []).includes(index)}
+                          onChange={(e) => {
+                            const days = formData.recurrenceDays || [];
+                            if (e.target.checked) {
+                              setFormData((prev: any) => ({
+                                ...prev,
+                                recurrenceDays: [...days, index].sort()
+                              }));
+                            } else {
+                              setFormData((prev: any) => ({
+                                ...prev,
+                                recurrenceDays: days.filter((d: number) => d !== index)
+                              }));
+                            }
+                          }}
+                        />
+                        {day}
+                      </label>
+                    ))}
+                  </div>
+                  <p className={styles.helperText}>Select which days of the week the event repeats</p>
+                </div>
+              )}
+
+              {/* Recurrence End Date */}
+              <div className={styles.formGroup}>
+                <label htmlFor="recurrenceEndDate" className={styles.label}>
+                  End Date (Optional)
+                </label>
+                <input
+                  type="date"
+                  id="recurrenceEndDate"
+                  name="recurrenceEndDate"
+                  value={formData.recurrenceEndDate || ''}
+                  onChange={handleChange}
+                  className={styles.input}
+                />
+                <p className={styles.helperText}>Leave empty for no end date</p>
+              </div>
+
+              {/* Recurrence Count */}
+              <div className={styles.formGroup}>
+                <label htmlFor="recurrenceCount" className={styles.label}>
+                  Number of Occurrences (Optional)
+                </label>
+                <input
+                  type="number"
+                  id="recurrenceCount"
+                  name="recurrenceCount"
+                  value={formData.recurrenceCount || ''}
+                  onChange={handleChange}
+                  min="1"
+                  placeholder="e.g., 10"
+                  className={styles.input}
+                />
+                <p className={styles.helperText}>Alternative to end date - stop after X occurrences</p>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Form Actions */}

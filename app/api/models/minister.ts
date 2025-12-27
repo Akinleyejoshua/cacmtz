@@ -14,6 +14,7 @@ export interface IMinister extends Document {
         instagram?: string;
         linkedin?: string;
     };
+    displayOrder: number;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -33,6 +34,7 @@ const MinisterSchema: Schema = new Schema(
             instagram: { type: String },
             linkedin: { type: String },
         },
+        displayOrder: { type: Number, default: 0 },
     },
     {
         timestamps: true,

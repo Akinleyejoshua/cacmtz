@@ -30,7 +30,7 @@ export default function Home() {
       <Events events={events} />
       <SermonSection sermon={latestSermon} />
       <MinistersSection
-        ministers={ministers.slice(0, 8)}
+        ministers={ministers.slice(0, 25)}
         showSearch={false}
         title="Meet Our Ministers"
         subtitle="Dedicated leaders serving our community"

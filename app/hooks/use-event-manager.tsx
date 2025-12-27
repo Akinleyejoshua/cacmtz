@@ -15,6 +15,13 @@ type Event = {
     isLive?: boolean;
     time?: any;
     dateTime: string;
+    // Recurrence fields
+    isRecurring?: boolean;
+    recurrenceType?: 'daily' | 'weekly' | 'monthly' | 'yearly';
+    recurrenceInterval?: number;
+    recurrenceDays?: number[]; // 0-6 for Sunday-Saturday
+    recurrenceEndDate?: string;
+    recurrenceCount?: number;
 };
 
 export const useEventManager = () => {
@@ -50,7 +57,7 @@ export const useEventManager = () => {
         return `${mins}m`;
     }
 
-    function getEventStatus(dateTime: any, isLive?: boolean): "live" | "upcoming" | "past" |"ongoing"{
+    function getEventStatus(dateTime: any, isLive?: boolean): "live" | "upcoming" | "past" | "ongoing" {
         const now = new Date();
         if (isLive) return "live";
         if (dateTime == now.getTime()) return "ongoing";
@@ -107,7 +114,14 @@ export const useEventManager = () => {
         liveLink: "",
         isLive: false,
         time: "",
-        dateTime: ""
+        dateTime: "",
+        // Recurrence defaults
+        isRecurring: false,
+        recurrenceType: 'weekly',
+        recurrenceInterval: 1,
+        recurrenceDays: [],
+        recurrenceEndDate: "",
+        recurrenceCount: undefined
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -154,14 +168,14 @@ export const useEventManager = () => {
                 [name]: parseInt(value) || 0,
             }));
         } else if (name === "date") {
-            
+
             setFormData((prev: any) => ({
                 ...prev,
                 dateTime: new Date(value).getTime(),
                 date: value
             }));
         } else if (name === "time") {
-            const [hours, minutes] = value.split(":");           
+            const [hours, minutes] = value.split(":");
 
             setFormData((prev: any) => ({
                 ...prev,
@@ -204,7 +218,14 @@ export const useEventManager = () => {
                 image: formData.image,
                 liveLink: formData.liveLink,
                 isLive: false,
-                dateTime: formData.dateTime
+                dateTime: formData.dateTime,
+                // Recurrence data
+                isRecurring: formData.isRecurring,
+                recurrenceType: formData.recurrenceType,
+                recurrenceInterval: formData.recurrenceInterval,
+                recurrenceDays: formData.recurrenceDays,
+                recurrenceEndDate: formData.recurrenceEndDate,
+                recurrenceCount: formData.recurrenceCount
             })
 
             setSuccess(true);

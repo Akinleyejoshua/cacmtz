@@ -13,6 +13,8 @@ export interface Minister {
         instagram?: string;
         linkedin?: string;
     };
+    displayOrder: number;
     createdAt: string;
     updatedAt: string;
 }
+
