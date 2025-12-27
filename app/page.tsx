@@ -24,7 +24,7 @@ export default function Home() {
     <div>
       <MainHeader />
       <Hero />
-      <Banner />
+      <Banner generalSettings={generalSettings} />
       <Events events={events} />
       <SermonSection sermon={latestSermon} />
       <MinistersSection

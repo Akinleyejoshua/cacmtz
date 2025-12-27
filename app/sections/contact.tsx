@@ -3,7 +3,6 @@
 import React from "react";
 import styles from "./contact.module.css";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
-import LoadingSpinner from "../components/loading-spinner";
 
 type ContactInfo = {
   id: string;
@@ -179,8 +178,7 @@ export default function ContactSection({ contacts = DEFAULT_CONTACTS, socials = 
 
 
             </>
-
-            : <LoadingSpinner size="medium" />}
+            : null}
         </div>
       </div>
     </section>
