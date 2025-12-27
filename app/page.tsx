@@ -9,11 +9,16 @@ import SermonSection from "./sections/sermon";
 import ContactSection from "./sections/contact";
 import Footer from "./sections/footer";
 import AboutSection from "./sections/about";
-
 import MinistersSection from "./sections/ministers";
+import { SplashScreen } from "./components/splash-screen";
 
 export default function Home() {
-  const { events, generalSettings, latestSermon, ministers } = useLandingPage();
+  const { loading, events, generalSettings, latestSermon, ministers } = useLandingPage();
+
+  // Show splash screen while loading
+  if (loading) {
+    return <SplashScreen isLoading={loading} />;
+  }
 
   return (
     <div>
@@ -31,7 +36,6 @@ export default function Home() {
       <AboutSection generalSettings={generalSettings} />
       <ContactSection generalSettings={generalSettings} />
       <Footer generalSettings={generalSettings} />
-
     </div>
   );
 }

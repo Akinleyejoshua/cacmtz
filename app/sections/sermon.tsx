@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import styles from "./sermon.module.css";
-import LoadingSpinner from "../components/loading-spinner";
 
 type Document = {
   id: string;
@@ -87,9 +86,6 @@ export default function SermonSection({ sermon, title = "Latest Sermon" }: Sermo
         <div className={styles.header}>
           <h2 className={styles.title}>{title}</h2>
           <p className={styles.subtitle}>Listen to the latest message from our pulpit</p>
-          <br></br>
-          {!sermon && <LoadingSpinner size="medium" />}
-
         </div>
 
         {sermon &&

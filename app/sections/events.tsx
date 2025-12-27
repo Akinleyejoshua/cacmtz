@@ -5,7 +5,6 @@ import Link from "next/link";
 import styles from "./events.module.css";
 import { useLandingPage } from "../hooks/use-landing-page";
 import { formatRelativeTime } from "../utils/helpers";
-import LoadingSpinner from "../components/loading-spinner";
 
 interface EventsProps {
   events?: any;
@@ -23,8 +22,6 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
         <div className={styles.header}>
           <h2 className={styles.title}>{title}</h2>
           <p className={styles.subtitle}>Join us for worship, community, and growth</p>
-          <br></br>
-          {events.length == 0 && <LoadingSpinner size="medium" />}
         </div>
 
         {events.length > 0 &&
