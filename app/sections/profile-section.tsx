@@ -47,6 +47,13 @@ export default function ProfileSection({
         return () => window.removeEventListener("keydown", handleKey);
     }, [active, tabList.length]);
 
+    // Auto-select first tab when content loads
+    useEffect(() => {
+        if (tabList.length > 0 && active < 0) {
+            setActive(0);
+        }
+    }, [tabList.length, active]);
+
     return (
         <section className={styles.section}>
             <div className={styles.container}>
