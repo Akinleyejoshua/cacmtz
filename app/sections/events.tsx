@@ -77,7 +77,16 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                           </div>
                           <div className={styles.metaItem}>
                             <span className={styles.metaLabel}>📅 Next</span>
-                            <span className={styles.metaValue}>{getNextOccurrence(event).toLocaleDateString()}</span>
+                            <span className={styles.metaValue}>
+                              {(() => {
+                                const nextDate = getNextOccurrence(event);
+                                const today = new Date();
+                                const isToday = nextDate.getDate() === today.getDate() &&
+                                  nextDate.getMonth() === today.getMonth() &&
+                                  nextDate.getFullYear() === today.getFullYear();
+                                return isToday ? "Today" : nextDate.toLocaleDateString();
+                              })()}
+                            </span>
                           </div>
                         </>
                       ) : (
@@ -102,9 +111,15 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
 
                     <div className={styles.footer}>
                       <div className={styles.countdown}>
-                        {event.isRecurring
-                          ? formatRelativeTime(getNextOccurrence(event))
-                          : formatRelativeTime(new Date(event.date))}
+                        {(() => {
+                          const targetDate = event.isRecurring ? getNextOccurrence(event) : new Date(event.date);
+                          const today = new Date();
+                          const isToday = targetDate.getDate() === today.getDate() &&
+                            targetDate.getMonth() === today.getMonth() &&
+                            targetDate.getFullYear() === today.getFullYear();
+
+                          return isToday ? "Happening Today" : formatRelativeTime(targetDate);
+                        })()}
                       </div>
                       <div style={{ display: 'flex', gap: '10px' }}>
                         {event.isPublicDetailedView && (
@@ -128,6 +143,6 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
 
 
       </div>
-    </section>
+    </section >
   );
 }

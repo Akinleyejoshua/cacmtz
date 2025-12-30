@@ -119,10 +119,17 @@ export const getNextOccurrence = (event: any): Date => {
     const interval = event.recurrenceInterval || 1;
     let nextDate = new Date(eventDate);
 
+    const isSameDay = (d1: Date, d2: Date) => {
+        return d1.getFullYear() === d2.getFullYear() &&
+            d1.getMonth() === d2.getMonth() &&
+            d1.getDate() === d2.getDate();
+    };
+
     switch (event.recurrenceType) {
         case 'daily':
             // Calculate how many intervals have passed and get next one
-            while (nextDate <= now) {
+            // We allow it to be today even if time passed
+            while (nextDate < now && !isSameDay(nextDate, now)) {
                 nextDate.setDate(nextDate.getDate() + interval);
             }
             break;
@@ -141,7 +148,8 @@ export const getNextOccurrence = (event: any): Date => {
                         candidate.setDate(now.getDate() - today + day + (weekOffset * 7 * interval));
                         candidate.setHours(eventDate.getHours(), eventDate.getMinutes(), 0, 0);
 
-                        if (candidate > now) {
+                        // If candidate is in future OR is today (ignoring time)
+                        if (candidate > now || isSameDay(candidate, now)) {
                             nextDate = candidate;
                             found = true;
                             break;
@@ -149,20 +157,20 @@ export const getNextOccurrence = (event: any): Date => {
                     }
                 }
             } else {
-                while (nextDate <= now) {
+                while (nextDate < now && !isSameDay(nextDate, now)) {
                     nextDate.setDate(nextDate.getDate() + (7 * interval));
                 }
             }
             break;
 
         case 'monthly':
-            while (nextDate <= now) {
+            while (nextDate < now && !isSameDay(nextDate, now)) {
                 nextDate.setMonth(nextDate.getMonth() + interval);
             }
             break;
 
         case 'yearly':
-            while (nextDate <= now) {
+            while (nextDate < now && !isSameDay(nextDate, now)) {
                 nextDate.setFullYear(nextDate.getFullYear() + interval);
             }
             break;
@@ -217,4 +225,11 @@ export const save = (key: string, value: any) => {
 
 export const load = (key: string) => {
     return localStorage.getItem(key);
-}   
+}
+
+export const isToday = (date: Date): boolean => {
+    const today = new Date();
+    return date.getDate() === today.getDate() &&
+        date.getMonth() === today.getMonth() &&
+        date.getFullYear() === today.getFullYear();
+}
