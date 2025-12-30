@@ -15,7 +15,7 @@ export default function CreateMinisterPage() {
         email: "",
         phone: "",
         bio: "",
-        image: "",
+        images: [] as string[],
         displayOrder: 0,
         type: "regular",
         isVisible: true,
@@ -62,17 +62,22 @@ export default function CreateMinisterPage() {
             return;
         }
 
-        if (type === "file" && files && files[0]) {
-            const file = files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64 = reader.result as string;
+        if (type === "file" && files && files.length > 0) {
+            // Handle multiple file uploads
+            const filesArray = Array.from(files);
+            const promises = filesArray.map((file) => {
+                return new Promise<string>((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.readAsDataURL(file);
+                });
+            });
+            Promise.all(promises).then((base64Images) => {
                 setFormData((prev) => ({
                     ...prev,
-                    image: base64,
+                    images: [...prev.images, ...base64Images],
                 }));
-            };
-            reader.readAsDataURL(file);
+            });
             return;
         }
         if (name.startsWith("social_")) {
@@ -127,7 +132,7 @@ export default function CreateMinisterPage() {
 
     return (
         <div className={styles.page}>
-            
+
             <div className={styles.container}>
 
                 {/* Header */}
