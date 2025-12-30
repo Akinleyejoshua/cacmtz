@@ -118,9 +118,17 @@ export default function SermonsSection({ showHeader = true }: SermonsSectionProp
             {paginatedSermons.length > 0 ? (
                 <div className={styles.sermonsGrid}>
                     {paginatedSermons.map((sermon) => {
-                        const ministerName = typeof sermon.minister === 'object' && sermon.minister?.name
-                            ? sermon.minister.name
-                            : (typeof sermon.minister === 'string' ? sermon.minister : 'Unknown Minister');
+                        // Extract minister name - handle populated object, ObjectId string, or plain string
+                        let ministerName = 'Unknown Minister';
+                        if (sermon.minister) {
+                            if (typeof sermon.minister === 'object' && sermon.minister.name) {
+                                ministerName = sermon.minister.name;
+                            } else if (typeof sermon.minister === 'string') {
+                                // Check if it's an ObjectId (24 hex characters)
+                                const isObjectId = /^[a-f\d]{24}$/i.test(sermon.minister);
+                                ministerName = isObjectId ? 'Minister' : sermon.minister;
+                            }
+                        }
 
                         return (
                             <a

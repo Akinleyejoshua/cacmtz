@@ -7,14 +7,33 @@ import styles from "./page.module.css";
 import request from "@/app/utils/axios";
 import LoadingSpinner from "@/app/components/loading-spinner";
 
+type Minister = {
+  _id: string;
+  name: string;
+  position?: string;
+};
+
 type Sermon = {
   _id: string;
   title: string;
-  minister: string;
+  minister: Minister | string;
   youtubeLink: string;
   date: string;
   duration: number;
-  bulletinId: string;
+  bulletinId: any;
+};
+
+// Helper to extract minister name
+const getMinisterName = (minister: Minister | string): string => {
+  if (typeof minister === 'object' && minister?.name) {
+    return minister.name;
+  }
+  if (typeof minister === 'string') {
+    // Check if it's an ObjectId (24 hex characters)
+    const isObjectId = /^[a-f\d]{24}$/i.test(minister);
+    return isObjectId ? 'Minister' : minister;
+  }
+  return 'Unknown Minister';
 };
 
 export default function SermonManagerPage() {
@@ -42,7 +61,7 @@ export default function SermonManagerPage() {
       .filter(
         (sermon) =>
           sermon.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          sermon.minister.toLowerCase().includes(searchQuery.toLowerCase())
+          getMinisterName(sermon.minister).toLowerCase().includes(searchQuery.toLowerCase())
       )
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [sermons, searchQuery]);
@@ -142,7 +161,7 @@ export default function SermonManagerPage() {
                   <h3 className={styles.sermonTitle}>{sermon.title}</h3>
 
                   {/* Minister */}
-                  <p className={styles.ministerName}>{sermon.minister}</p>
+                  <p className={styles.ministerName}>{getMinisterName(sermon.minister)}</p>
 
                   {/* Meta Info */}
                   <div className={styles.metaInfo}>

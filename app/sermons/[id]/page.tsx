@@ -180,31 +180,31 @@ export default function SermonDetailPage() {
                     </div>
 
                     {/* Minister Section */}
-                    {sermon.minister && typeof sermon.minister === 'object' && sermon.minister.name && (
+                    {sermon.minister && (sermon.minister as any).name && (
                         <div className={styles.ministerSection}>
                             <h2 className={styles.sectionTitle}>Minister</h2>
                             <div className={styles.ministerCard}>
                                 <div className={styles.ministerImageWrapper}>
-                                    {sermon.minister.image ? (
+                                    {(sermon.minister as any).image ? (
                                         <img
-                                            src={sermon.minister.image}
-                                            alt={sermon.minister.name}
+                                            src={(sermon.minister as any).image}
+                                            alt={(sermon.minister as any).name}
                                             className={styles.ministerImage}
                                         />
                                     ) : (
                                         <div className={styles.ministerPlaceholder}>
-                                            {sermon.minister.name.charAt(0).toUpperCase()}
+                                            {((sermon.minister as any).name || "M").charAt(0).toUpperCase()}
                                         </div>
                                     )}
                                 </div>
                                 <div className={styles.ministerInfo}>
-                                    <h3 className={styles.ministerName}>{sermon.minister.name}</h3>
+                                    <h3 className={styles.ministerName}>{(sermon.minister as any).name}</h3>
                                     <p className={styles.ministerPosition}>
-                                        {sermon.minister.position}
-                                        {sermon.minister.department && ` • ${sermon.minister.department}`}
+                                        {(sermon.minister as any).position || "Minister"}
+                                        {(sermon.minister as any).department && ` • ${(sermon.minister as any).department}`}
                                     </p>
-                                    {sermon.minister.bio && (
-                                        <p className={styles.ministerBio}>{sermon.minister.bio}</p>
+                                    {(sermon.minister as any).bio && (
+                                        <p className={styles.ministerBio}>{(sermon.minister as any).bio}</p>
                                     )}
                                 </div>
                             </div>

@@ -1,7 +1,11 @@
 import Sermon from "../models/sermon";
-import "../models/minister";
-import "../models/bulletin";
+import Minister from "../models/minister";
+import Bulletin from "../models/bulletin";
 import connectDB from "../db";
+
+// Ensure models are registered
+const _ = { Minister, Bulletin };
+
 connectDB();
 
 export default class SermonService {
