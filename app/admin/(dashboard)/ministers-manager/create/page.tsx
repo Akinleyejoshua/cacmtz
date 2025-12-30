@@ -299,17 +299,59 @@ export default function CreateMinisterPage() {
                             />
                         </div>
                     </div>
-                    {/* Image Upload */}
+                    {/* Images Upload */}
                     <div className={styles.formGroup}>
-                        <label htmlFor="image" className={styles.label}>Profile Image</label>
+                        <label htmlFor="images" className={styles.label}>Profile Images (Multiple)</label>
                         <input
                             type="file"
-                            id="image"
-                            name="image"
+                            id="images"
+                            name="images"
                             accept="image/*"
+                            multiple
                             onChange={handleChange}
                             className={styles.input}
                         />
+                        <p className={styles.helperText}>Upload multiple images for a slideshow effect on the ministers page.</p>
+
+                        {/* Image Previews */}
+                        {formData.images.length > 0 && (
+                            <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
+                                {formData.images.map((img, index) => (
+                                    <div key={index} style={{ position: 'relative' }}>
+                                        <img
+                                            src={img}
+                                            alt={`Preview ${index + 1}`}
+                                            style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #ddd' }}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => setFormData(prev => ({
+                                                ...prev,
+                                                images: prev.images.filter((_, i) => i !== index)
+                                            }))}
+                                            style={{
+                                                position: 'absolute',
+                                                top: '-8px',
+                                                right: '-8px',
+                                                width: '22px',
+                                                height: '22px',
+                                                borderRadius: '50%',
+                                                background: '#ef4444',
+                                                color: 'white',
+                                                border: 'none',
+                                                cursor: 'pointer',
+                                                fontSize: '12px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}
+                                        >
+                                            ✕
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* Display Order */}

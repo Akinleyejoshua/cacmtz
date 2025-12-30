@@ -18,7 +18,7 @@ export default function EditMinisterPage() {
         email: "",
         phone: "",
         bio: "",
-        image: "",
+        images: [] as string[],
         displayOrder: 0,
         type: "regular",
         isVisible: true,
@@ -54,7 +54,7 @@ export default function EditMinisterPage() {
                     email: minister.email || "",
                     phone: minister.phone || "",
                     bio: minister.bio || "",
-                    image: minister.image || "",
+                    images: minister.images || [],
                     displayOrder: minister.displayOrder || 0,
                     type: minister.type || "regular",
                     isVisible: minister.isVisible !== undefined ? minister.isVisible : true,
@@ -106,17 +106,21 @@ export default function EditMinisterPage() {
             return;
         }
 
-        if (type === "file" && files && files[0]) {
-            const file = files[0];
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64 = reader.result as string;
+        if (type === "file" && files && files.length > 0) {
+            const filesArray = Array.from(files);
+            const promises = filesArray.map((file) => {
+                return new Promise<string>((resolve) => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.readAsDataURL(file);
+                });
+            });
+            Promise.all(promises).then((base64Images) => {
                 setFormData((prev) => ({
                     ...prev,
-                    image: base64,
+                    images: [...prev.images, ...base64Images],
                 }));
-            };
-            reader.readAsDataURL(file);
+            });
             return;
         }
 
@@ -367,17 +371,58 @@ export default function EditMinisterPage() {
                             />
                         </div>
 
-                        {/* Image Upload */}
+                        {/* Images Upload */}
                         <div className={styles.formGroup}>
-                            <label htmlFor="image" className={styles.label}>Profile Image</label>
+                            <label htmlFor="images" className={styles.label}>Profile Images (Multiple)</label>
                             <input
                                 type="file"
-                                id="image"
-                                name="image"
+                                id="images"
+                                name="images"
                                 accept="image/*"
+                                multiple
                                 onChange={handleChange}
                                 className={styles.input}
                             />
+                            <p className={styles.helperText}>Upload additional images for a slideshow effect.</p>
+
+                            {formData.images.length > 0 && (
+                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
+                                    {formData.images.map((img, index) => (
+                                        <div key={index} style={{ position: 'relative' }}>
+                                            <img
+                                                src={img}
+                                                alt={`Preview ${index + 1}`}
+                                                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #ddd' }}
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData(prev => ({
+                                                    ...prev,
+                                                    images: prev.images.filter((_, i) => i !== index)
+                                                }))}
+                                                style={{
+                                                    position: 'absolute',
+                                                    top: '-8px',
+                                                    right: '-8px',
+                                                    width: '22px',
+                                                    height: '22px',
+                                                    borderRadius: '50%',
+                                                    background: '#ef4444',
+                                                    color: 'white',
+                                                    border: 'none',
+                                                    cursor: 'pointer',
+                                                    fontSize: '12px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}
+                                            >
+                                                ✕
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
 
                         {/* Display Order */}

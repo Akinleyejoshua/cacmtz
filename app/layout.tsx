@@ -24,7 +24,7 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://cacmtz.vercel.app'), // Fallback URL, essential for absolute OG image paths if not provided
+  metadataBase: new URL('https://cacmtz.vercel.app'),
   title: {
     default: "CAC Mount Zion Kingdom Zone Head Quarters",
     template: "%s | CAC Mount Zion",
@@ -43,12 +43,18 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://cacmtz.vercel.app/img/brand/logo.jpg',
-        width: 800,
-        height: 600,
-        alt: 'CAC Mount Zion Logo',
+        url: 'https://cacmtz.vercel.app/src/img/brand/logo.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'CAC Mount Zion Kingdom Zone Head Quarters Logo',
       },
     ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'CAC Mount Zion Kingdom Zone Head Quarters',
+    description: 'Welcome to Christ Apostolic Church Mount Zion Kingdom Zone Head Quarters. Raising Kingdom Giants.',
+    images: ['https://cacmtz.vercel.app/src/img/brand/logo.jpg'],
   },
   robots: {
     index: true,
