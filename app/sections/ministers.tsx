@@ -58,72 +58,83 @@ export default function MinistersSection({
 
                         <div className={styles.grid}>
                             {filteredMinisters.length > 0 ? (
-                                filteredMinisters.map((minister) => (
-                                    <div key={minister._id} className={styles.card}>
-                                        <div className={styles.imageContainer}>
-                                            <ImageSlideshow
-                                                images={minister.images || []}
-                                                alt={minister.name}
-                                            />
-                                            <div className={styles.overlay} />
-                                        </div>
-                                        <div className={styles.content}>
-                                            <div className={styles.headerInfo}>
-                                                <div className={styles.roleBadge}>
-                                                    <span className={styles.role}>{minister.position}</span>
+                                filteredMinisters.map((minister) => {
+                                    // Handle backward compatibility: old ministers have 'image', new ones have 'images'
+                                    const ministerAny = minister as any;
+                                    let ministerImages: string[] = [];
+                                    if (minister.images && minister.images.length > 0) {
+                                        ministerImages = minister.images;
+                                    } else if (ministerAny.image) {
+                                        ministerImages = [ministerAny.image];
+                                    }
+
+                                    return (
+                                        <div key={minister._id} className={styles.card}>
+                                            <div className={styles.imageContainer}>
+                                                <ImageSlideshow
+                                                    images={ministerImages}
+                                                    alt={minister.name}
+                                                />
+                                                <div className={styles.overlay} />
+                                            </div>
+                                            <div className={styles.content}>
+                                                <div className={styles.headerInfo}>
+                                                    <div className={styles.roleBadge}>
+                                                        <span className={styles.role}>{minister.position}</span>
+                                                    </div>
+                                                    <h3 className={styles.name}>{minister.name}</h3>
+                                                    <p className={styles.department}>{minister.department}</p>
                                                 </div>
-                                                <h3 className={styles.name}>{minister.name}</h3>
-                                                <p className={styles.department}>{minister.department}</p>
-                                            </div>
 
-                                            {minister.bio && <p className={styles.bio}>{minister.bio}</p>}
+                                                {minister.bio && <p className={styles.bio}>{minister.bio}</p>}
 
-                                            <div className={styles.actions}>
-                                                {minister.phone ? (
-                                                    <a href={`tel:${minister.phone}`} className={`${styles.actionButton} ${styles.primaryAction}`}>
-                                                        <FaPhone size={14} /> Call
-                                                    </a>
-                                                ) : (
-                                                    <span className={`${styles.actionButton} ${styles.secondaryAction}`} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
-                                                        <FaPhone size={14} /> Call
-                                                    </span>
-                                                )}
-                                                {minister.email ? (
-                                                    <a href={`mailto:${minister.email}`} className={`${styles.actionButton} ${styles.secondaryAction}`}>
-                                                        <FaEnvelope size={14} /> Email
-                                                    </a>
-                                                ) : (
-                                                    <span className={`${styles.actionButton} ${styles.secondaryAction}`} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
-                                                        <FaEnvelope size={14} /> Email
-                                                    </span>
-                                                )}
-                                            </div>
+                                                <div className={styles.actions}>
+                                                    {minister.phone ? (
+                                                        <a href={`tel:${minister.phone}`} className={`${styles.actionButton} ${styles.primaryAction}`}>
+                                                            <FaPhone size={14} /> Call
+                                                        </a>
+                                                    ) : (
+                                                        <span className={`${styles.actionButton} ${styles.secondaryAction}`} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
+                                                            <FaPhone size={14} /> Call
+                                                        </span>
+                                                    )}
+                                                    {minister.email ? (
+                                                        <a href={`mailto:${minister.email}`} className={`${styles.actionButton} ${styles.secondaryAction}`}>
+                                                            <FaEnvelope size={14} /> Email
+                                                        </a>
+                                                    ) : (
+                                                        <span className={`${styles.actionButton} ${styles.secondaryAction}`} style={{ opacity: 0.5, cursor: 'not-allowed' }}>
+                                                            <FaEnvelope size={14} /> Email
+                                                        </span>
+                                                    )}
+                                                </div>
 
-                                            <div className={styles.socials}>
-                                                {minister.socialLinks?.facebook && (
-                                                    <a href={minister.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                                                        <FaFacebook size={18} />
-                                                    </a>
-                                                )}
-                                                {minister.socialLinks?.twitter && (
-                                                    <a href={minister.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                                                        <FaTwitter size={18} />
-                                                    </a>
-                                                )}
-                                                {minister.socialLinks?.instagram && (
-                                                    <a href={minister.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                                                        <FaInstagram size={18} />
-                                                    </a>
-                                                )}
-                                                {minister.socialLinks?.linkedin && (
-                                                    <a href={minister.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
-                                                        <FaLinkedin size={18} />
-                                                    </a>
-                                                )}
+                                                <div className={styles.socials}>
+                                                    {minister.socialLinks?.facebook && (
+                                                        <a href={minister.socialLinks.facebook} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                                                            <FaFacebook size={18} />
+                                                        </a>
+                                                    )}
+                                                    {minister.socialLinks?.twitter && (
+                                                        <a href={minister.socialLinks.twitter} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                                                            <FaTwitter size={18} />
+                                                        </a>
+                                                    )}
+                                                    {minister.socialLinks?.instagram && (
+                                                        <a href={minister.socialLinks.instagram} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                                                            <FaInstagram size={18} />
+                                                        </a>
+                                                    )}
+                                                    {minister.socialLinks?.linkedin && (
+                                                        <a href={minister.socialLinks.linkedin} target="_blank" rel="noopener noreferrer" className={styles.socialLink}>
+                                                            <FaLinkedin size={18} />
+                                                        </a>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))
+                                    );
+                                })
                             ) : (
                                 <div className={styles.emptyState}>
                                     <p>No ministers found matching your search.</p>

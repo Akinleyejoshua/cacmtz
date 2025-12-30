@@ -32,7 +32,7 @@ export default function ImageSlideshow({
     if (!images || images.length === 0) {
         return (
             <Image
-                src="/img/brand/logo.jpg"
+                src="/src/img/brand/logo.jpg"
                 alt={alt}
                 fill
                 className={styles.image}
