@@ -1,0 +1,17 @@
+.adminLayout {
+    min-height: 100vh;
+    background: var(--background);
+}
+
+.mainContent {
+    margin-left: 260px;
+    padding-top: 60px;
+    min-height: 100vh;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .mainContent {
+        margin-left: 0;
+    }
+}

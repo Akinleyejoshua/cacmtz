@@ -24,7 +24,7 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://cacmtz.vercel.app/'), // Fallback URL, essential for absolute OG image paths if not provided
+  metadataBase: new URL('https://cacmtz.vercel.app'), // Fallback URL, essential for absolute OG image paths if not provided
   title: {
     default: "CAC Mount Zion Kingdom Zone Head Quarters",
     template: "%s | CAC Mount Zion",
@@ -37,13 +37,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CAC Mount Zion Kingdom Zone Head Quarters",
     description: "Welcome to Christ Apostolic Church Mount Zion Kingdom Zone Head Quarters. Raising Kingdom Giants.",
-    url: 'https://cacmtz.vercel.app/',
+    url: 'https://cacmtz.vercel.app',
     siteName: 'CAC Mount Zion',
     locale: 'en_NG',
     type: 'website',
     images: [
       {
-        url: '/img/brand/logo.jpg', // Ensure this path is correct relative to public folder
+        url: 'https://cacmtz.vercel.app/img/brand/logo.jpg',
         width: 800,
         height: 600,
         alt: 'CAC Mount Zion Logo',

@@ -1,0 +1,125 @@
+.header {
+    position: fixed;
+    top: 0;
+    left: 260px;
+    right: 0;
+    height: 60px;
+    background: var(--background);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    z-index: 90;
+}
+
+.left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.menuBtn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.menuBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--button-bg);
+}
+
+.menuIcon {
+    font-size: 18px;
+    opacity: 0.85;
+}
+
+.pageIndicator {
+    font-size: 14px;
+    font-weight: 700;
+    opacity: 0.6;
+}
+
+.right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--button-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 200ms ease;
+    border: 2px solid transparent;
+}
+
+.avatar:hover {
+    border-color: rgba(64, 235, 64, 0.5);
+    transform: scale(1.05);
+}
+
+.avatarIcon {
+    font-size: 16px;
+}
+
+.logoutBtn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    border-radius: 8px;
+    color: #fca5a5 !important;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 200ms ease;
+}
+
+.logoutBtn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+}
+
+.logoutIcon {
+    font-size: 14px;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .header {
+        left: 0;
+    }
+
+    .menuBtn {
+        display: flex;
+    }
+
+    .pageIndicator {
+        display: none;
+    }
+
+    .logoutText {
+        display: none;
+    }
+
+    .logoutBtn {
+        padding: 8px 12px;
+    }
+}
