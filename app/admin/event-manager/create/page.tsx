@@ -144,6 +144,21 @@ export default function CreateEventPage() {
             </div>
           </div>
 
+          {/* Previous Sermon Link */}
+          <div className={styles.formGroup}>
+            <label htmlFor="previousSermonLink" className={styles.label}>
+              Previous Sermon Link
+            </label>
+            <input
+              type="url"
+              id="previousSermonLink"
+              name="previousSermonLink"
+              onChange={handleChange}
+              placeholder="https://example.com/sermon"
+              className={styles.input}
+            />
+          </div>
+
           {/* Duration */}
           <div className={styles.formGroup}>
             <label htmlFor="duration" className={styles.label}>

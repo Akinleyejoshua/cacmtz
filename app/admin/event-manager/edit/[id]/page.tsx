@@ -362,6 +362,22 @@ export default function EditEventPage({ }: PageProps) {
             />
           </div>
 
+          {/* Previous Sermon Link */}
+          <div className={styles.formGroup}>
+            <label htmlFor="previousSermonLink" className={styles.label}>
+              Previous Sermon Link
+            </label>
+            <input
+              type="url"
+              id="previousSermonLink"
+              name="previousSermonLink"
+              value={formData.previousSermonLink || ""}
+              onChange={handleChange}
+              placeholder="https://example.com/sermon"
+              className={styles.input}
+            />
+          </div>
+
           {/* Is Live */}
           <div className={styles.checkboxGroup}>
             <input

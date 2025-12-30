@@ -24,10 +24,42 @@ const geistMono = Geist_Mono({
 
 
 export const metadata: Metadata = {
-  title: "Christ Apostolic Church Mount Zion Ojodu",
-  description: "Kingdom Zonal HeadQuarters",
+  metadataBase: new URL('https://cacmtz.org'), // Fallback URL, essential for absolute OG image paths if not provided
+  title: {
+    default: "CAC Mount Zion Kingdom Zone Head Quarters",
+    template: "%s | CAC Mount Zion",
+  },
+  description: "Welcome to Christ Apostolic Church Mount Zion Kingdom Zone Head Quarters, Ojodu. Join us for powerful worship, undiluted word of God, and spiritual growth.",
+  keywords: ["CAC Mount Zion", "Kingdom Zone", "Head Quarters", "Ojodu", "Church", "Sermons", "Christian", "Worship", "Olowu", "CAC", "Christ Apostolic Church"],
+  authors: [{ name: "CAC Mount Zion Media" }],
+  creator: "CAC Mount Zion",
+  publisher: "CAC Mount Zion",
   openGraph: {
-    images: './src/img/brand/logo.jpg', // e.g., '/og-image.jpg'
+    title: "CAC Mount Zion Kingdom Zone Head Quarters",
+    description: "Welcome to Christ Apostolic Church Mount Zion Kingdom Zone Head Quarters. Raising Kingdom Giants.",
+    url: 'https://cacmtz.org',
+    siteName: 'CAC Mount Zion',
+    locale: 'en_NG',
+    type: 'website',
+    images: [
+      {
+        url: '/img/brand/logo.jpg', // Ensure this path is correct relative to public folder
+        width: 800,
+        height: 600,
+        alt: 'CAC Mount Zion Logo',
+      },
+    ],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
 };
 

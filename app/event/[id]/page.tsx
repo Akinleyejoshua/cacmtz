@@ -95,16 +95,31 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                         <span>{event.location}</span>
                     </div>
 
-                    {event.isLive && event.liveLink && (
-                        <a
-                            href={event.liveLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.liveButton}
-                        >
-                            Watch Live
-                        </a>
-                    )}
+                    {/* Links Section */}
+                    <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+                        {event.isLive && event.liveLink && (
+                            <a
+                                href={event.liveLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.liveButton}
+                            >
+                                Watch Live
+                            </a>
+                        )}
+
+                        {event.previousSermonLink && (
+                            <a
+                                href={event.previousSermonLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className={styles.liveButton} // Reusing the same button style for consistency
+                                style={{ backgroundColor: '#555' }} // Differentiate with color
+                            >
+                                Previous Sermon
+                            </a>
+                        )}
+                    </div>
                 </div>
             </section>
 

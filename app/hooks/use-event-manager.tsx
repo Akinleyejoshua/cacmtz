@@ -12,6 +12,7 @@ type Event = {
     location: string;
     image: string;
     liveLink?: string;
+    previousSermonLink?: string;
     isLive?: boolean;
     time?: any;
     dateTime: string;
@@ -147,6 +148,7 @@ export const useEventManager = () => {
         location: "",
         image: "",
         liveLink: "",
+        previousSermonLink: "",
         isLive: false,
         time: "",
         dateTime: "",
@@ -256,6 +258,7 @@ export const useEventManager = () => {
                 location: formData.location,
                 image: formData.image,
                 liveLink: formData.liveLink,
+                previousSermonLink: formData.previousSermonLink,
                 isLive: false,
                 dateTime: formData.dateTime,
                 // Recurrence data
