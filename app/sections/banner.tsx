@@ -88,6 +88,7 @@ export default function Banner({ generalSettings }: BannerProps) {
       image: latestEvent.image || "/src/img/hero/bg_1.jpg",
       dateTime: latestEvent.dateTime,
       time: latestEvent.time,
+      endTime: latestEvent.endTime,
       isLive: latestEvent.isLive,
       liveLink: latestEvent.liveLink,
       // Recurrence data
