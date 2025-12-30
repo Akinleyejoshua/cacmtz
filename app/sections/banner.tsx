@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./banner.module.css";
-import { formatRelativeTime, convert24hrTo12hr, getNextOccurrence } from "../utils/helpers";
+import { formatRelativeTime, convert24hrTo12hr, getNextOccurrence, isToday } from "../utils/helpers";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
 
 type SocialMedia = {
@@ -176,9 +176,13 @@ export default function Banner({ generalSettings }: BannerProps) {
                   <div className={styles.detailRow}>
                     <span className={styles.detailIcon}>📅</span>
                     <span className={styles.detailText}>
-                      {nextEvent.isRecurring
-                        ? getNextOccurrence(nextEvent).toLocaleDateString()
-                        : new Date(nextEvent.date).toLocaleDateString()}
+                      {(() => {
+                        const targetDate = nextEvent.isRecurring
+                          ? getNextOccurrence(nextEvent)
+                          : new Date(nextEvent.date);
+
+                        return isToday(targetDate) ? "Today" : targetDate.toLocaleDateString();
+                      })()}
                     </span>
                   </div>
                   <div className={styles.detailRow}>
@@ -192,9 +196,19 @@ export default function Banner({ generalSettings }: BannerProps) {
                     {nextEvent.isRecurring ? 'Next occurrence' : 'Next event'}
                   </div>
                   <div className={styles.countdown}>
-                    {nextEvent.isRecurring
-                      ? formatRelativeTime(getNextOccurrence(nextEvent))
-                      : formatRelativeTime(nextEvent.dateTime)}
+                    {(() => {
+                      let targetDate;
+                      if (nextEvent.isRecurring) {
+                        targetDate = getNextOccurrence(nextEvent);
+                      } else {
+                        // Handle dateTime check similar to how nextEvent object is constructed or use date logic
+                        targetDate = nextEvent.dateTime ? new Date(parseInt(nextEvent.dateTime)) : new Date(nextEvent.date);
+                      }
+
+                      if (isToday(targetDate)) return "Happening Today";
+
+                      return formatRelativeTime(targetDate.getTime());
+                    })()}
                   </div>
                   {nextEvent.isLive && (
                     <a href={nextEvent.liveLink} target="_blank" rel="noopener noreferrer" className={styles.liveButton}>

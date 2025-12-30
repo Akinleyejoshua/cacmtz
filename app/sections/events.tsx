@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import styles from "./events.module.css";
 import { useLandingPage } from "../hooks/use-landing-page";
-import { formatRelativeTime, getNextOccurrence } from "../utils/helpers";
+import { formatRelativeTime, getNextOccurrence, convert24hrTo12hr } from "../utils/helpers";
 
 interface EventsProps {
   events?: any;
@@ -97,7 +97,7 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                       )}
                       <div className={styles.metaItem}>
                         <span className={styles.metaLabel}>🕐 Time</span>
-                        <span className={styles.metaValue}>{(event.time)}</span>
+                        <span className={styles.metaValue}>{convert24hrTo12hr(event.time)}</span>
                       </div>
                       <div className={styles.metaItem}>
                         <span className={styles.metaLabel}>⏱️ Duration</span>
