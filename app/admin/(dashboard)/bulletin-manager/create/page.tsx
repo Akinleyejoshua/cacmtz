@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import styles from "../page.module.css";
 import request from "@/app/utils/axios";
 
-import RichTextEditor from "../../../components/rich-text-editor";
+import RichTextEditor from "@/app/components/rich-text-editor";
 
 export default function CreateBulletinPage() {
   const router = useRouter();
@@ -60,7 +60,7 @@ export default function CreateBulletinPage() {
 
   return (
     <div className={styles.page}>
-      
+
       <div className={styles.container}>
         <div className={styles.header}>
           <div className={styles.titleSection}>

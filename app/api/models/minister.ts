@@ -7,7 +7,7 @@ export interface IMinister extends Document {
     email?: string;
     phone?: string;
     bio?: string;
-    image?: string;
+    images?: string[];
     socialLinks?: {
         facebook?: string;
         twitter?: string;
@@ -29,7 +29,7 @@ const MinisterSchema: Schema = new Schema(
         email: { type: String },
         phone: { type: String },
         bio: { type: String },
-        image: { type: String },
+        images: { type: [String], default: [] },
         socialLinks: {
             facebook: { type: String },
             twitter: { type: String },

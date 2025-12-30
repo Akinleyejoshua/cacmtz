@@ -6,7 +6,7 @@ export interface Minister {
     email?: string;
     phone?: string;
     bio?: string;
-    image?: string;
+    images?: string[];
     socialLinks?: {
         facebook?: string;
         twitter?: string;
