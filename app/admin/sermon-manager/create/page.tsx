@@ -1,11 +1,24 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AdminTopNav from "../../../components/admin-top-nav";
 import styles from "./page.module.css";
 import request from "@/app/utils/axios";
 import RichTextEditor from "@/app/components/rich-text-editor";
+import LoadingSpinner from "@/app/components/loading-spinner";
+
+interface Minister {
+  _id: string;
+  name: string;
+  position: string;
+}
+
+interface Bulletin {
+  _id: string;
+  title: string;
+  date: string;
+}
 
 export default function CreateSermonPage() {
   const router = useRouter();
@@ -21,9 +34,32 @@ export default function CreateSermonPage() {
     description: "",
   });
 
+  const [ministers, setMinisters] = useState<Minister[]>([]);
+  const [bulletins, setBulletins] = useState<Bulletin[]>([]);
+  const [loadingDeps, setLoadingDeps] = useState(true);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  // Fetch ministers and bulletins
+  useEffect(() => {
+    const fetchDependencies = async () => {
+      try {
+        const [ministersRes, bulletinsRes] = await Promise.all([
+          request.get("/ministers"),
+          request.get("/bulletins"),
+        ]);
+        setMinisters(ministersRes.data || []);
+        setBulletins(bulletinsRes.data || []);
+      } catch (error) {
+        console.error("Failed to fetch dependencies:", error);
+      } finally {
+        setLoadingDeps(false);
+      }
+    };
+
+    fetchDependencies();
+  }, []);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -32,8 +68,8 @@ export default function CreateSermonPage() {
       newErrors.title = "Sermon title is required";
     }
 
-    if (!formData.minister.trim()) {
-      newErrors.minister = "Minister name is required";
+    if (!formData.minister) {
+      newErrors.minister = "Please select a minister";
     }
 
     if (!formData.youtubeLink.trim()) {
@@ -64,7 +100,7 @@ export default function CreateSermonPage() {
     return regex.test(url);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -114,6 +150,17 @@ export default function CreateSermonPage() {
     router.back();
   };
 
+  if (loadingDeps) {
+    return (
+      <div className={styles.page}>
+        <AdminTopNav />
+        <div className={styles.loadingContainer}>
+          <LoadingSpinner size="medium" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.page}>
       <AdminTopNav />
@@ -160,21 +207,29 @@ export default function CreateSermonPage() {
             {errors.title && <span className={styles.errorText}>{errors.title}</span>}
           </div>
 
-          {/* Minister Name */}
+          {/* Minister Selection */}
           <div className={styles.formGroup}>
             <label htmlFor="minister" className={styles.label}>
-              Minister Name <span className={styles.required}>*</span>
+              Minister <span className={styles.required}>*</span>
             </label>
-            <input
-              type="text"
+            <select
               id="minister"
               name="minister"
               value={formData.minister}
               onChange={handleChange}
-              placeholder="e.g., Pastor John Adekunle"
               className={`${styles.input} ${errors.minister ? styles.inputError : ""}`}
-            />
+            >
+              <option value="">-- Select a Minister --</option>
+              {ministers.map((minister) => (
+                <option key={minister._id} value={minister._id}>
+                  {minister.name} ({minister.position})
+                </option>
+              ))}
+            </select>
             {errors.minister && <span className={styles.errorText}>{errors.minister}</span>}
+            {ministers.length === 0 && (
+              <p className={styles.helperText}>No ministers available. Add ministers in Minister Manager first.</p>
+            )}
           </div>
 
           {/* Description */}
@@ -257,21 +312,26 @@ export default function CreateSermonPage() {
             {errors.duration && <span className={styles.errorText}>{errors.duration}</span>}
           </div>
 
-          {/* Bulletin ID */}
+          {/* Bulletin Selection */}
           <div className={styles.formGroup}>
             <label htmlFor="bulletinId" className={styles.label}>
-              Bulletin ID
+              Link Bulletin (Optional)
             </label>
-            <input
-              type="text"
+            <select
               id="bulletinId"
               name="bulletinId"
               value={formData.bulletinId}
               onChange={handleChange}
-              placeholder="e.g., b001"
               className={styles.input}
-            />
-            <p className={styles.helperText}>Link this sermon to a bulletin (optional)</p>
+            >
+              <option value="">-- No Bulletin --</option>
+              {bulletins.map((bulletin) => (
+                <option key={bulletin._id} value={bulletin._id}>
+                  {bulletin.title} ({new Date(bulletin.date).toLocaleDateString()})
+                </option>
+              ))}
+            </select>
+            <p className={styles.helperText}>Link this sermon to a bulletin for additional resources.</p>
           </div>
         </div>
 

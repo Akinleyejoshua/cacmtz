@@ -23,6 +23,13 @@
   margin: 0;
 }
 
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
 /* Messages */
 .successMessage {
   display: flex;

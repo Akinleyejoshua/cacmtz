@@ -3,15 +3,23 @@
 import { useState, useEffect, useMemo } from "react";
 import request from "../utils/axios";
 
+export interface MinisterData {
+    _id: string;
+    name: string;
+    position?: string;
+    department?: string;
+    image?: string;
+}
+
 export interface Sermon {
     _id: string;
     title: string;
-    minister: string;
+    minister: MinisterData | string; // Can be populated object or string ID
     date: string;
     description: string;
     youtubeLink: string;
     duration: number;
-    bulletinId?: string;
+    bulletinId?: any;
     createdAt: string;
     updatedAt: string;
 }
@@ -20,6 +28,14 @@ export type TimeFilter = "all" | "week" | "month" | "year";
 export type SortBy = "newest" | "oldest" | "title" | "minister";
 
 const SERMONS_PER_PAGE = 12;
+
+// Helper to get minister name from either object or string
+const getMinisterName = (minister: MinisterData | string): string => {
+    if (typeof minister === 'object' && minister?.name) {
+        return minister.name;
+    }
+    return typeof minister === 'string' ? minister : '';
+};
 
 export const useSermons = () => {
     const [sermons, setSermons] = useState<Sermon[]>([]);
@@ -57,7 +73,7 @@ export const useSermons = () => {
             result = result.filter(
                 (sermon) =>
                     sermon.title.toLowerCase().includes(query) ||
-                    sermon.minister.toLowerCase().includes(query)
+                    getMinisterName(sermon.minister).toLowerCase().includes(query)
             );
         }
 
@@ -92,7 +108,7 @@ export const useSermons = () => {
                 case "title":
                     return a.title.localeCompare(b.title);
                 case "minister":
-                    return a.minister.localeCompare(b.minister);
+                    return getMinisterName(a.minister).localeCompare(getMinisterName(b.minister));
                 default:
                     return 0;
             }

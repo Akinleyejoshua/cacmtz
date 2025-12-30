@@ -267,6 +267,19 @@
     opacity: 0.6;
 }
 
+.seeMore {
+    display: inline-block;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--button-bg);
+    transition: all 0.2s ease;
+}
+
+.sermonCard:hover .seeMore {
+    transform: translateX(4px);
+}
+
 /* Empty State */
 .emptyState {
     text-align: center;

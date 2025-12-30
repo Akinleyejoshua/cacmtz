@@ -117,34 +117,39 @@ export default function SermonsSection({ showHeader = true }: SermonsSectionProp
             {/* Sermons Grid */}
             {paginatedSermons.length > 0 ? (
                 <div className={styles.sermonsGrid}>
-                    {paginatedSermons.map((sermon) => (
-                        <a
-                            key={sermon._id}
-                            href={sermon.youtubeLink}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.sermonCard}
-                        >
-                            <div className={styles.thumbnailContainer}>
-                                <img
-                                    src={getYouTubeThumbnail(sermon.youtubeLink)}
-                                    alt={sermon.title}
-                                    className={styles.thumbnail}
-                                />
-                                <div className={styles.playOverlay}>
-                                    <svg viewBox="0 0 24 24" fill="currentColor" className={styles.playIcon}>
-                                        <path d="M8 5v14l11-7z" />
-                                    </svg>
+                    {paginatedSermons.map((sermon) => {
+                        const ministerName = typeof sermon.minister === 'object' && sermon.minister?.name
+                            ? sermon.minister.name
+                            : (typeof sermon.minister === 'string' ? sermon.minister : 'Unknown Minister');
+
+                        return (
+                            <a
+                                key={sermon._id}
+                                href={`/sermons/${sermon._id}`}
+                                className={styles.sermonCard}
+                            >
+                                <div className={styles.thumbnailContainer}>
+                                    <img
+                                        src={getYouTubeThumbnail(sermon.youtubeLink)}
+                                        alt={sermon.title}
+                                        className={styles.thumbnail}
+                                    />
+                                    <div className={styles.playOverlay}>
+                                        <svg viewBox="0 0 24 24" fill="currentColor" className={styles.playIcon}>
+                                            <path d="M8 5v14l11-7z" />
+                                        </svg>
+                                    </div>
+                                    <span className={styles.duration}>{formatDuration(sermon.duration)}</span>
                                 </div>
-                                <span className={styles.duration}>{formatDuration(sermon.duration)}</span>
-                            </div>
-                            <div className={styles.cardContent}>
-                                <h3 className={styles.sermonTitle}>{sermon.title}</h3>
-                                <p className={styles.minister}>{sermon.minister}</p>
-                                <p className={styles.date}>{formatDate(sermon.date)}</p>
-                            </div>
-                        </a>
-                    ))}
+                                <div className={styles.cardContent}>
+                                    <h3 className={styles.sermonTitle}>{sermon.title}</h3>
+                                    <p className={styles.minister}>{ministerName}</p>
+                                    <p className={styles.date}>{formatDate(sermon.date)}</p>
+                                    <span className={styles.seeMore}>See More →</span>
+                                </div>
+                            </a>
+                        );
+                    })}
                 </div>
             ) : (
                 <div className={styles.emptyState}>

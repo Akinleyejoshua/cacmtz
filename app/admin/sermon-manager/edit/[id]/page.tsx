@@ -8,6 +8,18 @@ import request from "@/app/utils/axios";
 import LoadingSpinner from "@/app/components/loading-spinner";
 import RichTextEditor from "@/app/components/rich-text-editor";
 
+interface Minister {
+  _id: string;
+  name: string;
+  position: string;
+}
+
+interface Bulletin {
+  _id: string;
+  title: string;
+  date: string;
+}
+
 export default function EditSermonPage() {
   const router = useRouter();
   const params = useParams();
@@ -24,6 +36,8 @@ export default function EditSermonPage() {
     description: "",
   });
 
+  const [ministers, setMinisters] = useState<Minister[]>([]);
+  const [bulletins, setBulletins] = useState<Bulletin[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -31,10 +45,19 @@ export default function EditSermonPage() {
   const [notFound, setNotFound] = useState(false);
 
   useEffect(() => {
-    const fetchSermon = async () => {
+    const fetchData = async () => {
       try {
-        const res: any = await request.get(`/sermon/${sermonId}`, { params: { id: sermonId } });
-        const sermon = res.data;
+        // Fetch sermon, ministers, and bulletins in parallel
+        const [sermonRes, ministersRes, bulletinsRes] = await Promise.all([
+          request.get(`/sermon/${sermonId}`, { params: { id: sermonId } }),
+          request.get("/ministers"),
+          request.get("/bulletins"),
+        ]);
+
+        setMinisters(ministersRes.data || []);
+        setBulletins(bulletinsRes.data || []);
+
+        const sermon = sermonRes.data;
 
         if (!sermon) {
           setNotFound(true);
@@ -42,9 +65,26 @@ export default function EditSermonPage() {
         }
 
         const timestamp = new Date(sermon.date);
+
+        // Handle minister - it can be a populated object or string ID
+        let ministerId = "";
+        if (typeof sermon.minister === 'object' && sermon.minister?._id) {
+          ministerId = sermon.minister._id;
+        } else if (typeof sermon.minister === 'string') {
+          ministerId = sermon.minister;
+        }
+
+        // Handle bulletinId - it can be a populated object or string ID
+        let bulletinIdValue = "";
+        if (typeof sermon.bulletinId === 'object' && sermon.bulletinId?._id) {
+          bulletinIdValue = sermon.bulletinId._id;
+        } else if (typeof sermon.bulletinId === 'string') {
+          bulletinIdValue = sermon.bulletinId;
+        }
+
         setFormData({
           title: sermon.title,
-          minister: sermon.minister,
+          minister: ministerId,
           youtubeLink: sermon.youtubeLink,
           date: timestamp.toISOString().split("T")[0],
           time: timestamp.toLocaleTimeString("en-US", {
@@ -53,18 +93,18 @@ export default function EditSermonPage() {
             hour12: false,
           }),
           duration: sermon.duration,
-          bulletinId: sermon.bulletinId || "",
+          bulletinId: bulletinIdValue,
           description: sermon.description || "",
         });
       } catch (error) {
-        console.error("Failed to fetch sermon:", error);
+        console.error("Failed to fetch data:", error);
         setNotFound(true);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchSermon();
+    fetchData();
   }, [sermonId]);
 
   const validateForm = (): boolean => {
@@ -74,8 +114,8 @@ export default function EditSermonPage() {
       newErrors.title = "Sermon title is required";
     }
 
-    if (!formData.minister.trim()) {
-      newErrors.minister = "Minister name is required";
+    if (!formData.minister) {
+      newErrors.minister = "Please select a minister";
     }
 
     if (!formData.youtubeLink.trim()) {
@@ -106,7 +146,7 @@ export default function EditSermonPage() {
     return regex.test(url);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -248,20 +288,25 @@ export default function EditSermonPage() {
             {errors.title && <span className={styles.errorText}>{errors.title}</span>}
           </div>
 
-          {/* Minister Name */}
+          {/* Minister Selection */}
           <div className={styles.formGroup}>
             <label htmlFor="minister" className={styles.label}>
-              Minister Name <span className={styles.required}>*</span>
+              Minister <span className={styles.required}>*</span>
             </label>
-            <input
-              type="text"
+            <select
               id="minister"
               name="minister"
               value={formData.minister}
               onChange={handleChange}
-              placeholder="e.g., Pastor John Adekunle"
               className={`${styles.input} ${errors.minister ? styles.inputError : ""}`}
-            />
+            >
+              <option value="">-- Select a Minister --</option>
+              {ministers.map((minister) => (
+                <option key={minister._id} value={minister._id}>
+                  {minister.name} ({minister.position})
+                </option>
+              ))}
+            </select>
             {errors.minister && <span className={styles.errorText}>{errors.minister}</span>}
           </div>
 
@@ -345,20 +390,25 @@ export default function EditSermonPage() {
             {errors.duration && <span className={styles.errorText}>{errors.duration}</span>}
           </div>
 
-          {/* Bulletin ID */}
+          {/* Bulletin Selection */}
           <div className={styles.formGroup}>
             <label htmlFor="bulletinId" className={styles.label}>
-              Bulletin ID
+              Link Bulletin (Optional)
             </label>
-            <input
-              type="text"
+            <select
               id="bulletinId"
               name="bulletinId"
               value={formData.bulletinId}
               onChange={handleChange}
-              placeholder="e.g., b001"
               className={styles.input}
-            />
+            >
+              <option value="">-- No Bulletin --</option>
+              {bulletins.map((bulletin) => (
+                <option key={bulletin._id} value={bulletin._id}>
+                  {bulletin.title} ({new Date(bulletin.date).toLocaleDateString()})
+                </option>
+              ))}
+            </select>
             <p className={styles.helperText}>Link this sermon to a bulletin (optional)</p>
           </div>
         </div>
