@@ -1,8 +1,10 @@
 "use client"
 
 import React from "react";
+import Image from "next/image";
 import styles from "./footer.module.css";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
+import { HiMapPin, HiPhone, HiEnvelope } from "react-icons/hi2";
 
 type SocialLink = {
   id: string;
@@ -53,7 +55,7 @@ const DEFAULT_EXPLORE_LINKS: ExploreLink[] = [
 export default function Footer({
   churchName = "C.A.C Mount Zion",
   churchSlogan = "A Kingdom of God on Earth",
-  about = "We are a vibrant community of believers committed to spreading the gospel of Jesus Christ and making disciples of all nations. Our mission is to glorify God through worship, discipleship, and service.",
+  about = "We are a vibrant community of believers committed to spreading the gospel of Jesus Christ and making disciples of all nations.",
   address = "123 Faith Street, Mount Zion City, Nigeria",
   phone = "+234 (0) 701 234 5678",
   email = "info@cacmountzion.org",
@@ -75,144 +77,132 @@ export default function Footer({
     { id: "tw", name: "Twitter", icon: <FaTwitter />, url: generalSettings.socialHandles?.twitter || DEFAULT_SOCIALS[2].url, color: "#1DA1F2" },
     { id: "yt", name: "YouTube", icon: <FaYoutube />, url: generalSettings.socialHandles?.youtube || DEFAULT_SOCIALS[3].url, color: "#FF0000" },
     ...(generalSettings.socialHandles?.soundCloud ? [{ id: "sc", name: "SoundCloud", icon: <FaSoundcloud />, url: generalSettings.socialHandles.soundCloud, color: "#FF5500" }] : []),
-    // ...(generalSettings.socialHandles?.whatsapp ? [{ id: "wa", name: "WhatsApp", icon: <FaWhatsapp />, url: generalSettings.socialHandles.whatsapp, color: "#25D366" }] : []),
     ...(generalSettings.socialHandles?.tiktok ? [{ id: "tk", name: "TikTok", icon: <FaTiktok />, url: generalSettings.socialHandles.tiktok, color: "#000000" }] : []),
     ...(generalSettings.socialHandles?.linkedin ? [{ id: "li", name: "LinkedIn", icon: <FaLinkedinIn />, url: generalSettings.socialHandles.linkedin, color: "#0A66C2" }] : []),
   ] : socials;
 
   return (
     <footer className={styles.footer}>
-      {/* Main Footer Content */}
+      {/* Decorative Top Border */}
+      <div className={styles.topBorder} />
+
       <div className={styles.container}>
         <div className={styles.mainContent}>
-          {/* About Section */}
-          <div className={styles.column}>
-            <h3 className={styles.columnTitle}>{churchName}</h3>
-            <p className={styles.slogan}>{churchSlogan}</p>
+          {/* Brand Column */}
+          <div className={styles.brandColumn}>
+            <div className={styles.logoWrapper}>
+              <Image
+                src="/src/img/brand/logo.jpg"
+                alt="CAC Logo"
+                width={60}
+                height={60}
+                className={styles.logo}
+              />
+              <div className={styles.brandText}>
+                <h3 className={styles.churchName}>{churchName}</h3>
+                <p className={styles.slogan}>{churchSlogan}</p>
+              </div>
+            </div>
             <p className={styles.aboutText}>{about}</p>
-          </div>
 
-          {/* Explore Links - Column 1 */}
-          <div className={styles.column}>
-            <h4 className={styles.columnTitle}>Explore</h4>
-            <ul className={styles.linksList}>
-              {linksColumn1.map((link) => (
-                <li key={link.id}>
-                  <a href={link.href} className={styles.link}>
-                    {link.label}
-                  </a>
-                </li>
+            <div className={styles.socialWrapper}>
+              {displaySocials.map((social: SocialLink) => (
+                <a
+                  key={social.id}
+                  href={social.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.socialLink}
+                  aria-label={social.name}
+                >
+                  {social.icon}
+                </a>
               ))}
-            </ul>
+            </div>
           </div>
 
-          {/* Explore Links - Column 2 */}
-          <div className={styles.column}>
+          {/* Links Column */}
+          <div className={styles.linksColumn}>
             <h4 className={styles.columnTitle}>Quick Links</h4>
-            <ul className={styles.linksList}>
-              {linksColumn2.map((link) => (
-                <li key={link.id}>
-                  <a href={link.href} className={styles.link}>
-                    {link.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
+            <div className={styles.linksGrid}>
+              <ul className={styles.linksList}>
+                {linksColumn1.map((link) => (
+                  <li key={link.id}>
+                    <a href={link.href} className={styles.link}>
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+              <ul className={styles.linksList}>
+                {linksColumn2.map((link) => (
+                  <li key={link.id}>
+                    <a href={link.href} className={styles.link}>
+                      {link.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          {/* Contact & Social Section */}
-          <div className={styles.column}>
-            <h4 className={styles.columnTitle}>Connect</h4>
-
-            {/* Contact Info */}
-            {generalSettings?.contactDetails ?
-              <>
+          {/* Contact Column */}
+          <div className={styles.contactColumn}>
+            <h4 className={styles.columnTitle}>Get in Touch</h4>
+            <div className={styles.contactList}>
+              <div className={styles.contactItem}>
+                <div className={styles.iconBox}>
+                  <HiMapPin className={styles.contactIcon} />
+                </div>
                 <div className={styles.contactInfo}>
-                  <div className={styles.contactItem}>
-                    <span className={styles.contactIcon}>📍</span>
-                    <div className={styles.contactText}>
-                      <p className={styles.contactLabel}>Address</p>
-                      <a
-                        href={`https://www.google.com/maps?q=${displayAddress}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.contactValue}
-                      >
-                        {displayAddress}
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className={styles.contactItem}>
-                    <span className={styles.contactIcon}>📞</span>
-                    <div className={styles.contactText}>
-                      <p className={styles.contactLabel}>Phone</p>
-                      <a href={`tel:${displayPhone}`} className={styles.contactValue}>
-                        {displayPhone}
-                      </a>
-                    </div>
-                  </div>
-
-                  <div className={styles.contactItem}>
-                    <span className={styles.contactIcon}>✉️</span>
-                    <div className={styles.contactText}>
-                      <p className={styles.contactLabel}>Email</p>
-                      <a href={`mailto:${displayEmail}`} className={styles.contactValue}>
-                        {displayEmail}
-                      </a>
-                    </div>
-                  </div>
+                  <span className={styles.label}>Visit Us</span>
+                  <a
+                    href={`https://www.google.com/maps?q=${displayAddress}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={styles.value}
+                  >
+                    {displayAddress}
+                  </a>
                 </div>
+              </div>
 
-                {/* Social Links */}
-
-                <div className={styles.socialContainer}>
-                  <p className={styles.followText}>Follow Us</p>
-                  <div className={styles.socialLinks}>
-                    {displaySocials.map((social: SocialLink) => (
-                      <a
-                        key={social.id}
-                        href={social.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.socialLink}
-                      >
-                        <span className={styles.socialIcon} style={{ color: social.color }}>
-                          {social.icon}
-                        </span>
-                      </a>
-                    ))}
-                  </div>
-                  {/* Divider */}
-                  <div className={styles.divider} />
-
-                  {/* Copyright & Bottom Section */}
-
+              <div className={styles.contactItem}>
+                <div className={styles.iconBox}>
+                  <HiPhone className={styles.contactIcon} />
                 </div>
+                <div className={styles.contactInfo}>
+                  <span className={styles.label}>Call Us</span>
+                  <a href={`tel:${displayPhone}`} className={styles.value}>
+                    {displayPhone}
+                  </a>
+                </div>
+              </div>
 
-
-              </>
-              : null}
+              <div className={styles.contactItem}>
+                <div className={styles.iconBox}>
+                  <HiEnvelope className={styles.contactIcon} />
+                </div>
+                <div className={styles.contactInfo}>
+                  <span className={styles.label}>Email Us</span>
+                  <a href={`mailto:${displayEmail}`} className={styles.value}>
+                    {displayEmail}
+                  </a>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <div className={styles.bottomSection}>
-        <div className={styles.container}>
-          <div className={styles.bottomContent}>
-            <p className={styles.copyright}>{copyright}</p>
-            <div className={styles.bottomLinks}>
-              <a href="/privacy" className={styles.bottomLink}>
-                Privacy Policy
-              </a>
-              <span className={styles.separator}>•</span>
-              <a href="/terms" className={styles.bottomLink}>
-                Terms of Service
-              </a>
-              <span className={styles.separator}>•</span>
-              <a href="/sitemap" className={styles.bottomLink}>
-                Sitemap
-              </a>
-            </div>
+
+        {/* Bottom Bar */}
+        <div className={styles.bottomBar}>
+          <p className={styles.copyright}>{copyright}</p>
+          <div className={styles.bottomLinks}>
+            <a href="/privacy">Privacy Policy</a>
+            <span className={styles.dot}>•</span>
+            <a href="/terms">Terms of Service</a>
+            <span className={styles.dot}>•</span>
+            <a href="/sitemap">Sitemap</a>
           </div>
         </div>
       </div>
