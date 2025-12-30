@@ -37,6 +37,11 @@ export default function EditEventPage({ }: PageProps) {
       res_data.eventMinisters = res_data.eventMinisters.map((m: any) => m._id);
     }
 
+    // Normalize bulletinId to ID if it is a populated object
+    if (res_data.bulletinId && typeof res_data.bulletinId === 'object') {
+      res_data.bulletinId = res_data.bulletinId._id;
+    }
+
     setFormData(res_data)
   }
 

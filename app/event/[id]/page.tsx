@@ -123,25 +123,36 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                     <section className={styles.section}>
                         <h2 className={styles.sectionTitle}>Ministers</h2>
                         <div className={styles.ministersGrid}>
-                            {event.eventMinisters.map((minister: any) => (
-                                <div key={minister._id} className={styles.ministerCard}>
-                                    <div className={styles.ministerImageWrapper}>
-                                        {minister.image ? (
-                                            <img
-                                                src={minister.image}
-                                                alt={minister.name}
-                                                className={styles.ministerImage}
-                                            />
-                                        ) : (
-                                            <div style={{ width: "100%", height: "100%", backgroundColor: "#eee", display: "flex", alignItems: "center", justifyContent: "center", color: "#999" }}>
-                                                No Image
-                                            </div>
-                                        )}
+                            {(() => {
+                                // Deduplicate ministers based on _id to prevent duplicate key errors
+                                const uniqueMinistersMap = new Map();
+                                event.eventMinisters.forEach((minister: any) => {
+                                    if (minister && minister._id && !uniqueMinistersMap.has(minister._id)) {
+                                        uniqueMinistersMap.set(minister._id, minister);
+                                    }
+                                });
+                                const uniqueMinisters: any[] = Array.from(uniqueMinistersMap.values());
+
+                                return uniqueMinisters.map((minister: any) => (
+                                    <div key={minister._id} className={styles.ministerCard}>
+                                        <div className={styles.ministerImageWrapper}>
+                                            {minister.image ? (
+                                                <img
+                                                    src={minister.image}
+                                                    alt={minister.name}
+                                                    className={styles.ministerImage}
+                                                />
+                                            ) : (
+                                                <div style={{ width: "100%", height: "100%", backgroundColor: "#eee", display: "flex", alignItems: "center", justifyContent: "center", color: "#999" }}>
+                                                    No Image
+                                                </div>
+                                            )}
+                                        </div>
+                                        <h3 className={styles.ministerName}>{minister.name}</h3>
+                                        <p className={styles.ministerRole}>{minister.position}</p>
                                     </div>
-                                    <h3 className={styles.ministerName}>{minister.name}</h3>
-                                    <p className={styles.ministerRole}>{minister.position}</p>
-                                </div>
-                            ))}
+                                ));
+                            })()}
                         </div>
                     </section>
                 )}
