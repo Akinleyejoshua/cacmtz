@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
-import Editor from "../../../components/editor";
 import styles from "./page.module.css";
 import { useChurchProfileManager } from "@/app/hooks/use-church-profile-manager";
 import RichTextEditor from "@/app/components/rich-text-editor";
@@ -19,21 +18,21 @@ type Profile = {
 
 export default function CreateProfilePage() {
   const {
-    
-        formData,
-        errors,
-        loading,
-        success, 
-        handleChange,
 
-        handleContentChange,
-        handleSubmit,
-        handleCancel,
+    formData,
+    errors,
+    loading,
+    success,
+    handleChange,
+
+    handleContentChange,
+    handleSubmit,
+    handleCancel,
   } = useChurchProfileManager()
 
   return (
     <div className={styles.page}>
-      
+
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.titleSection}>

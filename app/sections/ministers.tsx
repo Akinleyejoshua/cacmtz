@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
-import Image from 'next/image';
 import { Minister } from '../types/minister';
 import styles from './ministers.module.css';
 import { FaSearch, FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaPhone, FaEnvelope } from 'react-icons/fa';
+import ImageSlideshow from '../components/image-slideshow';
 
 interface MinistersSectionProps {
     ministers: Minister[];
@@ -61,12 +61,9 @@ export default function MinistersSection({
                                 filteredMinisters.map((minister) => (
                                     <div key={minister._id} className={styles.card}>
                                         <div className={styles.imageContainer}>
-                                            <Image
-                                                src={minister.image || '/src/img/brand/logo.jpg'}
+                                            <ImageSlideshow
+                                                images={minister.images || []}
                                                 alt={minister.name}
-                                                fill
-                                                className={styles.image}
-                                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                             />
                                             <div className={styles.overlay} />
                                         </div>
