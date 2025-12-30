@@ -130,17 +130,31 @@ export default function CreateEventPage() {
             </div>
 
             {/* Time */}
-            <div className={styles.formGroup}>
-              <label htmlFor="time" className={styles.label}>
-                Time
-              </label>
-              <input
-                type="time"
-                id="time"
-                name="time"
-                onChange={handleChange}
-                className={styles.input}
-              />
+            <div className={styles.formGroup} style={{ display: 'flex', gap: '10px' }}>
+              <div style={{ flex: 1 }}>
+                <label htmlFor="time" className={styles.label}>
+                  Start Time
+                </label>
+                <input
+                  type="time"
+                  id="time"
+                  name="time"
+                  onChange={handleChange}
+                  className={styles.input}
+                />
+              </div>
+              <div style={{ flex: 1 }}>
+                <label htmlFor="endTime" className={styles.label}>
+                  End Time
+                </label>
+                <input
+                  type="time"
+                  id="endTime"
+                  name="endTime"
+                  onChange={handleChange}
+                  className={styles.input}
+                />
+              </div>
             </div>
           </div>
 

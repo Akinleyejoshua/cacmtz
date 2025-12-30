@@ -15,6 +15,7 @@ type Event = {
     previousSermonLink?: string;
     isLive?: boolean;
     time?: any;
+    endTime?: string;
     dateTime: string;
     // Recurrence fields
     isRecurring?: boolean;
@@ -151,6 +152,7 @@ export const useEventManager = () => {
         previousSermonLink: "",
         isLive: false,
         time: "",
+        endTime: "",
         dateTime: "",
         // Recurrence defaults
         isRecurring: false,
@@ -253,6 +255,7 @@ export const useEventManager = () => {
                 title: formData.title,
                 description: formData.description,
                 time: formData.time,
+                endTime: formData.endTime,
                 date: formData.date,
                 duration: formData.duration,
                 location: formData.location,

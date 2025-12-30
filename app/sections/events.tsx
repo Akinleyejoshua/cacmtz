@@ -97,7 +97,10 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                       )}
                       <div className={styles.metaItem}>
                         <span className={styles.metaLabel}>🕐 Time</span>
-                        <span className={styles.metaValue}>{convert24hrTo12hr(event.time)}</span>
+                        <span className={styles.metaValue}>
+                          {convert24hrTo12hr(event.time)}
+                          {event.endTime && ` - ${convert24hrTo12hr(event.endTime)}`}
+                        </span>
                       </div>
                       <div className={styles.metaItem}>
                         <span className={styles.metaLabel}>⏱️ Duration</span>

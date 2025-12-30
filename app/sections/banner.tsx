@@ -171,7 +171,10 @@ export default function Banner({ generalSettings }: BannerProps) {
                 <div className={styles.eventDetails}>
                   <div className={styles.detailRow}>
                     <span className={styles.detailIcon}>🕐</span>
-                    <span className={styles.detailText}>{convert24hrTo12hr(nextEvent.time)}</span>
+                    <span className={styles.detailText}>
+                      {convert24hrTo12hr(nextEvent.time)}
+                      {nextEvent.endTime && ` - ${convert24hrTo12hr(nextEvent.endTime)}`}
+                    </span>
                   </div>
                   <div className={styles.detailRow}>
                     <span className={styles.detailIcon}>📅</span>
