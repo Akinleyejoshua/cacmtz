@@ -1,8 +1,8 @@
 export const renderMarkdown = (text: string): string => {
     let html = text;
 
-    // Escape HTML
-    html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    // Escape HTML - REMOVED to allow RichTextEditor HTML
+    // html = html.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
     // Code blocks
     html = html.replace(/```([\s\S]*?)```/g, "<pre><code>$1</code></pre>");

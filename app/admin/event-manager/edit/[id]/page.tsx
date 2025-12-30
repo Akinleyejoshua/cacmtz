@@ -6,6 +6,7 @@ import AdminTopNav from "../../../../components/admin-top-nav";
 import styles from "./page.module.css";
 import { useEventManager } from "@/app/hooks/use-event-manager";
 import request from "@/app/utils/axios";
+import RichTextEditor from "@/app/components/rich-text-editor";
 
 
 interface PageProps {
@@ -216,14 +217,10 @@ export default function EditEventPage({ }: PageProps) {
             <label htmlFor="description" className={styles.label}>
               Description
             </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description || ""}
-              onChange={handleChange}
-              placeholder="Enter event description"
-              rows={4}
-              className={styles.textarea}
+            <RichTextEditor
+              content={formData.description || ""}
+              onChange={(content: string) => setFormData((prev: any) => ({ ...prev, description: content }))}
+              initialContent={formData.description || ""}
             />
           </div>
 

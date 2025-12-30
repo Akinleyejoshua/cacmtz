@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import AdminTopNav from "../../../components/admin-top-nav";
 import styles from "./page.module.css";
 import { useEventManager } from "@/app/hooks/use-event-manager";
+import RichTextEditor from "@/app/components/rich-text-editor";
 
 
 export default function CreateEventPage() {
@@ -70,13 +71,10 @@ export default function CreateEventPage() {
             <label htmlFor="description" className={styles.label}>
               Description
             </label>
-            <textarea
-              id="description"
-              name="description"
-              onChange={handleChange}
-              placeholder="Enter event description"
-              rows={4}
-              className={styles.textarea}
+            <RichTextEditor
+              content={formData.description}
+              onChange={(content: string) => setFormData((prev: any) => ({ ...prev, description: content }))}
+              initialContent={formData.description}
             />
           </div>
 

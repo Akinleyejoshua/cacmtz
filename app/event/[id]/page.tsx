@@ -121,7 +121,7 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
                 {/* Ministers */}
                 {event.eventMinisters && event.eventMinisters.length > 0 && (
                     <section className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Guest Ministers</h2>
+                        <h2 className={styles.sectionTitle}>Ministers</h2>
                         <div className={styles.ministersGrid}>
                             {event.eventMinisters.map((minister: any) => (
                                 <div key={minister._id} className={styles.ministerCard}>

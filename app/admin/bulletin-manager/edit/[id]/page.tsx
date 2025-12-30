@@ -7,7 +7,7 @@ import styles from "../../page.module.css";
 import request from "@/app/utils/axios";
 import LoadingSpinner from "@/app/components/loading-spinner";
 
-import Editor from "@/app/components/editor";
+import RichTextEditor from "@/app/components/rich-text-editor";
 
 export default function EditBulletinPage({ params }: { params: { id: string } }) {
   const router = useRouter();
@@ -145,11 +145,10 @@ export default function EditBulletinPage({ params }: { params: { id: string } })
 
             <div className={styles.formGroup}>
               <label className={styles.label}>Description</label>
-              <Editor
-                placeholder="Enter bulletin description..."
-                defaultValue={formData.description}
-                onContentChange={handleEditorChange}
-                height="300px"
+              <RichTextEditor
+                content={formData.description}
+                onChange={handleEditorChange}
+                initialContent={formData.description}
               />
             </div>
 

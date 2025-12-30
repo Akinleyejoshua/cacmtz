@@ -6,6 +6,7 @@ import AdminTopNav from "../../../../components/admin-top-nav";
 import styles from "./page.module.css";
 import request from "@/app/utils/axios";
 import LoadingSpinner from "@/app/components/loading-spinner";
+import RichTextEditor from "@/app/components/rich-text-editor";
 
 export default function EditSermonPage() {
   const router = useRouter();
@@ -269,14 +270,10 @@ export default function EditSermonPage() {
             <label htmlFor="description" className={styles.label}>
               Description <span className={styles.required}>*</span>
             </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Brief description of the sermon..."
-              className={`${styles.textarea} ${errors.description ? styles.inputError : ""}`}
-              rows={4}
+            <RichTextEditor
+              content={formData.description}
+              onChange={(content: string) => setFormData((prev: any) => ({ ...prev, description: content }))}
+              initialContent={formData.description}
             />
             {errors.description && <span className={styles.errorText}>{errors.description}</span>}
           </div>

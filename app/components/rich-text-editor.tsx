@@ -1,5 +1,4 @@
-'use client';
-
+// ... (imports remain mostly same, adding MdAudiotrack)
 import { useRef, useEffect, useState, useCallback } from 'react';
 import {
     MdFormatBold,
@@ -25,6 +24,7 @@ import {
     MdSubscript,
     MdSuperscript,
     MdVideoLibrary,
+    MdAudiotrack,
     MdPreview,
     MdEdit,
     MdClose,
@@ -42,7 +42,7 @@ interface RichTextEditorProps {
 }
 
 const headingOptions = [
-    { label: 'Paragraph', value: 'p' },
+    { label: 'Normal', value: 'p' },
     { label: 'Heading 1', value: 'h1' },
     { label: 'Heading 2', value: 'h2' },
     { label: 'Heading 3', value: 'h3' },
@@ -51,6 +51,18 @@ const headingOptions = [
 
 const fontSizes = ['10px', '12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px'];
 
+const fontFamilies = [
+    { label: 'Default', value: 'inherit' },
+    { label: 'Arial', value: 'Arial, sans-serif' },
+    { label: 'Times New Roman', value: '"Times New Roman", serif' },
+    { label: 'Courier New', value: '"Courier New", monospace' },
+    { label: 'Georgia', value: 'Georgia, serif' },
+    { label: 'Verdana', value: 'Verdana, sans-serif' },
+    { label: 'Tahoma', value: 'Tahoma, sans-serif' },
+    { label: 'Trebuchet MS', value: '"Trebuchet MS", sans-serif' },
+    { label: 'Impact', value: 'Impact, sans-serif' },
+];
+
 export default function RichTextEditor({
     content,
     onChange,
@@ -58,14 +70,15 @@ export default function RichTextEditor({
     showVariables = false,
     initialContent = '',
     templateVariables = [],
-}: RichTextEditorProps) {
+}: any) {
     const contentEditableRef = useRef<HTMLDivElement>(null);
     const [currentHeading, setCurrentHeading] = useState('p');
     const [currentFontSize, setCurrentFontSize] = useState('16px');
+    const [currentFontFamily, setCurrentFontFamily] = useState('inherit');
     const [showPreview, setShowPreview] = useState(false);
     const [showLinkModal, setShowLinkModal] = useState(false);
     const [showMediaModal, setShowMediaModal] = useState(false);
-    const [mediaType, setMediaType] = useState<'image' | 'video'>('image');
+    const [mediaType, setMediaType] = useState<'image' | 'video' | 'audio'>('image');
     const [linkUrl, setLinkUrl] = useState('');
     const [linkText, setLinkText] = useState('');
     const [mediaUrl, setMediaUrl] = useState('');
@@ -138,6 +151,35 @@ export default function RichTextEditor({
         onChange(e.currentTarget.innerHTML);
     };
 
+    const handlePaste = (e: React.ClipboardEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        const text = e.clipboardData.getData('text/plain');
+        const html = e.clipboardData.getData('text/html');
+
+        let cleanHtml = '';
+
+        if (html) {
+            // Very basic cleanup of MS Word garbage (this is a simplified approach)
+            cleanHtml = html
+                .replace(/class="Mso[^"]*"/g, '')
+                .replace(/style="[^"]*mso-[^"]*"/g, '')
+                .replace(/<!--[\s\S]*?-->/g, ''); // Remove comments
+        } else if (text) {
+            // Check for URL
+            const urlRegex = /^(http|https):\/\/[^ "]+$/;
+            if (urlRegex.test(text)) {
+                cleanHtml = `<a href="${text}" target="_blank" rel="noopener noreferrer">${text}</a>`;
+            } else {
+                // Convert newlines to breaks
+                cleanHtml = text.replace(/\n/g, '<br>');
+            }
+        }
+
+        document.execCommand('insertHTML', false, cleanHtml);
+        onChange(e.currentTarget.innerHTML);
+    };
+
+
     // Handle keyboard shortcuts
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         // Ctrl/Cmd + B = Bold
@@ -183,12 +225,23 @@ export default function RichTextEditor({
 
     const handleFontSizeChange = (size: string) => {
         setCurrentFontSize(size);
+        // Use a temporary font size to find the element, then apply inline style
         document.execCommand('fontSize', false, '7');
         const fontElements = contentEditableRef.current?.querySelectorAll('font[size="7"]');
         fontElements?.forEach((element) => {
             element.removeAttribute('size');
             (element as HTMLElement).style.fontSize = size;
         });
+        if (contentEditableRef.current) {
+            onChange(contentEditableRef.current.innerHTML);
+        }
+    };
+
+    const handleFontFamilyChange = (font: string) => {
+        setCurrentFontFamily(font);
+        document.execCommand('fontName', false, font);
+        // Modern browsers like Chrome might use <font face="">. We can try to standardize if needed, 
+        // but execCommand fontName usually works for simple cases. 
         if (contentEditableRef.current) {
             onChange(contentEditableRef.current.innerHTML);
         }
@@ -261,7 +314,7 @@ export default function RichTextEditor({
     };
 
     // Media insertion with modal
-    const openMediaModal = (type: 'image' | 'video') => {
+    const openMediaModal = (type: 'image' | 'video' | 'audio') => {
         saveSelection();
         setMediaType(type);
         setMediaUrl('');
@@ -281,18 +334,29 @@ export default function RichTextEditor({
             const range = selection.getRangeAt(0);
             range.deleteContents();
 
+            const container = document.createElement('div');
+            container.style.margin = '1rem 0';
+            container.contentEditable = 'false'; // Wrapper is not editable
+
             if (mediaType === 'image') {
                 const img = document.createElement('img');
                 img.src = mediaUrl;
                 img.alt = mediaAlt || 'Image';
                 img.style.maxWidth = mediaWidth;
                 img.style.height = 'auto';
+                img.style.borderRadius = '8px';
                 img.style.display = 'block';
-                img.style.margin = '1rem auto';
-                range.insertNode(img);
-                range.setStartAfter(img);
+                img.style.margin = '0 auto';
+                container.appendChild(img);
+            } else if (mediaType === 'audio') {
+                const audio = document.createElement('audio');
+                audio.src = mediaUrl;
+                audio.controls = true;
+                audio.style.width = '100%';
+                audio.style.marginTop = '0.5rem';
+                container.appendChild(audio);
             } else {
-                // Video - create iframe for YouTube/Vimeo or video element
+                // Video
                 const isYouTube = mediaUrl.includes('youtube.com') || mediaUrl.includes('youtu.be');
                 const isVimeo = mediaUrl.includes('vimeo.com');
 
@@ -301,23 +365,24 @@ export default function RichTextEditor({
                     let embedUrl = mediaUrl;
 
                     if (isYouTube) {
-                        const videoId = mediaUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/)?.[1];
-                        embedUrl = `https://www.youtube.com/embed/${videoId}`;
+                        // Improved regex for YouTube
+                        const videoIdMatch = mediaUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+                        const videoId = videoIdMatch ? videoIdMatch[1] : null;
+                        if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}`;
                     } else if (isVimeo) {
                         const videoId = mediaUrl.match(/vimeo\.com\/(\d+)/)?.[1];
-                        embedUrl = `https://player.vimeo.com/video/${videoId}`;
+                        if (videoId) embedUrl = `https://player.vimeo.com/video/${videoId}`;
                     }
 
                     iframe.src = embedUrl;
-                    iframe.width = '560';
+                    iframe.width = '100%';
                     iframe.height = '315';
                     iframe.style.maxWidth = mediaWidth;
                     iframe.style.display = 'block';
-                    iframe.style.margin = '1rem auto';
+                    iframe.style.margin = '0 auto';
                     iframe.allowFullscreen = true;
                     iframe.frameBorder = '0';
-                    range.insertNode(iframe);
-                    range.setStartAfter(iframe);
+                    container.appendChild(iframe);
                 } else {
                     const video = document.createElement('video');
                     video.src = mediaUrl;
@@ -325,11 +390,20 @@ export default function RichTextEditor({
                     video.style.maxWidth = mediaWidth;
                     video.style.height = 'auto';
                     video.style.display = 'block';
-                    video.style.margin = '1rem auto';
-                    range.insertNode(video);
-                    range.setStartAfter(video);
+                    video.style.margin = '0 auto';
+                    container.appendChild(video);
                 }
             }
+
+            range.insertNode(container);
+            // Insert a paragraph after so user can continue typing
+            const p = document.createElement('p');
+            p.innerHTML = '<br>';
+            range.setStartAfter(container);
+            range.insertNode(p);
+
+            range.setStart(p, 0);
+            range.setEnd(p, 0);
 
             selection.removeAllRanges();
             selection.addRange(range);
@@ -378,7 +452,7 @@ export default function RichTextEditor({
                 {!isReadOnly && (
                     <>
                         <div className={styles.editorToolbar}>
-                            {/* Heading & Font Size */}
+                            {/* Heading, Font Size, Font Family */}
                             <select
                                 className={styles.toolSelect}
                                 value={currentHeading}
@@ -394,9 +468,24 @@ export default function RichTextEditor({
 
                             <select
                                 className={styles.toolSelect}
+                                value={currentFontFamily}
+                                onChange={(e) => handleFontFamilyChange(e.target.value)}
+                                title="Font Family"
+                                style={{ width: '120px' }}
+                            >
+                                {fontFamilies.map((font) => (
+                                    <option key={font.value} value={font.value}>
+                                        {font.label}
+                                    </option>
+                                ))}
+                            </select>
+
+                            <select
+                                className={styles.toolSelect}
                                 value={currentFontSize}
                                 onChange={(e) => handleFontSizeChange(e.target.value)}
                                 title="Font Size"
+                                style={{ width: '70px' }}
                             >
                                 {fontSizes.map((size) => (
                                     <option key={size} value={size}>
@@ -481,6 +570,9 @@ export default function RichTextEditor({
                             <button type="button" className={styles.toolButton} onClick={() => openMediaModal('video')} title="Insert Video">
                                 <MdVideoLibrary />
                             </button>
+                            <button type="button" className={styles.toolButton} onClick={() => openMediaModal('audio')} title="Insert Audio">
+                                <MdAudiotrack />
+                            </button>
                             <button type="button" className={styles.toolButton} onClick={() => execCommand('formatBlock', '<blockquote>')} title="Quote">
                                 <MdFormatQuote />
                             </button>
@@ -525,37 +617,9 @@ export default function RichTextEditor({
                     suppressContentEditableWarning
                     onInput={handleInput}
                     onKeyDown={handleKeyDown}
-                    data-placeholder="Start typing your content here..."
+                    onPaste={handlePaste}
+                    data-placeholder="Start typing your content here... (Paste URLs to auto-link)"
                 />
-                {/* Editor / Preview Toggle */}
-                {/* {showPreview ? (
-                    <div className={styles.previewContainer}>
-                        <div className={styles.previewHeader}>
-                            <span>Preview</span>
-                            <button
-                                type="button"
-                                className={styles.closePreview}
-                                onClick={() => setShowPreview(false)}
-                            >
-                                <MdEdit /> Edit
-                            </button>
-                        </div>
-                        <div
-                            className={styles.preview}
-                            dangerouslySetInnerHTML={{ __html: content }}
-                        />
-                    </div>
-                ) : (
-                    <div
-                        ref={contentEditableRef}
-                        className={styles.editor}
-                        contentEditable={!isReadOnly}
-                        suppressContentEditableWarning
-                        onInput={handleInput}
-                        onKeyDown={handleKeyDown}
-                        data-placeholder="Start typing your content here..."
-                    />
-                )} */}
             </div>
 
             {/* Link Modal */}
@@ -607,25 +671,30 @@ export default function RichTextEditor({
                 <div className={styles.modalOverlay} onClick={() => setShowMediaModal(false)}>
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
                         <div className={styles.modalHeader}>
-                            <h3>Insert {mediaType === 'image' ? 'Image' : 'Video'}</h3>
+                            <h3>Insert {mediaType === 'image' ? 'Image' : mediaType === 'video' ? 'Video' : 'Audio'}</h3>
                             <button type="button" onClick={() => setShowMediaModal(false)}>
                                 <MdClose />
                             </button>
                         </div>
                         <div className={styles.modalBody}>
                             <div className={styles.formGroup}>
-                                <label>{mediaType === 'image' ? 'Image' : 'Video'} URL</label>
+                                <label>{mediaType === 'image' ? 'Image' : mediaType === 'video' ? 'Video' : 'Audio'} URL</label>
                                 <input
                                     type="url"
-                                    placeholder={mediaType === 'image'
-                                        ? 'https://example.com/image.jpg'
-                                        : 'https://youtube.com/watch?v=... or https://vimeo.com/...'}
+                                    placeholder={
+                                        mediaType === 'image' ? 'https://example.com/image.jpg' :
+                                            mediaType === 'video' ? 'https://youtube.com/watch?v=...' :
+                                                'https://example.com/audio.mp3'
+                                    }
                                     value={mediaUrl}
                                     onChange={(e) => setMediaUrl(e.target.value)}
                                     autoFocus
                                 />
                                 {mediaType === 'video' && (
                                     <span className={styles.hint}>Supports YouTube, Vimeo, or direct video URLs</span>
+                                )}
+                                {mediaType === 'audio' && (
+                                    <span className={styles.hint}>Supports MP3, WAV, OGG URLs</span>
                                 )}
                             </div>
                             {mediaType === 'image' && (
@@ -639,18 +708,20 @@ export default function RichTextEditor({
                                     />
                                 </div>
                             )}
-                            <div className={styles.formGroup}>
-                                <label>Max Width</label>
-                                <select
-                                    value={mediaWidth}
-                                    onChange={(e) => setMediaWidth(e.target.value)}
-                                >
-                                    <option value="100%">Full Width (100%)</option>
-                                    <option value="75%">Large (75%)</option>
-                                    <option value="50%">Medium (50%)</option>
-                                    <option value="25%">Small (25%)</option>
-                                </select>
-                            </div>
+                            {mediaType !== 'audio' && (
+                                <div className={styles.formGroup}>
+                                    <label>Max Width</label>
+                                    <select
+                                        value={mediaWidth}
+                                        onChange={(e) => setMediaWidth(e.target.value)}
+                                    >
+                                        <option value="100%">Full Width (100%)</option>
+                                        <option value="75%">Large (75%)</option>
+                                        <option value="50%">Medium (50%)</option>
+                                        <option value="25%">Small (25%)</option>
+                                    </select>
+                                </div>
+                            )}
                             {mediaUrl && mediaType === 'image' && (
                                 <div className={styles.mediaPreview}>
                                     <label>Preview:</label>
@@ -663,7 +734,7 @@ export default function RichTextEditor({
                                 Cancel
                             </button>
                             <button type="button" className={styles.insertBtn} onClick={insertMedia} disabled={!mediaUrl}>
-                                <MdCheck /> Insert {mediaType === 'image' ? 'Image' : 'Video'}
+                                <MdCheck /> Insert {mediaType.charAt(0).toUpperCase() + mediaType.slice(1)}
                             </button>
                         </div>
                     </div>

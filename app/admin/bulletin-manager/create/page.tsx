@@ -6,7 +6,7 @@ import AdminTopNav from "../../../components/admin-top-nav";
 import styles from "../page.module.css";
 import request from "@/app/utils/axios";
 
-import Editor from "../../../components/editor";
+import RichTextEditor from "../../../components/rich-text-editor";
 
 export default function CreateBulletinPage() {
   const router = useRouter();
@@ -108,11 +108,10 @@ export default function CreateBulletinPage() {
 
             <div className={styles.formGroup}>
               <label className={styles.label}>Description</label>
-              <Editor
-                placeholder="Enter bulletin description..."
-                defaultValue={formData.description}
-                onContentChange={handleEditorChange}
-                height="300px"
+              <RichTextEditor
+                content={formData.description}
+                onChange={handleEditorChange}
+                initialContent={formData.description}
               />
             </div>
 
