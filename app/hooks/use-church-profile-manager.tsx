@@ -17,10 +17,18 @@ export const useChurchProfileManager = () => {
     // ====================================== VIEWS
 
     const [profiles, setProfiles] = useState<Profile[]>([]);
+    const [fetchingProfiles, setFetchingProfiles] = useState(true);
 
     const get_church_profiles = async () => {
-        const res_data = await request.get("/get-church-profiles");
-        setProfiles(res_data.data)
+        setFetchingProfiles(true);
+        try {
+            const res_data = await request.get("/get-church-profiles");
+            setProfiles(res_data.data);
+        } catch (error) {
+            console.error("Error fetching profiles:", error);
+        } finally {
+            setFetchingProfiles(false);
+        }
     }
 
     useEffect(() => {
@@ -172,12 +180,12 @@ export const useChurchProfileManager = () => {
 
     // ================================ DEL =========================
 
-       const del_church_profile = async (id: any) => {
+    const del_church_profile = async (id: any) => {
         const res: any = await request.post("/del-church-profile", { id });
         get_church_profiles();
     }
 
-    
+
 
     return {
         profiles, setProfiles,
@@ -199,5 +207,6 @@ export const useChurchProfileManager = () => {
 
         del_church_profile,
         get_church_profiles,
+        fetchingProfiles,
     }
 }

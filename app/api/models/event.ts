@@ -7,6 +7,7 @@ export interface IEvent extends Document {
   location: string;
   date: string;
   time: string;
+  endTime: string;
   createdAt: Date;
   updatedAt: Date;
   duration: string;
@@ -36,6 +37,7 @@ const EventSchema: Schema<IEvent> = new Schema({
   location: { type: String, required: true },
   date: { type: String, required: true },
   time: { type: String, required: true },
+  endTime: { type: String, required: false },
   duration: { type: String, required: true },
   liveLink: { type: String, required: false },
   isLive: { type: Boolean, required: false },

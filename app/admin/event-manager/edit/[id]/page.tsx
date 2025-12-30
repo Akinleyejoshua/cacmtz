@@ -7,6 +7,7 @@ import styles from "./page.module.css";
 import { useEventManager } from "@/app/hooks/use-event-manager";
 import request from "@/app/utils/axios";
 import RichTextEditor from "@/app/components/rich-text-editor";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 
 interface PageProps {
@@ -29,29 +30,44 @@ export default function EditEventPage({ }: PageProps) {
 
 
   const get_events = async () => {
-    const res: any = await request.post("/get-event", { id: id });
-    let res_data = res.data;
+    setFetchingEvent(true);
+    try {
+      const res: any = await request.post("/get-event", { id: id });
+      let res_data = res.data;
 
-    // Normalize eventMinisters to IDs if they are populated objects
-    if (Array.isArray(res_data.eventMinisters) && res_data.eventMinisters.length > 0 && typeof res_data.eventMinisters[0] === 'object') {
-      res_data.eventMinisters = res_data.eventMinisters.map((m: any) => m._id);
+      if (!res_data) {
+        setNotFound(true);
+        return;
+      }
+
+      // Normalize eventMinisters to IDs if they are populated objects
+      if (Array.isArray(res_data.eventMinisters) && res_data.eventMinisters.length > 0 && typeof res_data.eventMinisters[0] === 'object') {
+        res_data.eventMinisters = res_data.eventMinisters.map((m: any) => m._id);
+      }
+
+      // Normalize bulletinId to ID if it is a populated object
+      if (res_data.bulletinId && typeof res_data.bulletinId === 'object') {
+        res_data.bulletinId = res_data.bulletinId._id;
+      }
+
+      setFormData(res_data);
+    } catch (error) {
+      console.error("Error fetching event:", error);
+      setNotFound(true);
+    } finally {
+      setFetchingEvent(false);
     }
-
-    // Normalize bulletinId to ID if it is a populated object
-    if (res_data.bulletinId && typeof res_data.bulletinId === 'object') {
-      res_data.bulletinId = res_data.bulletinId._id;
-    }
-
-    setFormData(res_data)
   }
 
   useEffect(() => {
     get_events();
-  }, [eventData])
+  }, [id])
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [fetchingEvent, setFetchingEvent] = useState(true);
+  const [notFound, setNotFound] = useState(false);
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -164,16 +180,30 @@ export default function EditEventPage({ }: PageProps) {
     return `${hours}:${minutes}`;
   };
 
-  if (!eventData) {
+  if (fetchingEvent) {
     return (
       <div className={styles.page}>
+        <AdminTopNav />
         <div className={styles.header}>
-          <h1 className={styles.pageTitle}>Event Not Found</h1>
-          <p className={styles.subtitle}>The event you're trying to edit doesn't exist.</p>
+          <div className={styles.loadingSpinner}><LoadingSpinner size="medium" /></div>
         </div>
-        <button onClick={handleCancel} className={styles.secondaryBtn}>
-          ← Go Back
-        </button>
+      </div>
+    );
+  }
+
+  if (notFound) {
+    return (
+      <div className={styles.page}>
+        <AdminTopNav />
+        <div className={styles.header}>
+          <div className={styles.titleSection}>
+            <h1 className={styles.pageTitle}>Event Not Found</h1>
+            <p className={styles.subtitle}>The event you're trying to edit doesn't exist.</p>
+            <button style={{ width: "max-content", marginTop: "1rem" }} onClick={handleCancel} className={styles.secondaryBtn}>
+              Go Back
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

@@ -224,6 +224,13 @@ export const useEventManager = () => {
                 ...prev,
                 time: `${hours}:${minutes}`,
             }));
+        } else if (name === "endTime") {
+            const [hours, minutes] = value.split(":");
+
+            setFormData((prev: any) => ({
+                ...prev,
+                endTime: `${hours}:${minutes}`,
+            }));
         } else {
             setFormData((prev) => ({
                 ...prev,

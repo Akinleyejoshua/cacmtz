@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 import { useChurchProfileManager } from "@/app/hooks/use-church-profile-manager";
 import request from "@/app/utils/axios";
 import RichTextEditor from "@/app/components/rich-text-editor";
-import { profile } from "console";
+import LoadingSpinner from "@/app/components/loading-spinner";
 
 type Profile = {
   _id: string;
@@ -26,23 +26,21 @@ interface PageProps {
 export default function EditProfilePage({ }: PageProps) {
   const router = useRouter();
   const { id } = useParams();
-  const { profiles } = useChurchProfileManager();
+  const { profiles, fetchingProfiles } = useChurchProfileManager();
   const profileData: any = profiles.find((item: any) => item._id == id)
 
-
-
-  const [formData, setFormData] = useState<Profile>(
-    profileData || {
-      _id: "",
-      title: "",
-      description: "",
-      content: "",
-    }
-  );
+  const [formData, setFormData] = useState<Profile>({
+    _id: "",
+    title: "",
+    description: "",
+    content: "",
+  });
 
   useEffect(() => {
-    setFormData(profileData)
-  }, [profiles])
+    if (profileData) {
+      setFormData(profileData);
+    }
+  }, [profiles, profileData])
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -120,16 +118,30 @@ export default function EditProfilePage({ }: PageProps) {
     router.back();
   };
 
+  if (fetchingProfiles) {
+    return (
+      <div className={styles.page}>
+        <AdminTopNav />
+        <div className={styles.header}>
+          <div className={styles.loadingSpinner}><LoadingSpinner size="medium" /></div>
+        </div>
+      </div>
+    );
+  }
+
   if (!profileData) {
     return (
       <div className={styles.page}>
+        <AdminTopNav />
         <div className={styles.header}>
-          <h1 className={styles.pageTitle}>Profile Not Found</h1>
-          <p className={styles.subtitle}>The profile you're trying to edit doesn't exist.</p>
+          <div className={styles.titleSection}>
+            <h1 className={styles.pageTitle}>Profile Not Found</h1>
+            <p className={styles.subtitle}>The profile you're trying to edit doesn't exist.</p>
+            <button style={{ width: "max-content", marginTop: "1rem" }} onClick={handleCancel} className={styles.secondaryBtn}>
+              Go Back
+            </button>
+          </div>
         </div>
-        <button onClick={handleCancel} className={styles.secondaryBtn}>
-          ← Go Back
-        </button>
       </div>
     );
   }
