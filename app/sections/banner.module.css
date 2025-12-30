@@ -5,9 +5,25 @@
   border-bottom: 1px solid rgba(107, 70, 193, 0.1);
 }
 
-.liveButton{
-  font-size: 12px;
-  text-decoration: underline;
+.liveButton {
+  display: inline-block;
+  padding: 10px 18px;
+  background-color: var(--button-bg);
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+  transition: all 180ms ease;
+  box-shadow: 0 8px 20px rgba(107, 70, 193, 0.2);
+  width: fit-content;
+  margin-top: 8px;
+}
+
+.liveButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(107, 70, 193, 0.3);
 }
 
 /* News Alert Marquee */

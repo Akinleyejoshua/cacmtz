@@ -2,7 +2,7 @@
   width: 100%;
   padding: 60px 20px;
   background: linear-gradient(180deg, rgba(107, 70, 193, 0.03), rgba(180, 148, 244, 0.02));
-padding-top: 8rem;
+  padding-top: 8rem;
 }
 
 .container {
@@ -92,9 +92,12 @@ padding-top: 8rem;
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -164,12 +167,12 @@ padding-top: 8rem;
 .countdown {
   font-size: 12px;
   font-weight: 700;
-  /* color: rgba(107, 70, 193, 1); */
-  color: white;
-  /* background: rgba(107, 70, 193, 0.15); */
-  background-color: var(--button-bg);
-  padding: 6px 10px;
-  border-radius: 6px;
+  color: var(--primary);
+  /* Using primary color to distinguish */
+  background: transparent;
+  padding: 0;
+  margin-right: auto;
+  /* Push it to the left */
 }
 
 .liveBtn {
