@@ -30,11 +30,18 @@ export const useEventManager = () => {
     // ==================================================== LIST
 
     const [events, setEvents] = useState([]);
+    const [fetchingEvents, setFetchingEvents] = useState(true);
 
     const get_events = async () => {
-        const res: any = await request.get("/get-events");
-        let res_data = res.data;
-        setEvents(res_data);
+        try {
+            const res: any = await request.get("/get-events");
+            let res_data = res.data;
+            setEvents(res_data);
+        } catch (error) {
+            console.error("Error fetching events:", error);
+        } finally {
+            setFetchingEvents(false);
+        }
     }
 
     useEffect(() => {
@@ -317,6 +324,6 @@ export const useEventManager = () => {
         setErrors,
         setFormData,
         del_event,
-
+        fetchingEvents,
     }
 }

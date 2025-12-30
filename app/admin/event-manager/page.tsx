@@ -6,11 +6,14 @@ import styles from "./page.module.css";
 import { useEventManager } from "@/app/hooks/use-event-manager";
 import { convert24hrTo12hr, formatRelativeTime } from "@/app/utils/helpers";
 
+import LoadingSpinner from "@/app/components/loading-spinner";
+
 export default function EventManagerPage() {
   const {
     events, formatDuration,
     getEventStatus, searchQuery, filterStatus, sortBy, setSearchQuery, setFilterStatus, setSortBy,
     del_event,
+    fetchingEvents,
   } = useEventManager();
 
   return (
@@ -78,7 +81,11 @@ export default function EventManagerPage() {
 
       {/* Table Section */}
       <div className={styles.tableWrapper}>
-        {events.length > 0 ? (
+        {fetchingEvents ? (
+          <div style={{ display: "flex", justifyContent: "center", padding: "4rem" }}>
+            <LoadingSpinner size="medium" />
+          </div>
+        ) : events.length > 0 ? (
           <table className={styles.table}>
             <thead>
               <tr>
