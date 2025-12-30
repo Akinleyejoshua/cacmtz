@@ -58,7 +58,11 @@ export const useEventManager = () => {
                 request.get("/ministers"), // Assuming this endpoint exists or will exist
                 request.get("/bulletins")  // Assuming this endpoint exists or will exist
             ]);
-            setMinisters((ministersRes as any).data || []);
+            const rawMinisters = (ministersRes as any).data || [];
+            // Remove duplicates based on _id
+            const uniqueMinisters = Array.from(new Map(rawMinisters.map((m: any) => [m._id, m])).values());
+
+            setMinisters(uniqueMinisters as any);
             setBulletins((bulletinsRes as any).data || []);
         } catch (error) {
             console.error("Error fetching dependencies:", error);

@@ -31,6 +31,12 @@ export default function EditEventPage({ }: PageProps) {
   const get_events = async () => {
     const res: any = await request.post("/get-event", { id: id });
     let res_data = res.data;
+
+    // Normalize eventMinisters to IDs if they are populated objects
+    if (Array.isArray(res_data.eventMinisters) && res_data.eventMinisters.length > 0 && typeof res_data.eventMinisters[0] === 'object') {
+      res_data.eventMinisters = res_data.eventMinisters.map((m: any) => m._id);
+    }
+
     setFormData(res_data)
   }
 
