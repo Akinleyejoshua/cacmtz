@@ -42,15 +42,15 @@ export const metadata: Metadata = {
     locale: 'en_NG',
     type: 'website',
 
-    // images: [
-    //   {
-    //     url: 'https://cacmtz.vercel.app/src/img/brand/logo.jpg',
-    //     width: 1200,
-    //     height: 630,
-    //     alt: 'CAC Mount Zion Kingdom Zone Head Quarters Logo',
-    //   },
-    // ],
-    images: "https://cacmtz.vercel.app/src/img/brand/logo.jpg"
+    images: [
+      {
+        url: 'https://cacmtz.vercel.app/src/img/brand/logo.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'CAC Mount Zion Kingdom Zone Head Quarters Logo',
+      },
+    ],
+    
   },
   twitter: {
     card: 'summary_large_image',
