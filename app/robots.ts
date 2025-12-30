@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/admin/', // Disallow crawling admin pages
         },
-        sitemap: 'https://cacmtz.org/sitemap.xml',
+        sitemap: 'https://cacmtz.vercel.app/sitemap.xml',
     }
 }
