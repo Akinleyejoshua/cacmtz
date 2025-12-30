@@ -143,7 +143,7 @@ export default function GeneralSettingsPage() {
         <div className={styles.container}>
           <div className={styles.header}>
             <h1 className={styles.title}>General</h1>
-            <p className={styles.subtitle}><LoadingSpinner size="small" /></p>
+            <div className={styles.subtitle}><LoadingSpinner size="small" /></div>
           </div>
         </div>
       </div>
