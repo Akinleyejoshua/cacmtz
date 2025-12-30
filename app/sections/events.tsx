@@ -106,11 +106,18 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                           ? formatRelativeTime(getNextOccurrence(event))
                           : formatRelativeTime(new Date(event.date))}
                       </div>
-                      {event.liveLink && (
-                        <Link href={event.liveLink} className={styles.liveBtn}>
-                          {event.isLive ? "Join Live" : "Learn More"}
-                        </Link>
-                      )}
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        {event.isPublicDetailedView && (
+                          <Link href={`/event/${event._id}`} className={styles.liveBtn}>
+                            See More
+                          </Link>
+                        )}
+                        {event.liveLink && (
+                          <Link href={event.liveLink} className={styles.liveBtn}>
+                            {event.isLive ? "Join Live" : "Learn More"}
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </article>

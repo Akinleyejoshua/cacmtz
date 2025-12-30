@@ -22,6 +22,11 @@ export interface IEvent extends Document {
   recurrenceDays: number[]; // 0-6 for Sunday-Saturday (used for weekly)
   recurrenceEndDate: string;
   recurrenceCount: number;
+
+  // Detailed View Fields
+  eventMinisters: Schema.Types.ObjectId[];
+  bulletinId: Schema.Types.ObjectId;
+  isPublicDetailedView: boolean;
 }
 
 // 2. Define the Mongoose Schema
@@ -43,6 +48,11 @@ const EventSchema: Schema<IEvent> = new Schema({
   recurrenceDays: { type: [Number], default: [] }, // For weekly: days of week (0=Sunday, 6=Saturday)
   recurrenceEndDate: { type: String, required: false }, // When recurrence ends
   recurrenceCount: { type: Number, required: false }, // Number of occurrences (alternative to endDate)
+
+  // Detailed View Fields
+  eventMinisters: [{ type: Schema.Types.ObjectId, ref: 'Minister' }],
+  bulletinId: { type: Schema.Types.ObjectId, ref: 'Bulletin' },
+  isPublicDetailedView: { type: Boolean, default: false },
 });
 // 3. Create/Retrieve the Mongoose Model
 // This check prevents the "OverwriteModelError" in Next.js

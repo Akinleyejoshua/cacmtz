@@ -22,6 +22,10 @@ type Event = {
     recurrenceDays?: number[]; // 0-6 for Sunday-Saturday
     recurrenceEndDate?: string;
     recurrenceCount?: number;
+    // Detailed View
+    eventMinisters?: string[];
+    bulletinId?: string;
+    isPublicDetailedView?: boolean;
 };
 
 export const useEventManager = () => {
@@ -31,6 +35,9 @@ export const useEventManager = () => {
 
     const [events, setEvents] = useState([]);
     const [fetchingEvents, setFetchingEvents] = useState(true);
+    const [ministers, setMinisters] = useState([]);
+    const [bulletins, setBulletins] = useState([]);
+    const [fetchingDependencies, setFetchingDependencies] = useState(false);
 
     const get_events = async () => {
         try {
@@ -44,8 +51,25 @@ export const useEventManager = () => {
         }
     }
 
+    const get_dependencies = async () => {
+        setFetchingDependencies(true);
+        try {
+            const [ministersRes, bulletinsRes] = await Promise.all([
+                request.get("/ministers"), // Assuming this endpoint exists or will exist
+                request.get("/bulletins")  // Assuming this endpoint exists or will exist
+            ]);
+            setMinisters((ministersRes as any).data || []);
+            setBulletins((bulletinsRes as any).data || []);
+        } catch (error) {
+            console.error("Error fetching dependencies:", error);
+        } finally {
+            setFetchingDependencies(false);
+        }
+    }
+
     useEffect(() => {
         get_events();
+        get_dependencies();
     }, [])
 
     function formatDate(date: Date): string {
@@ -128,7 +152,11 @@ export const useEventManager = () => {
         recurrenceInterval: 1,
         recurrenceDays: [],
         recurrenceEndDate: "",
-        recurrenceCount: undefined
+        recurrenceCount: undefined,
+        // Detailed View
+        eventMinisters: [],
+        bulletinId: "",
+        isPublicDetailedView: false,
     });
 
     const [errors, setErrors] = useState<Record<string, string>>({});
@@ -232,7 +260,11 @@ export const useEventManager = () => {
                 recurrenceInterval: formData.recurrenceInterval,
                 recurrenceDays: formData.recurrenceDays,
                 recurrenceEndDate: formData.recurrenceEndDate,
-                recurrenceCount: formData.recurrenceCount
+                recurrenceCount: formData.recurrenceCount,
+                // Detailed View
+                eventMinisters: formData.eventMinisters,
+                bulletinId: formData.bulletinId,
+                isPublicDetailedView: formData.isPublicDetailedView,
             })
 
             setSuccess(true);
@@ -325,5 +357,8 @@ export const useEventManager = () => {
         setFormData,
         del_event,
         fetchingEvents,
+        ministers,
+        bulletins,
+        fetchingDependencies,
     }
 }

@@ -1,4 +1,6 @@
 import Event from "../models/event";
+import "../models/minister";
+import "../models/bulletin";
 import dbConnect from "../db";
 dbConnect();
 
@@ -13,7 +15,7 @@ class EventService {
     }
 
     get_event = async (id: string) => {
-        return await Event.findById(id);
+        return await Event.findById(id).populate('eventMinisters').populate('bulletinId').lean();
     }
 
     update_event = async (id: string, data: any) => {

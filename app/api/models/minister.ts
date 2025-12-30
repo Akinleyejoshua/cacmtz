@@ -15,6 +15,8 @@ export interface IMinister extends Document {
         linkedin?: string;
     };
     displayOrder: number;
+    type: 'regular' | 'guest';
+    isVisible: boolean;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -35,6 +37,8 @@ const MinisterSchema: Schema = new Schema(
             linkedin: { type: String },
         },
         displayOrder: { type: Number, default: 0 },
+        type: { type: String, enum: ['regular', 'guest'], default: 'regular' },
+        isVisible: { type: Boolean, default: true },
     },
     {
         timestamps: true,

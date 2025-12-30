@@ -18,6 +18,8 @@ export default function CreateEventPage() {
     success,
     setFormData,
     state,
+    ministers,
+    bulletins,
   } = useEventManager()
   return (
     <div className={styles.page}>
@@ -346,6 +348,98 @@ export default function CreateEventPage() {
                   className={styles.input}
                 />
                 <p className={styles.helperText}>Alternative to end date - stop after X occurrences</p>
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Detailed View Settings */}
+        <div className={styles.formSection}>
+          <h2 className={styles.sectionTitle}>Detailed View Settings</h2>
+
+          {/* Public Detailed View Toggle */}
+          <div className={styles.checkboxGroup}>
+            <input
+              type="checkbox"
+              id="isPublicDetailedView"
+              name="isPublicDetailedView"
+              checked={formData.isPublicDetailedView || false}
+              onChange={handleChange}
+              className={styles.checkbox}
+            />
+            <label htmlFor="isPublicDetailedView" className={styles.checkboxLabel}>
+              Enable Public Detailed Page
+            </label>
+            <p className={styles.helperText} style={{ marginLeft: '28px' }}>
+              If enabled, a detailed page with ministers and bulletin info will be accessible publicly.
+            </p>
+          </div>
+
+          {formData.isPublicDetailedView && (
+            <>
+              {/* Event Ministers */}
+              <div className={styles.formGroup}>
+                <label htmlFor="eventMinisters" className={styles.label}>
+                  Select Ministers
+                </label>
+                <div style={{ maxHeight: '200px', overflowY: 'auto', border: '1px solid #ccc', padding: '10px', borderRadius: '4px' }}>
+                  {ministers.length > 0 ? (
+                    ministers.map((minister: any) => (
+                      <div key={minister._id} style={{ display: 'flex', alignItems: 'center', marginBottom: '8px' }}>
+                        <input
+                          type="checkbox"
+                          id={`minister-${minister._id}`}
+                          value={minister._id}
+                          checked={(formData.eventMinisters || []).includes(minister._id)}
+                          onChange={(e) => {
+                            const selected = formData.eventMinisters || [];
+                            if (e.target.checked) {
+                              setFormData((prev: any) => ({
+                                ...prev,
+                                eventMinisters: [...selected, minister._id]
+                              }));
+                            } else {
+                              setFormData((prev: any) => ({
+                                ...prev,
+                                eventMinisters: selected.filter((id: string) => id !== minister._id)
+                              }));
+                            }
+                          }}
+                          style={{ marginRight: '10px' }}
+                        />
+                        <label htmlFor={`minister-${minister._id}`} style={{ cursor: 'pointer' }}>
+                          {minister.name} ({minister.position})
+                        </label>
+                      </div>
+                    ))
+                  ) : (
+                    <p style={{ color: '#666', fontStyle: 'italic' }}>No ministers available. Add ministers in Minister Manager.</p>
+                  )}
+                </div>
+              </div>
+
+              {/* Bulletin Selection */}
+              <div className={styles.formGroup}>
+                <label htmlFor="bulletinId" className={styles.label}>
+                  Link Bulletin
+                </label>
+                <select
+                  id="bulletinId"
+                  name="bulletinId"
+                  value={formData.bulletinId || ""}
+                  onChange={handleChange}
+                  className={styles.input}
+                >
+                  <option value="">-- Select a Bulletin --</option>
+                  {bulletins.map((bulletin: any) => (
+                    <option key={bulletin._id} value={bulletin._id}>
+                      {bulletin.title} ({new Date(bulletin.date).toLocaleDateString()})
+                    </option>
+                  ))}
+                </select>
+                <p className={styles.helperText}>
+                  Select a bulletin to display its description and download link on the event page.
+                </p>
               </div>
             </>
           )}

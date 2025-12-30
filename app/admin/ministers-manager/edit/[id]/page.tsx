@@ -21,6 +21,8 @@ export default function EditMinisterPage() {
         bio: "",
         image: "",
         displayOrder: 0,
+        type: "regular",
+        isVisible: true,
         socialLinks: {
             facebook: "",
             twitter: "",
@@ -55,6 +57,8 @@ export default function EditMinisterPage() {
                     bio: minister.bio || "",
                     image: minister.image || "",
                     displayOrder: minister.displayOrder || 0,
+                    type: minister.type || "regular",
+                    isVisible: minister.isVisible !== undefined ? minister.isVisible : true,
                     socialLinks: {
                         facebook: minister.socialLinks?.facebook || "",
                         twitter: minister.socialLinks?.twitter || "",
@@ -92,8 +96,17 @@ export default function EditMinisterPage() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { name, value, type, files } = e.target as HTMLInputElement;
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+        const { name, value, type, files, checked } = e.target as HTMLInputElement;
+
+        if (type === "checkbox") {
+            setFormData((prev) => ({
+                ...prev,
+                [name]: checked,
+            }));
+            return;
+        }
+
         if (type === "file" && files && files[0]) {
             const file = files[0];
             const reader = new FileReader();
@@ -234,6 +247,44 @@ export default function EditMinisterPage() {
                                 className={`${styles.input} ${errors.name ? styles.inputError : ""}`}
                             />
                             {errors.name && <span className={styles.errorText}>{errors.name}</span>}
+                        </div>
+
+                        {/* Minister Type & Visibility */}
+                        <div className={styles.formRow}>
+                            <div className={styles.formGroup}>
+                                <label htmlFor="type" className={styles.label}>
+                                    Minister Type
+                                </label>
+                                <select
+                                    id="type"
+                                    name="type"
+                                    value={formData.type}
+                                    onChange={handleChange}
+                                    className={styles.input}
+                                >
+                                    <option value="regular">Regular Minister</option>
+                                    <option value="guest">Guest Minister</option>
+                                </select>
+                            </div>
+
+                            <div className={styles.formGroup} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                <label className={styles.label} style={{ marginBottom: '10px' }}>
+                                    Visibility
+                                </label>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                    <input
+                                        type="checkbox"
+                                        id="isVisible"
+                                        name="isVisible"
+                                        checked={formData.isVisible}
+                                        onChange={handleChange}
+                                        style={{ width: '20px', height: '20px' }}
+                                    />
+                                    <label htmlFor="isVisible" style={{ cursor: 'pointer' }}>
+                                        Show on Ministers Page
+                                    </label>
+                                </div>
+                            </div>
                         </div>
 
                         {/* Position & Department */}
