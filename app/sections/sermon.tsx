@@ -66,15 +66,27 @@ export default function SermonSection({ sermon, title = "Latest Sermon" }: Sermo
   // If no sermon is provided, don't render the section (or render default if desired, but user asked for DB data)
   // For now, let's fall back to default if not provided, OR we can map the DB sermon to the UI structure
 
+  // Extract minister name helper
+  const getMinisterName = (minister: any): string => {
+    if (typeof minister === 'object' && minister?.name) {
+      return minister.name;
+    }
+    if (typeof minister === 'string') {
+      const isObjectId = /^[a-f\d]{24}$/i.test(minister);
+      return isObjectId ? 'Minister' : minister;
+    }
+    return 'Unknown Minister';
+  };
+
   const displaySermon = sermon ? {
     id: sermon._id,
     title: sermon.title,
-    speaker: sermon.minister,
+    speaker: getMinisterName(sermon.minister), // Use helper function
     date: new Date(sermon.date),
     description: sermon.description,
     youtubeId: sermon.youtubeLink.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([a-zA-Z0-9_-]{11})/)?.[1] || "",
     duration: sermon.duration,
-    documents: [] // Backend doesn't have documents yet
+    documents: []
   } : DEFAULT_SERMON;
 
   const youtubeEmbedUrl = `https://www.youtube.com/embed/${displaySermon.youtubeId}`;
@@ -88,7 +100,7 @@ export default function SermonSection({ sermon, title = "Latest Sermon" }: Sermo
           <p className={styles.subtitle}>Listen to the latest message from our pulpit</p>
         </div>
 
-        {sermon &&
+        {sermon ? (
           <div className={styles.content}>
             {/* Video Container */}
             <div className={styles.videoWrapper}>
@@ -118,31 +130,22 @@ export default function SermonSection({ sermon, title = "Latest Sermon" }: Sermo
                   </div>
                 </div>
 
-                <p className={styles.description}>{displaySermon.description}</p>
-              </div>
-
-              {/* Document Links */}
-              <div className={styles.documents}>
-                <h4 className={styles.documentsTitle}>📚 Resources</h4>
-                <div className={styles.documentLinks}>
-                  {displaySermon.documents.map((doc: any) => (
-                    <a key={doc.id} href={doc.url} target="_blank" rel="noopener noreferrer" className={`${styles.docLink} ${styles[doc.type]}`}>
-                      <span className={styles.docIcon}>{doc.icon}</span>
-                      <span className={styles.docTitle}>{doc.title}</span>
-                    </a>
-                  ))}
-                </div>
+                <div className={styles.description} dangerouslySetInnerHTML={{ __html: displaySermon.description }} />
               </div>
 
               {/* Action Button */}
-              <Link href={youtubeEmbedUrl} target="_blank" className={styles.watchBtn}>
-                🎬 Watch Full Video
+              <Link href={`/sermons/${displaySermon.id}`} className={styles.watchBtn}>
+                🎬 View Sermon Details
               </Link>
             </div>
           </div>
-
-
-        }
+        ) : (
+          <div className={styles.content}>
+            <div className={styles.details} style={{ width: '100%', textAlign: 'center' }}>
+              <p>No sermon available at the moment.</p>
+            </div>
+          </div>
+        )}
 
       </div>
     </section>
