@@ -9,9 +9,16 @@ const _ = { Minister, Bulletin };
 connectDB();
 
 export default class SermonService {
+    private cleanup_data(data: any) {
+        if (data.bulletinId === "") delete data.bulletinId;
+        if (data.minister === "") delete data.minister;
+        return data;
+    }
+
     async add_sermon(data: any) {
         try {
-            const sermon = await Sermon.create(data);
+            const cleanedData = this.cleanup_data(data);
+            const sermon = await Sermon.create(cleanedData);
             return sermon;
         } catch (error) {
             console.log(error);
@@ -46,7 +53,8 @@ export default class SermonService {
 
     async update_sermon(id: string, data: any) {
         try {
-            const sermon = await Sermon.findByIdAndUpdate(id, data, { new: true });
+            const cleanedData = this.cleanup_data(data);
+            const sermon = await Sermon.findByIdAndUpdate(id, cleanedData, { new: true });
             return sermon;
         } catch (error) {
             console.log(error);

@@ -5,8 +5,17 @@ import dbConnect from "../db";
 dbConnect();
 
 class EventService {
+    private cleanup_data(data: any) {
+        if (data.bulletinId === "") delete data.bulletinId;
+        if (Array.isArray(data.eventMinisters)) {
+            data.eventMinisters = data.eventMinisters.filter((id: any) => id !== "");
+        }
+        return data;
+    }
+
     add_event = async (data: any) => {
-        if (await Event.create(data)) return "created";
+        const cleanedData = this.cleanup_data(data);
+        if (await Event.create(cleanedData)) return "created";
         return "error";
     }
 
@@ -19,7 +28,8 @@ class EventService {
     }
 
     update_event = async (id: string, data: any) => {
-        return await Event.findByIdAndUpdate(id, data);
+        const cleanedData = this.cleanup_data(data);
+        return await Event.findByIdAndUpdate(id, cleanedData);
     }
 
     delete_event = async (id: string) => {
