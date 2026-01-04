@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import styles from "./events.module.css";
 import { useLandingPage } from "../hooks/use-landing-page";
-import { formatRelativeTime, getNextOccurrence, convert24hrTo12hr } from "../utils/helpers";
+import { formatRelativeTime, getNextOccurrence, convert24hrTo12hr, isEventCurrentlyLive } from "../utils/helpers";
 
 interface EventsProps {
   events?: any;
@@ -55,91 +55,94 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
             {sortedEvents.length == 0 && <h1 style={{ textAlign: "center" }}>No Upcoming Event</h1>}
 
             <div className={styles.grid}>
-              {sortedEvents.map((event) => (
-                <article key={event._id} className={`${styles.card} ${event.isLive ? styles.cardLive : ""}`}>
-                  <div className={styles.imageContainer}>
-                    <img src={event.image} alt={event.title} className={styles.image} />
-                    {event.isLive && <span className={styles.liveBadge}>🔴 LIVE</span>}
-                    {event.isRecurring && <span className={styles.liveBadge} style={{ background: '#6366f1', top: event.isLive ? '50px' : '10px' }}>🔄 Recurring</span>}
-                  </div>
+              {sortedEvents.map((event) => {
+                const eventIsLive = isEventCurrentlyLive(event);
+                return (
+                  <article key={event._id} className={`${styles.card} ${eventIsLive ? styles.cardLive : ""}`}>
+                    <div className={styles.imageContainer}>
+                      <img src={event.image} alt={event.title} className={styles.image} />
+                      {eventIsLive && <span className={styles.liveBadge}>🔴 LIVE</span>}
+                      {event.isRecurring && <span className={styles.liveBadge} style={{ background: '#6366f1', top: eventIsLive ? '50px' : '10px' }}>🔄 Recurring</span>}
+                    </div>
 
-                  <div className={styles.content}>
-                    <h3 className={styles.name}>{event.title}</h3>
-                    {event.description && <p className={styles.description}>{event.description}</p>}
+                    <div className={styles.content}>
+                      <h3 className={styles.name}>{event.title}</h3>
+                      {event.description && <p className={styles.description}>{event.description}</p>}
 
-                    <div className={styles.meta}>
-                      {/* Show recurrence schedule for recurring events, otherwise show date */}
-                      {event.isRecurring ? (
-                        <>
+                      <div className={styles.meta}>
+                        {/* Show recurrence schedule for recurring events, otherwise show date */}
+                        {event.isRecurring ? (
+                          <>
+                            <div className={styles.metaItem}>
+                              <span className={styles.metaLabel}>🔄 Schedule</span>
+                              <span className={styles.metaValue}>{formatRecurrence(event)}</span>
+                            </div>
+                            <div className={styles.metaItem}>
+                              <span className={styles.metaLabel}>📅 Next</span>
+                              <span className={styles.metaValue}>
+                                {(() => {
+                                  const nextDate = getNextOccurrence(event);
+                                  const today = new Date();
+                                  const isToday = nextDate.getDate() === today.getDate() &&
+                                    nextDate.getMonth() === today.getMonth() &&
+                                    nextDate.getFullYear() === today.getFullYear();
+                                  return isToday ? "Today" : nextDate.toLocaleDateString();
+                                })()}
+                              </span>
+                            </div>
+                          </>
+                        ) : (
                           <div className={styles.metaItem}>
-                            <span className={styles.metaLabel}>🔄 Schedule</span>
-                            <span className={styles.metaValue}>{formatRecurrence(event)}</span>
+                            <span className={styles.metaLabel}>📅 Date</span>
+                            <span className={styles.metaValue}>{event.date.split("T")[0]}</span>
                           </div>
-                          <div className={styles.metaItem}>
-                            <span className={styles.metaLabel}>📅 Next</span>
-                            <span className={styles.metaValue}>
-                              {(() => {
-                                const nextDate = getNextOccurrence(event);
-                                const today = new Date();
-                                const isToday = nextDate.getDate() === today.getDate() &&
-                                  nextDate.getMonth() === today.getMonth() &&
-                                  nextDate.getFullYear() === today.getFullYear();
-                                return isToday ? "Today" : nextDate.toLocaleDateString();
-                              })()}
-                            </span>
-                          </div>
-                        </>
-                      ) : (
+                        )}
                         <div className={styles.metaItem}>
-                          <span className={styles.metaLabel}>📅 Date</span>
-                          <span className={styles.metaValue}>{event.date.split("T")[0]}</span>
+                          <span className={styles.metaLabel}>🕐 Time</span>
+                          <span className={styles.metaValue}>
+                            {convert24hrTo12hr(event.time)}
+                            {event.endTime && ` - ${convert24hrTo12hr(event.endTime)}`}
+                          </span>
                         </div>
-                      )}
-                      <div className={styles.metaItem}>
-                        <span className={styles.metaLabel}>🕐 Time</span>
-                        <span className={styles.metaValue}>
-                          {convert24hrTo12hr(event.time)}
-                          {event.endTime && ` - ${convert24hrTo12hr(event.endTime)}`}
-                        </span>
+                        <div className={styles.metaItem}>
+                          <span className={styles.metaLabel}>⏱️ Duration</span>
+                          <span className={styles.metaValue}>{formatDuration(event.duration)}</span>
+                        </div>
+                        <div className={styles.metaItem}>
+                          <span className={styles.metaLabel}>📍 Location</span>
+                          <span className={styles.metaValue}>{event.location}</span>
+                        </div>
                       </div>
-                      <div className={styles.metaItem}>
-                        <span className={styles.metaLabel}>⏱️ Duration</span>
-                        <span className={styles.metaValue}>{formatDuration(event.duration)}</span>
-                      </div>
-                      <div className={styles.metaItem}>
-                        <span className={styles.metaLabel}>📍 Location</span>
-                        <span className={styles.metaValue}>{event.location}</span>
+
+                      <div className={styles.footer}>
+                        <div className={styles.countdown}>
+                          {(() => {
+                            const targetDate = event.isRecurring ? getNextOccurrence(event) : new Date(event.date);
+                            const today = new Date();
+                            const isToday = targetDate.getDate() === today.getDate() &&
+                              targetDate.getMonth() === today.getMonth() &&
+                              targetDate.getFullYear() === today.getFullYear();
+
+                            return isToday ? "Happening Today" : formatRelativeTime(targetDate);
+                          })()}
+                        </div>
+                        <div style={{ display: 'flex', gap: '10px' }}>
+                          {event.isPublicDetailedView && (
+                            <Link href={`/event/${event._id}`} className={styles.liveBtn}>
+                              See More
+                            </Link>
+                          )}
+                          {event.liveLink && (
+                            <Link href={event.liveLink} className={styles.liveBtn}>
+                              {eventIsLive ? "Join Live" : "Learn More"}
+                            </Link>
+                          )}
+                        </div>
                       </div>
                     </div>
-
-                    <div className={styles.footer}>
-                      <div className={styles.countdown}>
-                        {(() => {
-                          const targetDate = event.isRecurring ? getNextOccurrence(event) : new Date(event.date);
-                          const today = new Date();
-                          const isToday = targetDate.getDate() === today.getDate() &&
-                            targetDate.getMonth() === today.getMonth() &&
-                            targetDate.getFullYear() === today.getFullYear();
-
-                          return isToday ? "Happening Today" : formatRelativeTime(targetDate);
-                        })()}
-                      </div>
-                      <div style={{ display: 'flex', gap: '10px' }}>
-                        {event.isPublicDetailedView && (
-                          <Link href={`/event/${event._id}`} className={styles.liveBtn}>
-                            See More
-                          </Link>
-                        )}
-                        {event.liveLink && (
-                          <Link href={event.liveLink} className={styles.liveBtn}>
-                            {event.isLive ? "Join Live" : "Learn More"}
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                )
+              })}
             </div>
           </>
         }

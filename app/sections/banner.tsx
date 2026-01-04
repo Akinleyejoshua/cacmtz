@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import styles from "./banner.module.css";
-import { formatRelativeTime, convert24hrTo12hr, getNextOccurrence, isToday } from "../utils/helpers";
+import { formatRelativeTime, convert24hrTo12hr, getNextOccurrence, isToday, isEventCurrentlyLive } from "../utils/helpers";
 import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube, FaSoundcloud, FaWhatsapp, FaTiktok, FaLinkedinIn } from "react-icons/fa6";
 
 type SocialMedia = {
@@ -152,10 +152,10 @@ export default function Banner({ generalSettings }: BannerProps) {
 
           {/* Next Event Section */}
           {nextEvent && (
-            <div className={`${styles.eventCard} ${nextEvent.isLive ? styles.liveEvent : ''}`}>
+            <div className={`${styles.eventCard} ${isEventCurrentlyLive(nextEvent) ? styles.liveEvent : ''}`}>
               <div className={styles.eventImageWrapper}>
                 <img src={nextEvent.image} alt={nextEvent.name} className={styles.eventImage} />
-                {nextEvent.isLive && (
+                {isEventCurrentlyLive(nextEvent) && (
                   <div className={styles.liveIndicator}>
                     <span className={styles.liveDot}></span>
                     LIVE NOW
@@ -214,14 +214,14 @@ export default function Banner({ generalSettings }: BannerProps) {
                       return formatRelativeTime(targetDate.getTime());
                     })()}
                   </div>
-                  {nextEvent.isLive && (
+                  {isEventCurrentlyLive(nextEvent) && (
                     <a href={nextEvent.liveLink} target="_blank" rel="noopener noreferrer" className={styles.liveButton}>
                       Join Live Stream
                     </a>
                   )}
                   {/* Public Event See More Button */}
                   {nextEvent.isPublicDetailedView && (
-                    <Link href={`/event/${nextEvent.id}`} className={styles.liveButton} style={{ marginLeft: nextEvent.isLive ? '1rem' : '0', background: nextEvent.isLive ? 'rgba(255,255,255,0.1)' : 'var(--button-bg)' }}>
+                    <Link href={`/event/${nextEvent.id}`} className={styles.liveButton} style={{ marginLeft: isEventCurrentlyLive(nextEvent) ? '1rem' : '0', background: isEventCurrentlyLive(nextEvent) ? 'rgba(255,255,255,0.1)' : 'var(--button-bg)' }}>
                       See More
                     </Link>
                   )}

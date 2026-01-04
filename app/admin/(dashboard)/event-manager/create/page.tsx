@@ -24,7 +24,7 @@ export default function CreateEventPage() {
   } = useEventManager()
   return (
     <div className={styles.page}>
-      
+
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.titleSection}>
@@ -229,7 +229,25 @@ export default function CreateEventPage() {
             />
           </div>
 
-          {/* Is Live */}
+          {/* Auto-Live Toggle */}
+          <div className={styles.checkboxGroup}>
+            <input
+              type="checkbox"
+              id="isAutoLive"
+              name="isAutoLive"
+              checked={formData.isAutoLive || false}
+              onChange={handleChange}
+              className={styles.checkbox}
+            />
+            <label htmlFor="isAutoLive" className={styles.checkboxLabel}>
+              Enable Auto-Live
+            </label>
+            <p className={styles.helperText} style={{ marginLeft: '28px', marginTop: '4px' }}>
+              When enabled, the event will automatically show as &quot;LIVE&quot; during its scheduled time window (start time → end time).
+            </p>
+          </div>
+
+          {/* Is Live (Manual) */}
           <div className={styles.checkboxGroup}>
             <input
               type="checkbox"
@@ -238,10 +256,16 @@ export default function CreateEventPage() {
               checked={formData.isLive || false}
               onChange={handleChange}
               className={styles.checkbox}
+              disabled={formData.isAutoLive}
             />
-            <label htmlFor="isLive" className={styles.checkboxLabel}>
-              Mark as Live Event
+            <label htmlFor="isLive" className={styles.checkboxLabel} style={{ opacity: formData.isAutoLive ? 0.5 : 1 }}>
+              Mark as Live Event (Manual)
             </label>
+            {formData.isAutoLive && (
+              <p className={styles.helperText} style={{ marginLeft: '28px', marginTop: '4px', fontStyle: 'italic' }}>
+                Disabled when Auto-Live is enabled.
+              </p>
+            )}
           </div>
         </div>
 

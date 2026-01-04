@@ -13,6 +13,7 @@ export interface IEvent extends Document {
   duration: string;
   liveLink: string;
   isLive: Boolean;
+  isAutoLive: Boolean;
   image: string;
   status: string;
   dateTime: string;
@@ -41,6 +42,7 @@ const EventSchema: Schema<IEvent> = new Schema({
   duration: { type: String, required: true },
   liveLink: { type: String, required: false },
   isLive: { type: Boolean, required: false },
+  isAutoLive: { type: Boolean, default: false },
   image: { type: String, required: false },
   dateTime: { type: String, required: false },
   // Recurrence fields

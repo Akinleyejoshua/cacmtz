@@ -12,6 +12,7 @@ type Event = {
     location: string;
     image: string;
     liveLink?: string;
+    isAutoLive?: boolean;
     previousSermonLink?: string;
     isLive?: boolean;
     time?: any;
@@ -151,6 +152,7 @@ export const useEventManager = () => {
         liveLink: "",
         previousSermonLink: "",
         isLive: false,
+        isAutoLive: false,
         time: "",
         endTime: "",
         dateTime: "",
@@ -268,6 +270,7 @@ export const useEventManager = () => {
                 location: formData.location,
                 image: formData.image,
                 liveLink: formData.liveLink,
+                isAutoLive: formData.isAutoLive,
                 previousSermonLink: formData.previousSermonLink,
                 isLive: false,
                 dateTime: formData.dateTime,

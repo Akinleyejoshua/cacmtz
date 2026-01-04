@@ -233,3 +233,56 @@ export const isToday = (date: Date): boolean => {
         date.getMonth() === today.getMonth() &&
         date.getFullYear() === today.getFullYear();
 }
+
+/**
+ * Determines if an event is currently live based on its auto-live settings.
+ * For auto-live enabled events, calculates live status from time window.
+ * For manual mode, returns the stored isLive value.
+ */
+export const isEventCurrentlyLive = (event: any): boolean => {
+    // Manual mode - use stored isLive value
+    if (!event.isAutoLive) return event.isLive || false;
+
+    // Auto mode - calculate based on time window
+    const now = new Date();
+    let eventDate: Date;
+
+    // Get the target date (next occurrence for recurring, or event date for one-time)
+    if (event.isRecurring) {
+        eventDate = getNextOccurrence(event);
+    } else {
+        // Parse date from various formats
+        if (event.dateTime) {
+            eventDate = new Date(parseInt(event.dateTime));
+        } else if (event.date) {
+            eventDate = new Date(event.date);
+        } else {
+            return false;
+        }
+    }
+
+    // Check if today matches the event date
+    if (!isToday(eventDate)) {
+        return false;
+    }
+
+    // Parse start time (default to 00:00 if not set)
+    const startTimeParts = (event.time || "00:00").split(":");
+    const startHour = parseInt(startTimeParts[0], 10) || 0;
+    const startMin = parseInt(startTimeParts[1], 10) || 0;
+
+    // Parse end time (default to 23:59 if not set)
+    const endTimeParts = (event.endTime || "23:59").split(":");
+    const endHour = parseInt(endTimeParts[0], 10) || 23;
+    const endMin = parseInt(endTimeParts[1], 10) || 59;
+
+    // Create start and end timestamps for today
+    const startTime = new Date(eventDate);
+    startTime.setHours(startHour, startMin, 0, 0);
+
+    const endTime = new Date(eventDate);
+    endTime.setHours(endHour, endMin, 59, 999);
+
+    // Check if current time is within the event window
+    return now >= startTime && now <= endTime;
+}
