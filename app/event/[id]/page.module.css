@@ -226,7 +226,7 @@
   gap: 0.75rem;
   padding: 12px 24px;
   background-color: var(--button-bg);
-  color: white !important;
+  color: var(--foreground) !important;
   text-decoration: none;
   border-radius: 8px;
   font-weight: 600;
