@@ -1,13 +1,13 @@
 .section {
   width: 100%;
   padding: 56px 20px;
-  background: linear-gradient(180deg, rgba(10,12,20,0.25), rgba(10,12,20,0.06));
+  background: linear-gradient(180deg, rgba(10, 12, 20, 0.25), rgba(10, 12, 20, 0.06));
 }
 
 .container {
   max-width: 1100px;
   margin: 0 auto;
-    padding-top: calc(20vh - var(--header-height, 64px));
+  padding-top: calc(20vh - var(--header-height, 64px));
 
 }
 
@@ -24,7 +24,7 @@
 }
 
 .subtitle {
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
   margin: 0;
   font-size: 14px;
 }
@@ -40,6 +40,8 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
+  min-width: 0;
+  /* Prevents grid blowout from slider */
 }
 
 .right {
@@ -54,14 +56,14 @@
 
 .verseText {
   font-size: 16px;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
   font-style: italic;
   margin: 0 0 8px 0;
 }
 
 .verseRef {
   font-size: 13px;
-  color: rgba(255,255,255,0.7);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
 
@@ -70,6 +72,7 @@
   color: #fff;
   font-weight: 800;
   margin: 0 0 8px 0;
+  display: flex;
 }
 
 .bankList {
@@ -81,7 +84,7 @@
 .bankCard {
   padding: 18px;
   /* background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01)); */
-  border: 1px solid rgba(255,255,255,0.04);
+  border: 1px solid rgba(255, 255, 255, 0.04);
   border-radius: 10px;
 }
 
@@ -98,21 +101,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255,255,255,0.02);
+  background: rgba(255, 255, 255, 0.02);
   border-radius: 10px;
   overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.03);
+  border: 1px solid rgba(255, 255, 255, 0.03);
 }
 
-.logoWrap img{
-    min-width: 8rem;
-    min-height: 8rem;
-    height: 100%;
+.logoWrap img {
+  min-width: 8rem;
+  min-height: 8rem;
+  height: 100%;
 }
 
 .bankLogo {
   display: block;
-  object-fit:fill;
+  object-fit: fill;
 }
 
 .bankHeaderText {
@@ -120,15 +123,21 @@
   flex-direction: column;
 }
 
+.bankCardWrapper {
+  margin-bottom: 16px;
+}
+
+
+
 .bankCardTitle {
   font-size: 20px;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 800;
 }
 
 .bankCardSubtitle {
   font-size: 12px;
-  color: rgba(255,255,255,0.75);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .bankRow {
@@ -140,13 +149,13 @@
 
 .bankLabel {
   font-size: 12px;
-  color: rgba(255,255,255,0.6);
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 200;
 }
 
 .bankValue {
   font-size: 14px;
-  color: rgba(255,255,255,0.95);
+  color: rgba(255, 255, 255, 0.95);
   font-weight: 200;
 }
 
@@ -168,8 +177,8 @@
   align-items: center;
   gap: 8px;
   padding: 6px 8px;
-  background: linear-gradient(90deg, rgba(107,70,193,0.12), rgba(183,148,244,0.06));
-  border: 1px solid rgba(107,70,193,0.12);
+  background: linear-gradient(90deg, rgba(107, 70, 193, 0.12), rgba(183, 148, 244, 0.06));
+  border: 1px solid rgba(107, 70, 193, 0.12);
   color: #fff;
   border-radius: 999px;
   font-weight: 400;
@@ -196,8 +205,8 @@
 .typeItem {
   padding: 12px;
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border: 1px solid rgba(255,255,255,0.04);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(255, 255, 255, 0.04);
 }
 
 .typeTitle {
@@ -209,7 +218,7 @@
 
 .typeDesc {
   font-size: 13px;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   margin: 0;
 }
 
@@ -225,4 +234,38 @@
   .left {
     order: 1;
   }
+}
+
+.sliderContainer {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 8px;
+  /* Space for scrollbar */
+  /* scroll-snap-type: x mandatory; */
+  width: 100%;
+}
+
+.sliderContainer .bankCard {
+  min-width: 300px;
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+}
+
+.sliderContainer::-webkit-scrollbar {
+  height: 6px;
+}
+
+.sliderContainer::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.sliderContainer::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.sliderContainer::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
 }

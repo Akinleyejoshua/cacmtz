@@ -6,12 +6,13 @@ import styles from "./donation.module.css";
 
 type BankDetail = {
   id: string;
-  name: string;
-  accountNumber: string;
-  bank: string;
+  name?: string;
+  accountNumber?: string;
+  bank?: string;
   logo?: string;
   type?: string;
   accepts?: string[]; // ids of donation types this account accepts
+  data?: any[]; // additional data if needed
 };
 
 type DonationType = {
@@ -20,24 +21,53 @@ type DonationType = {
   description?: string;
 };
 
-const DEFAULT_BANKS: BankDetail[] = [
-    {
+const DEFAULT_BANKS: any = [
+  {
+
     id: "bank3",
-    name: "C.A.C Mount Zion Ojodu",
-    accountNumber: "0017420693",
-    bank: "Access Bank",
-    logo: "/src/img/donations/abank.png",
-    type: "Current",
-    accepts: ["Tithe"],
+    data: [
+      {
+        name: "C.A.C Mount Zion Ojodu",
+        accountNumber: "0017420693",
+        bank: "Access Bank",
+        logo: "/src/img/donations/abank.png",
+        type: "Current",
+        accepts: ["Tithe"],
+      },
+
+      {
+        name: "Akinleye Joseph Ayodare",
+        accountNumber: "0016422566",
+        bank: "Access Bank",
+        logo: "/src/img/donations/abank.png",
+        type: "Current",
+        accepts: ["Tithe"],
+      }
+    ],
+
   },
   {
     id: "bank1",
-    name: "C.A.C Mount Zion Ojodu",
-    accountNumber: "2026245339",
-    bank: "First Bank PLC",
-    logo: "/src/img/donations/fbank.jpg",
-    type: "Current",
-    accepts: ["Devine Parnership"],
+    data: [
+
+      {
+        name: "C.A.C Mount Zion Ojodu",
+        accountNumber: "2026245339",
+        bank: "First Bank PLC",
+        logo: "/src/img/donations/fbank.jpg",
+        type: "Current",
+        accepts: ["Devine Parnership"],
+      },
+      {
+        name: "Akinleye Joseph Ayodare",
+        accountNumber: "3133764368",
+        bank: "First Bank PLC",
+        logo: "/src/img/donations/fbank.jpg",
+        type: "Savings",
+        accepts: ["Devine Parnership"],
+      }
+    ],
+
   },
   {
     id: "bank6",
@@ -57,7 +87,7 @@ const DEFAULT_BANKS: BankDetail[] = [
     type: "Current",
     accepts: ["Missionary account"],
   },
-  
+
   {
     id: "bank4",
     name: "C.A.C Kingdom Zone",
@@ -122,52 +152,61 @@ export default function DonationSection({
 
             <div className={styles.bankList}>
               <h3 className={styles.sectionTitle}>Bank Details</h3>
-              {banks.map((b) => (
-                <div key={b.id} className={styles.bankCard}>
-                  <div className={styles.bankHeader}>
-                    <div className={styles.logoWrap}>
-                      <Image src={b.logo ?? '/src/img/donations/abank.png'} alt={`${b.bank} logo`} width={100} height={100} className={styles.bankLogo} />
-                    </div>
-                    <div className={styles.bankHeaderText}>
-                      <div className={styles.bankCardTitle}>{b.bank}</div>
-                      <div className={styles.bankCardSubtitle}>{b.name}</div>
-                    </div>
-                  </div>
-                  <div className={styles.bankRow}>
-                    <span className={styles.bankLabel}>Name</span>
-                    <span className={styles.bankValue}>{b.name}</span>
-                  </div>
-                  <div className={styles.bankRow}>
-                    <span className={styles.bankLabel}>Account</span>
-                    <span className={styles.bankValue}>{b.accountNumber}</span>
-                  </div>
-                  <div className={styles.bankRow}>
-                    <span className={styles.bankLabel}>Bank</span>
-                    <span className={styles.bankValue}>{b.bank}</span>
-                  </div>
-                  {b.type && (
-                    <div className={styles.bankRow}>
-                      <span className={styles.bankLabel}>Type</span>
-                      <span className={styles.bankValue}>{b.type}</span>
-                    </div>
-                  )}
+              {banks.map((b) => {
+                const accounts = b.data && b.data.length > 0 ? b.data : [b];
+                const isSlider = accounts.length > 1;
 
-                  {/* Accepted donation types badges */}
-                  {b.accepts && b.accepts.length > 0 && (
-                    <div className={styles.acceptsRow}>
-                      <span className={styles.bankLabel}>Accepts</span>
-                      <div className={styles.badges}>
-                        {b.accepts.map((tid) => (
-                          <span key={tid} className={styles.badge} title={tid}>
-                            <span className={styles.badgeIcon}>{TYPE_ICONS[tid] ?? "🔸"}</span>
-                            <span className={styles.badgeLabel}>{(DEFAULT_TYPES.find((x) => x.id === tid)?.title) ?? tid}</span>
-                          </span>
-                        ))}
+                return (
+                  <div key={b.id} className={isSlider ? styles.sliderContainer : undefined}>
+                    {accounts.map((account, idx) => (
+                      <div key={`${b.id}-${idx}`} className={styles.bankCard}>
+                        <div className={styles.bankHeader}>
+                          <div className={styles.logoWrap}>
+                            <Image src={account.logo ?? '/src/img/donations/abank.png'} alt={`${account.bank} logo`} width={100} height={100} className={styles.bankLogo} />
+                          </div>
+                          <div className={styles.bankHeaderText}>
+                            <div className={styles.bankCardTitle}>{account.bank}</div>
+                            <div className={styles.bankCardSubtitle}>{account.name}</div>
+                          </div>
+                        </div>
+                        <div className={styles.bankRow}>
+                          <span className={styles.bankLabel}>Name</span>
+                          <span className={styles.bankValue}>{account.name}</span>
+                        </div>
+                        <div className={styles.bankRow}>
+                          <span className={styles.bankLabel}>Account</span>
+                          <span className={styles.bankValue}>{account.accountNumber}</span>
+                        </div>
+                        <div className={styles.bankRow}>
+                          <span className={styles.bankLabel}>Bank</span>
+                          <span className={styles.bankValue}>{account.bank}</span>
+                        </div>
+                        {account.type && (
+                          <div className={styles.bankRow}>
+                            <span className={styles.bankLabel}>Type</span>
+                            <span className={styles.bankValue}>{account.type}</span>
+                          </div>
+                        )}
+
+                        {/* Accepted donation types badges */}
+                        {account.accepts && account.accepts.length > 0 && (
+                          <div className={styles.acceptsRow}>
+                            <span className={styles.bankLabel}>Accepts</span>
+                            <div className={styles.badges}>
+                              {account.accepts.map((tid: string) => (
+                                <span key={tid} className={styles.badge} title={tid}>
+                                  <span className={styles.badgeIcon}>{TYPE_ICONS[tid] ?? "🔸"}</span>
+                                  <span className={styles.badgeLabel}>{(DEFAULT_TYPES.find((x) => x.id === tid)?.title) ?? tid}</span>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                  )}
-                </div>
-              ))}
+                    ))}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
