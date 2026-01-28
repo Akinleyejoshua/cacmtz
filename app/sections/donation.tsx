@@ -41,7 +41,7 @@ const DEFAULT_BANKS: any = [
         bank: "Access Bank",
         logo: "/src/img/donations/abank.png",
         type: "Current",
-        accepts: ["Tithe"],
+        accepts: ["Deving Partnership"],
       }
     ],
 
