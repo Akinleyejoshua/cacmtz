@@ -1,6 +1,6 @@
 "use client"
 
-import React from "react";
+import React, { useRef, useEffect } from "react";
 import Image from "next/image";
 import styles from "./donation.module.css";
 
@@ -130,6 +130,93 @@ interface DonationSectionProps {
   verse?: { text: string; ref?: string };
 }
 
+function BankSlider({ accounts, bankId }: { accounts: any[], bankId: string }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const isSlider = accounts.length > 1;
+
+  useEffect(() => {
+    const container = scrollRef.current;
+    if (!container || !isSlider) return;
+
+    let isPaused = false;
+    const handleMouseEnter = () => { isPaused = true; };
+    const handleMouseLeave = () => { isPaused = false; };
+
+    container.addEventListener("mouseenter", handleMouseEnter);
+    container.addEventListener("mouseleave", handleMouseLeave);
+
+    const interval = setInterval(() => {
+      if (isPaused) return;
+      const { scrollLeft, scrollWidth, clientWidth } = container;
+      if (scrollLeft + clientWidth >= scrollWidth - 10) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: 320, behavior: "smooth" });
+      }
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+      container.removeEventListener("mouseenter", handleMouseEnter);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+    };
+  }, [accounts, isSlider]);
+
+  return (
+    <div
+      ref={scrollRef}
+      className={isSlider ? styles.sliderContainer : undefined}
+    >
+      {accounts.map((account, idx) => (
+        <div key={`${bankId}-${idx}`} className={styles.bankCard}>
+          <div className={styles.bankHeader}>
+            <div className={styles.logoWrap}>
+              <Image src={account.logo ?? '/src/img/donations/abank.png'} alt={`${account.bank} logo`} width={100} height={100} className={styles.bankLogo} />
+            </div>
+            <div className={styles.bankHeaderText}>
+              <div className={styles.bankCardTitle}>{account.bank}</div>
+              <div className={styles.bankCardSubtitle}>{account.name}</div>
+            </div>
+          </div>
+          <div className={styles.bankRow}>
+            <span className={styles.bankLabel}>Name</span>
+            <span className={styles.bankValue}>{account.name}</span>
+          </div>
+          <div className={styles.bankRow}>
+            <span className={styles.bankLabel}>Account</span>
+            <span className={styles.bankValue}>{account.accountNumber}</span>
+          </div>
+          <div className={styles.bankRow}>
+            <span className={styles.bankLabel}>Bank</span>
+            <span className={styles.bankValue}>{account.bank}</span>
+          </div>
+          {account.type && (
+            <div className={styles.bankRow}>
+              <span className={styles.bankLabel}>Type</span>
+              <span className={styles.bankValue}>{account.type}</span>
+            </div>
+          )}
+
+          {/* Accepted donation types badges */}
+          {account.accepts && account.accepts.length > 0 && (
+            <div className={styles.acceptsRow}>
+              <span className={styles.bankLabel}>Accepts</span>
+              <div className={styles.badges}>
+                {account.accepts.map((tid: string) => (
+                  <span key={tid} className={styles.badge} title={tid}>
+                    <span className={styles.badgeIcon}>{TYPE_ICONS[tid] ?? "🔸"}</span>
+                    <span className={styles.badgeLabel}>{(DEFAULT_TYPES.find((x) => x.id === tid)?.title) ?? tid}</span>
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function DonationSection({
   banks = DEFAULT_BANKS,
   types = DEFAULT_TYPES,
@@ -154,58 +241,7 @@ export default function DonationSection({
               <h3 className={styles.sectionTitle}>Bank Details</h3>
               {banks.map((b) => {
                 const accounts = b.data && b.data.length > 0 ? b.data : [b];
-                const isSlider = accounts.length > 1;
-
-                return (
-                  <div key={b.id} className={isSlider ? styles.sliderContainer : undefined}>
-                    {accounts.map((account, idx) => (
-                      <div key={`${b.id}-${idx}`} className={styles.bankCard}>
-                        <div className={styles.bankHeader}>
-                          <div className={styles.logoWrap}>
-                            <Image src={account.logo ?? '/src/img/donations/abank.png'} alt={`${account.bank} logo`} width={100} height={100} className={styles.bankLogo} />
-                          </div>
-                          <div className={styles.bankHeaderText}>
-                            <div className={styles.bankCardTitle}>{account.bank}</div>
-                            <div className={styles.bankCardSubtitle}>{account.name}</div>
-                          </div>
-                        </div>
-                        <div className={styles.bankRow}>
-                          <span className={styles.bankLabel}>Name</span>
-                          <span className={styles.bankValue}>{account.name}</span>
-                        </div>
-                        <div className={styles.bankRow}>
-                          <span className={styles.bankLabel}>Account</span>
-                          <span className={styles.bankValue}>{account.accountNumber}</span>
-                        </div>
-                        <div className={styles.bankRow}>
-                          <span className={styles.bankLabel}>Bank</span>
-                          <span className={styles.bankValue}>{account.bank}</span>
-                        </div>
-                        {account.type && (
-                          <div className={styles.bankRow}>
-                            <span className={styles.bankLabel}>Type</span>
-                            <span className={styles.bankValue}>{account.type}</span>
-                          </div>
-                        )}
-
-                        {/* Accepted donation types badges */}
-                        {account.accepts && account.accepts.length > 0 && (
-                          <div className={styles.acceptsRow}>
-                            <span className={styles.bankLabel}>Accepts</span>
-                            <div className={styles.badges}>
-                              {account.accepts.map((tid: string) => (
-                                <span key={tid} className={styles.badge} title={tid}>
-                                  <span className={styles.badgeIcon}>{TYPE_ICONS[tid] ?? "🔸"}</span>
-                                  <span className={styles.badgeLabel}>{(DEFAULT_TYPES.find((x) => x.id === tid)?.title) ?? tid}</span>
-                                </span>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                );
+                return <BankSlider key={b.id} accounts={accounts} bankId={b.id} />;
               })}
             </div>
           </div>
@@ -222,7 +258,7 @@ export default function DonationSection({
             </ul>
           </aside>
         </div>
-      </div>
-    </section>
+      </div >
+    </section >
   );
 }
