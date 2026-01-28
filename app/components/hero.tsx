@@ -18,7 +18,11 @@ const DEFAULT_SLIDES: Slide[] = [
 		image:
 			"https://images.unsplash.com/photo-1509395176047-4a66953fd231?auto=format&fit=crop&w=2000&q=60",
 		title: "Welcome to Christ Apostolic Church Mount Zion",
-		subtitle: "We are not just a church, We are a kingdom movement proclaiming the eternal realities of christ gospel to the nations. Our message is christ, our mission is preparing people for God's Kingdom on Earth and raising desciples for the work of the God's Kingdom, Our passion is to bring God's kingdom to every Family with a testimony of life transformed by the power of holy spirit. We are blessed to welcome you to our faith family—a place where hearts are transformed, spirits are nurtured, and communities are strengthened through Christ's love. Join us as we worship together, grow in faith, and serve with purpose and compassion.",
+		subtitle: `We are not just a church. We are a kingdom movement proclaiming the eternal realities of Christ gospel to the nations. 
+● Our message is Christ.            
+● Our mission is preparing people for God’s Kingdom on Earth and raising disciples for the work of God’s Kingdom. 
+● Our passion is to bring God’s Kingdom to every family with a testimony of life transformed by the power of the Holy Spirit. 
+We are blessed to welcome you to our church.`,
 		cta: { label: "Join Us for Worship", href: "/#banner" },
 		secondary: { label: "Learn Our Story", href: "/profile" },
 	},
