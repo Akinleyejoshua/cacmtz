@@ -525,6 +525,7 @@ export default function OutreachManagerPage() {
                         src={thumbUrl}
                         alt={vid.title}
                         fill
+                        unoptimized
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className={styles.cardImage}
                       />
@@ -603,6 +604,7 @@ export default function OutreachManagerPage() {
                       alt={acc.bank}
                       width={44}
                       height={44}
+                      unoptimized
                       className={styles.bankLogoAdmin}
                     />
                   </div>
@@ -682,6 +684,7 @@ export default function OutreachManagerPage() {
                         src={proj.images[0]}
                         alt={proj.title}
                         fill
+                        unoptimized
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className={styles.cardImage}
                       />
@@ -970,7 +973,7 @@ export default function OutreachManagerPage() {
                   <div className={styles.imagePreviewRow}>
                     {projectForm.images.map((img, idx) => (
                       <div key={idx} className={styles.imageThumbWrap}>
-                        <Image src={img} alt={`Upload ${idx + 1}`} fill className={styles.imageThumb} />
+                        <Image src={img} alt={`Upload ${idx + 1}`} fill unoptimized className={styles.imageThumb} />
                         <button
                           type="button"
                           className={styles.imageRemoveBtn}

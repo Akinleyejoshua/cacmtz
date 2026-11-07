@@ -264,6 +264,7 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                             alt={`${acc.bank} logo`}
                             width={52}
                             height={52}
+                            unoptimized
                             className={styles.bankLogo}
                           />
                         </div>
@@ -392,6 +393,7 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                             src={proj.images[0]}
                             alt={proj.title}
                             fill
+                            unoptimized
                             sizes="(max-width: 768px) 100vw, 33vw"
                             className={styles.projectImage}
                           />
