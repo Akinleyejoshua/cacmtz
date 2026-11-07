@@ -47,6 +47,14 @@ export default function EditMinisterPage() {
                     return;
                 }
 
+                // Resolve images: check both multi-photo `images` and legacy `image`
+                let resolvedImages: string[] = [];
+                if (Array.isArray(minister.images) && minister.images.length > 0) {
+                    resolvedImages = minister.images;
+                } else if (minister.image) {
+                    resolvedImages = [minister.image];
+                }
+
                 setFormData({
                     name: minister.name,
                     position: minister.position,
@@ -54,7 +62,7 @@ export default function EditMinisterPage() {
                     email: minister.email || "",
                     phone: minister.phone || "",
                     bio: minister.bio || "",
-                    images: minister.images || [],
+                    images: resolvedImages,
                     displayOrder: minister.displayOrder || 0,
                     type: minister.type || "regular",
                     isVisible: minister.isVisible !== undefined ? minister.isVisible : true,
@@ -158,7 +166,11 @@ export default function EditMinisterPage() {
         setSaving(true);
 
         try {
-            await request.put(`/ministers/${ministerId}`, formData);
+            const payload = {
+                ...formData,
+                image: formData.images[0] || "",
+            };
+            await request.put(`/ministers/${ministerId}`, payload);
             setSuccess(true);
             setTimeout(() => {
                 router.push("/admin/ministers-manager");
@@ -386,38 +398,72 @@ export default function EditMinisterPage() {
                             <p className={styles.helperText}>Upload additional images for a slideshow effect.</p>
 
                             {formData.images.length > 0 && (
-                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '12px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '14px', marginTop: '16px' }}>
                                     {formData.images.map((img, index) => (
-                                        <div key={index} style={{ position: 'relative' }}>
-                                            <img
-                                                src={img}
-                                                alt={`Preview ${index + 1}`}
-                                                style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '8px', border: '2px solid #ddd' }}
-                                            />
+                                        <div
+                                            key={index}
+                                            style={{
+                                                position: 'relative',
+                                                background: 'rgba(255, 255, 255, 0.04)',
+                                                border: '1px solid rgba(255, 255, 255, 0.1)',
+                                                borderRadius: '10px',
+                                                padding: '8px',
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                alignItems: 'center',
+                                                gap: '8px'
+                                            }}
+                                        >
+                                            <div style={{ position: 'relative', width: '100%', height: '100px' }}>
+                                                <img
+                                                    src={img}
+                                                    alt={`Preview ${index + 1}`}
+                                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }}
+                                                />
+                                                <span
+                                                    style={{
+                                                        position: 'absolute',
+                                                        top: '4px',
+                                                        left: '4px',
+                                                        background: 'rgba(0, 0, 0, 0.75)',
+                                                        color: index === 0 ? '#facc15' : '#ffffff',
+                                                        fontSize: '10px',
+                                                        fontWeight: 700,
+                                                        padding: '2px 5px',
+                                                        borderRadius: '4px'
+                                                    }}
+                                                >
+                                                    {index === 0 ? '★ Primary' : `#${index + 1}`}
+                                                </span>
+                                            </div>
                                             <button
                                                 type="button"
-                                                onClick={() => setFormData(prev => ({
-                                                    ...prev,
-                                                    images: prev.images.filter((_, i) => i !== index)
-                                                }))}
+                                                onClick={() => {
+                                                    if (window.confirm(`Delete image #${index + 1}?`)) {
+                                                        setFormData(prev => ({
+                                                            ...prev,
+                                                            images: prev.images.filter((_, i) => i !== index)
+                                                        }));
+                                                    }
+                                                }}
                                                 style={{
-                                                    position: 'absolute',
-                                                    top: '-8px',
-                                                    right: '-8px',
-                                                    width: '22px',
-                                                    height: '22px',
-                                                    borderRadius: '50%',
-                                                    background: '#ef4444',
-                                                    color: 'white',
-                                                    border: 'none',
+                                                    width: '100%',
+                                                    padding: '5px',
+                                                    background: 'rgba(239, 68, 68, 0.15)',
+                                                    border: '1px solid rgba(239, 68, 68, 0.35)',
+                                                    color: '#fca5a5',
+                                                    borderRadius: '6px',
                                                     cursor: 'pointer',
-                                                    fontSize: '12px',
+                                                    fontSize: '11px',
+                                                    fontWeight: 600,
                                                     display: 'flex',
                                                     alignItems: 'center',
-                                                    justifyContent: 'center'
+                                                    justifyContent: 'center',
+                                                    gap: '4px'
                                                 }}
                                             >
-                                                ✕
+                                                <span>🗑️</span>
+                                                <span>Delete</span>
                                             </button>
                                         </div>
                                     ))}

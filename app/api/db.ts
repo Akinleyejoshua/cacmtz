@@ -1,11 +1,13 @@
 import mongoose from 'mongoose';
 
+interface MongooseCache {
+  conn: typeof mongoose | null;
+  promise: Promise<typeof mongoose> | null;
+}
+
 // Type the global object to store the cached connection
 declare global {
-  var mongooseCache: { 
-    conn: typeof mongoose | null;
-    promise: Promise<typeof mongoose> | null;
-  } | undefined;
+  var mongooseCache: MongooseCache | undefined;
 }
 
 const MONGODB_URI = process.env.MONGODB_URI || "";
@@ -17,9 +19,9 @@ if (!MONGODB_URI) {
 }
 
 // Initialize global cache variable
-let cached = global.mongooseCache;
-if (!cached) {
-  cached = global.mongooseCache = { conn: null, promise: null };
+let cached: MongooseCache = global.mongooseCache || { conn: null, promise: null };
+if (!global.mongooseCache) {
+  global.mongooseCache = cached;
 }
 
 /**

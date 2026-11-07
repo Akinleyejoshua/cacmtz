@@ -33,7 +33,13 @@ export default function MinistersManagerPage() {
   const fetchMinisters = async () => {
     try {
       const res = await request.get("/ministers");
-      setMinisters(res.data);
+      const normalized = (res.data || []).map((m: any) => ({
+        ...m,
+        images: Array.isArray(m.images) && m.images.length > 0
+          ? m.images
+          : (m.image ? [m.image] : [])
+      }));
+      setMinisters(normalized);
     } catch (error) {
       console.error("Failed to fetch ministers:", error);
     } finally {
@@ -61,6 +67,69 @@ export default function MinistersManagerPage() {
       })
       .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   }, [ministers, searchQuery, filterDepartment]);
+
+  const handleDeletePhoto = async (ministerId: string, imageIndex: number) => {
+    if (!window.confirm("Are you sure you want to delete this photo?")) return;
+    const currentMinister = ministers.find((m) => m._id === ministerId);
+    if (!currentMinister || !currentMinister.images) return;
+    const updatedImages = currentMinister.images.filter((_, idx) => idx !== imageIndex);
+
+    setPhotoDeletingIdx(imageIndex);
+    try {
+      await request.put(`/ministers/${ministerId}`, { ...currentMinister, images: updatedImages });
+      const updated = ministers.map((m) =>
+        m._id === ministerId ? { ...m, images: updatedImages } : m
+      );
+      setMinisters(updated);
+      if (activePhotoMinister && activePhotoMinister._id === ministerId) {
+        setActivePhotoMinister({ ...activePhotoMinister, images: updatedImages });
+      }
+    } catch (err) {
+      console.error("Failed to delete photo:", err);
+      alert("Failed to delete photo. Please try again.");
+    } finally {
+      setPhotoDeletingIdx(null);
+    }
+  };
+
+  const handleUploadPhoto = async (
+    ministerId: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const currentMinister = ministers.find((m) => m._id === ministerId);
+    if (!currentMinister) return;
+
+    setPhotoUploading(true);
+    const filesArray = Array.from(files);
+    const promises = filesArray.map((file) => {
+      return new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.readAsDataURL(file);
+      });
+    });
+
+    try {
+      const base64Images = await Promise.all(promises);
+      const updatedImages = [...(currentMinister.images || []), ...base64Images];
+      await request.put(`/ministers/${ministerId}`, { ...currentMinister, images: updatedImages });
+      const updated = ministers.map((m) =>
+        m._id === ministerId ? { ...m, images: updatedImages } : m
+      );
+      setMinisters(updated);
+      if (activePhotoMinister && activePhotoMinister._id === ministerId) {
+        setActivePhotoMinister({ ...activePhotoMinister, images: updatedImages });
+      }
+      e.target.value = "";
+    } catch (err) {
+      console.error("Failed to upload images:", err);
+      alert("Failed to upload images");
+    } finally {
+      setPhotoUploading(false);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this minister?")) {
@@ -204,6 +273,7 @@ export default function MinistersManagerPage() {
                 <tr>
                   <th>Order</th>
                   <th>ID</th>
+                  <th>Photo(s)</th>
                   <th>Name</th>
                   <th>Position</th>
                   <th>Department</th>
@@ -252,6 +322,41 @@ export default function MinistersManagerPage() {
                     </td>
                     <td className={styles.idCell}>
                       <span className={styles.idBadge}>{minister._id.substring(0, 6)}...</span>
+                    </td>
+                    <td className={styles.photoCell}>
+                      <div
+                        className={styles.photoStack}
+                        onClick={() => setActivePhotoMinister(minister)}
+                        title="Click to view and manage photos"
+                      >
+                        {minister.images && minister.images.length > 0 ? (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                            <div style={{ position: 'relative', width: 42, height: 42 }}>
+                              <img
+                                src={minister.images[0]}
+                                alt={minister.name}
+                                style={{
+                                  width: 42,
+                                  height: 42,
+                                  borderRadius: 8,
+                                  objectFit: 'cover',
+                                  border: '2px solid rgba(168, 85, 247, 0.5)',
+                                }}
+                              />
+                              {minister.images.length > 1 && (
+                                <span className={styles.photoCountBadge}>
+                                  +{minister.images.length - 1}
+                                </span>
+                              )}
+                            </div>
+                            <span className={styles.photoManageLink}>
+                              {minister.images.length} {minister.images.length === 1 ? 'photo' : 'photos'}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className={styles.noPhotoBadge}>+ Add Photo</span>
+                        )}
+                      </div>
                     </td>
                     <td className={styles.nameCell}>
                       <div className={styles.ministerName}>{minister.name}</div>
@@ -330,6 +435,90 @@ export default function MinistersManagerPage() {
             <div className={styles.statLabel}>Departments</div>
           </div>
         </div>
+
+        {/* Photos Viewer & Management Modal */}
+        {activePhotoMinister && (
+          <div
+            className={styles.modalOverlay}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setActivePhotoMinister(null);
+            }}
+          >
+            <div className={styles.modalContent}>
+              <div className={styles.modalHeader}>
+                <div>
+                  <h2 className={styles.modalTitle}>
+                    Photos for {activePhotoMinister.name}
+                  </h2>
+                  <p className={styles.modalSubtitle}>
+                    {activePhotoMinister.position} &bull; {activePhotoMinister.department}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setActivePhotoMinister(null)}
+                  className={styles.modalCloseBtn}
+                  title="Close"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <div className={styles.modalBody}>
+                {activePhotoMinister.images && activePhotoMinister.images.length > 0 ? (
+                  <div className={styles.photoGrid}>
+                    {activePhotoMinister.images.map((img, idx) => (
+                      <div key={idx} className={styles.photoCard}>
+                        <div className={styles.photoImageWrap}>
+                          <img
+                            src={img}
+                            alt={`${activePhotoMinister.name} photo ${idx + 1}`}
+                            className={styles.photoPreviewImg}
+                          />
+                          <span className={styles.photoIndexBadge}>
+                            {idx === 0 ? "★ Primary" : `#${idx + 1}`}
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          className={styles.deletePhotoBtn}
+                          disabled={photoDeletingIdx === idx}
+                          onClick={() => handleDeletePhoto(activePhotoMinister._id, idx)}
+                          title="Delete this photo"
+                        >
+                          <span>🗑️</span>
+                          <span>{photoDeletingIdx === idx ? "Deleting..." : "Delete Photo"}</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={styles.noPhotosNotice}>
+                    <p>No photos uploaded yet for this minister.</p>
+                  </div>
+                )}
+
+                {/* Upload additional photo */}
+                <div className={styles.uploadArea}>
+                  <label className={styles.uploadLabel}>
+                    <span>{photoUploading ? "Uploading..." : "+ Upload New Photo(s)"}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      disabled={photoUploading}
+                      onChange={(e) => handleUploadPhoto(activePhotoMinister._id, e)}
+                      style={{ display: "none" }}
+                    />
+                  </label>
+                  <p className={styles.uploadHint}>
+                    PNG, JPG, or WebP. Slideshow displays all uploaded photos on the public ministers page.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
