@@ -127,7 +127,7 @@ export default function Events({ events, title = "Upcoming Events" }: EventsProp
                           })()}
                         </div>
                         <div style={{ display: 'flex', gap: '10px' }}>
-                          {event.isPublicDetailedView && (
+                          {event.isPublicDetailedView !== false && (
                             <Link href={`/event/${event._id}`} className={styles.liveBtn}>
                               See More
                             </Link>

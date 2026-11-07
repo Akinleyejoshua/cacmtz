@@ -220,7 +220,7 @@ export default function Banner({ generalSettings }: BannerProps) {
                     </a>
                   )}
                   {/* Public Event See More Button */}
-                  {nextEvent.isPublicDetailedView && (
+                  {nextEvent.isPublicDetailedView !== false && (
                     <Link href={`/event/${nextEvent.id}`} className={styles.liveButton} style={{ marginLeft: isEventCurrentlyLive(nextEvent) ? '1rem' : '0', background: isEventCurrentlyLive(nextEvent) ? 'rgba(255,255,255,0.1)' : 'var(--button-bg)' }}>
                       See More
                     </Link>

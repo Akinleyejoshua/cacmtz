@@ -22,6 +22,16 @@ const nextConfig: NextConfig = {
         destination: "/donate",
         permanent: true,
       },
+      {
+        source: "/events",
+        destination: "/#events",
+        permanent: true,
+      },
+      {
+        source: "/event",
+        destination: "/#events",
+        permanent: true,
+      },
     ];
   },
 };

@@ -12,12 +12,6 @@ import { renderMarkdown } from "../../utils/helpers";
 
 export const revalidate = 0; // Ensure fresh data on every request
 
-interface PageProps {
-    params: {
-        id: string;
-    };
-}
-
 export default async function EventDetailPage({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     const eventService = new EventService();
@@ -27,24 +21,30 @@ export default async function EventDetailPage({ params }: { params: Promise<{ id
     let generalSettings: any = null;
 
     try {
-        const [eventData, generalData] = await Promise.all([
-            eventService.get_event(id),
-            generalService.get_general()
-        ]);
-        event = JSON.parse(JSON.stringify(eventData));
-        generalSettings = JSON.parse(JSON.stringify(generalData));
-
+        const eventData = await eventService.get_event(id);
+        if (eventData) {
+            event = JSON.parse(JSON.stringify(eventData));
+        }
     } catch (error) {
-        console.error("Error fetching data:", error);
-        notFound();
+        console.error("Error fetching event data:", error);
     }
 
     if (!event) {
         notFound();
     }
 
-    // Check if detailed view is public
-    if (!event.isPublicDetailedView) {
+    try {
+        const generalData = await generalService.get_general();
+        if (generalData) {
+            generalSettings = JSON.parse(JSON.stringify(generalData));
+        }
+    } catch (error) {
+        console.error("Error fetching general settings:", error);
+        generalSettings = {};
+    }
+
+    // Check if detailed view is explicitly disabled
+    if (event.isPublicDetailedView === false) {
         return (
             <div className={styles.page}>
                 <MainHeader />

@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Event from "../models/event";
 import "../models/minister";
 import "../models/bulletin";
@@ -26,17 +27,31 @@ class EventService {
 
     get_event = async (id: string) => {
         await dbConnect();
-        return await Event.findById(id).populate('eventMinisters').populate('bulletinId').lean();
+        if (!id || !mongoose.isValidObjectId(id)) {
+            return null;
+        }
+        try {
+            return await Event.findById(id).populate('eventMinisters').populate('bulletinId').lean();
+        } catch (error) {
+            console.error("Populate failed in get_event, falling back to unpopulated:", error);
+            return await Event.findById(id).lean();
+        }
     }
 
     update_event = async (id: string, data: any) => {
         await dbConnect();
+        if (!id || !mongoose.isValidObjectId(id)) {
+            return null;
+        }
         const cleanedData = this.cleanup_data(data);
         return await Event.findByIdAndUpdate(id, cleanedData);
     }
 
     delete_event = async (id: string) => {
         await dbConnect();
+        if (!id || !mongoose.isValidObjectId(id)) {
+            return null;
+        }
         return await Event.findByIdAndDelete(id);
     }
 }

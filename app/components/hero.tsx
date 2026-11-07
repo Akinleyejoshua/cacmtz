@@ -33,7 +33,7 @@ We are blessed to welcome you to our church.`,
 		title: "Community & Ministries",
 		subtitle: "At C.A.C Mount Zion, we believe in the power of community and purposeful service. Our diverse ministries reach families, youth, and our city with compassion and hope. Whether you're seeking spiritual growth, fellowship, or ways to make a meaningful difference, there's a place for you here.",
 		cta: { label: "Explore Our Ministries", href: "/ministries" },
-		secondary: { label: "Upcoming Events", href: "/events" },
+		secondary: { label: "Upcoming Events", href: "/#events" },
 	},
 	{
 		id: "s3",
