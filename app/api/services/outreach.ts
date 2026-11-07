@@ -149,10 +149,19 @@ export async function getOutreachPageData() {
   }
 
   // 4. Videos (Revelation)
-  const videos = await OutreachVideo.find().sort({ order: 1, createdAt: -1 }).lean();
+  const rawVideos = await OutreachVideo.find().sort({ order: 1, createdAt: -1 }).lean();
+  const videos = rawVideos.map((v: any) => ({
+    ...v,
+    youtubeUrls: v.youtubeUrls && v.youtubeUrls.length > 0 ? v.youtubeUrls : v.youtubeUrl ? [v.youtubeUrl] : [],
+  }));
 
   // 5. Projects
-  const projects = await ChurchProject.find().sort({ order: 1, createdAt: -1 }).lean();
+  const rawProjects = await ChurchProject.find().sort({ order: 1, createdAt: -1 }).lean();
+  const projects = rawProjects.map((p: any) => ({
+    ...p,
+    images: p.images || [],
+    videoUrls: p.videoUrls || [],
+  }));
 
   return {
     settings,
@@ -190,22 +199,53 @@ export async function updateSettings(data: Partial<IOutreachSettings>) {
 // Videos (Revelation)
 export async function getVideos() {
   await dbConnect();
-  return await OutreachVideo.find().sort({ order: 1, createdAt: -1 }).lean();
+  const rawVideos = await OutreachVideo.find().sort({ order: 1, createdAt: -1 }).lean();
+  return rawVideos.map((v: any) => ({
+    ...v,
+    youtubeUrls: v.youtubeUrls && v.youtubeUrls.length > 0 ? v.youtubeUrls : v.youtubeUrl ? [v.youtubeUrl] : [],
+  }));
 }
 
 export async function createVideo(data: {
   title: string;
   description: string;
-  youtubeUrl: string;
+  youtubeUrl?: string;
+  youtubeUrls?: string[];
   order?: number;
 }) {
   await dbConnect();
-  return await OutreachVideo.create(data);
+  const urls =
+    data.youtubeUrls && data.youtubeUrls.length > 0
+      ? data.youtubeUrls.map((u) => u.trim()).filter(Boolean)
+      : data.youtubeUrl
+      ? [data.youtubeUrl.trim()]
+      : [];
+
+  return await OutreachVideo.create({
+    ...data,
+    youtubeUrls: urls,
+    youtubeUrl: urls[0] || "",
+  });
 }
 
 export async function updateVideo(id: string, data: any) {
   await dbConnect();
-  return await OutreachVideo.findByIdAndUpdate(id, data, { new: true });
+  const urls =
+    data.youtubeUrls && data.youtubeUrls.length > 0
+      ? data.youtubeUrls.map((u: string) => u.trim()).filter(Boolean)
+      : data.youtubeUrl
+      ? [data.youtubeUrl.trim()]
+      : [];
+
+  return await OutreachVideo.findByIdAndUpdate(
+    id,
+    {
+      ...data,
+      youtubeUrls: urls,
+      youtubeUrl: urls[0] || "",
+    },
+    { new: true }
+  );
 }
 
 export async function deleteVideo(id: string) {
@@ -263,25 +303,43 @@ export async function deleteDonationType(id: string) {
 // Projects
 export async function getProjects() {
   await dbConnect();
-  return await ChurchProject.find().sort({ order: 1, createdAt: -1 }).lean();
+  const rawProjects = await ChurchProject.find().sort({ order: 1, createdAt: -1 }).lean();
+  return rawProjects.map((p: any) => ({
+    ...p,
+    images: p.images || [],
+    videoUrls: p.videoUrls || [],
+  }));
 }
 
 export async function createProject(data: {
   title: string;
   description: string;
   images?: string[];
+  videoUrls?: string[];
   amount?: number | null;
   currency?: string;
   status?: "Active" | "Ongoing" | "Completed";
   order?: number;
 }) {
   await dbConnect();
-  return await ChurchProject.create(data);
+  return await ChurchProject.create({
+    ...data,
+    images: Array.isArray(data.images) ? data.images : [],
+    videoUrls: Array.isArray(data.videoUrls) ? data.videoUrls.filter(Boolean) : [],
+  });
 }
 
 export async function updateProject(id: string, data: any) {
   await dbConnect();
-  return await ChurchProject.findByIdAndUpdate(id, data, { new: true });
+  return await ChurchProject.findByIdAndUpdate(
+    id,
+    {
+      ...data,
+      images: Array.isArray(data.images) ? data.images : [],
+      videoUrls: Array.isArray(data.videoUrls) ? data.videoUrls.filter(Boolean) : [],
+    },
+    { new: true }
+  );
 }
 
 export async function deleteProject(id: string) {

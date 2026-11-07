@@ -37,11 +37,12 @@ export const OutreachSettings: Model<IOutreachSettings> =
   (mongoose.models.OutreachSettings as Model<IOutreachSettings>) ||
   mongoose.model<IOutreachSettings>("OutreachSettings", OutreachSettingsSchema);
 
-// 2. Revelation (Videos)
+// 2. Revelation (Videos) - Supports multiple stacked video URLs
 export interface IOutreachVideo extends Document {
   title: string;
   description: string;
-  youtubeUrl: string;
+  youtubeUrl?: string;
+  youtubeUrls: string[];
   order: number;
   createdAt: Date;
   updatedAt: Date;
@@ -51,7 +52,8 @@ const OutreachVideoSchema: Schema<IOutreachVideo> = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
-    youtubeUrl: { type: String, required: true },
+    youtubeUrl: { type: String, default: "" },
+    youtubeUrls: { type: [String], default: [] },
     order: { type: Number, default: 0 },
   },
   { timestamps: true }
@@ -108,11 +110,12 @@ export const DonationType: Model<IDonationType> =
   (mongoose.models.DonationType as Model<IDonationType>) ||
   mongoose.model<IDonationType>("DonationType", DonationTypeSchema);
 
-// 5. Church Project (e.g. Church Bus, Building, etc.)
+// 5. Church Project (Supports multiple images and video URLs)
 export interface IChurchProject extends Document {
   title: string;
   description: string;
   images: string[];
+  videoUrls: string[];
   amount?: number | null;
   currency: string;
   status: "Active" | "Ongoing" | "Completed";
@@ -126,6 +129,7 @@ const ChurchProjectSchema: Schema<IChurchProject> = new Schema(
     title: { type: String, required: true },
     description: { type: String, required: true },
     images: { type: [String], default: [] },
+    videoUrls: { type: [String], default: [] },
     amount: { type: Number, default: null },
     currency: { type: String, default: "NGN" },
     status: {

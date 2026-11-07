@@ -20,6 +20,7 @@ import {
   FaTrash,
   FaSave,
   FaExternalLinkAlt,
+  FaImage as FaImageIcon,
 } from "react-icons/fa";
 import styles from "./page.module.css";
 
@@ -52,7 +53,17 @@ export default function OutreachManagerPage() {
   // Modals state
   const [videoModalOpen, setVideoModalOpen] = useState(false);
   const [editingVideo, setEditingVideo] = useState<OutreachVideoData | null>(null);
-  const [videoForm, setVideoForm] = useState({ title: "", description: "", youtubeUrl: "", order: 0 });
+  const [videoForm, setVideoForm] = useState<{
+    title: string;
+    description: string;
+    youtubeUrls: string[];
+    order: number;
+  }>({
+    title: "",
+    description: "",
+    youtubeUrls: [""],
+    order: 0,
+  });
 
   const [accountModalOpen, setAccountModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<BankAccountData | null>(null);
@@ -75,6 +86,7 @@ export default function OutreachManagerPage() {
     currency: string;
     status: "Active" | "Ongoing" | "Completed";
     images: string[];
+    videoUrls: string[];
   }>({
     title: "",
     description: "",
@@ -82,7 +94,12 @@ export default function OutreachManagerPage() {
     currency: "NGN",
     status: "Active",
     images: [],
+    videoUrls: [],
   });
+
+  // Additional live URL inputs for projects
+  const [liveImageUrlInput, setLiveImageUrlInput] = useState("");
+  const [liveVideoUrlInput, setLiveVideoUrlInput] = useState("");
 
   const showNotification = (msg: string) => {
     setSuccessMessage(msg);
@@ -125,39 +142,82 @@ export default function OutreachManagerPage() {
     }
   };
 
-  // 2. Video CRUD
+  // 2. Video (Revelation) CRUD with multi-video stack
   const handleOpenVideoModal = (video?: OutreachVideoData) => {
     if (video) {
       setEditingVideo(video);
+      const urls =
+        video.youtubeUrls && video.youtubeUrls.length > 0
+          ? video.youtubeUrls
+          : video.youtubeUrl
+          ? [video.youtubeUrl]
+          : [""];
       setVideoForm({
         title: video.title,
         description: video.description,
-        youtubeUrl: video.youtubeUrl,
+        youtubeUrls: urls,
         order: video.order || 0,
       });
     } else {
       setEditingVideo(null);
-      setVideoForm({ title: "", description: "", youtubeUrl: "", order: 0 });
+      setVideoForm({
+        title: "",
+        description: "",
+        youtubeUrls: [""],
+        order: 0,
+      });
     }
     setVideoModalOpen(true);
   };
 
+  const handleAddVideoUrlField = () => {
+    setVideoForm((prev) => ({
+      ...prev,
+      youtubeUrls: [...prev.youtubeUrls, ""],
+    }));
+  };
+
+  const handleVideoUrlChange = (index: number, val: string) => {
+    setVideoForm((prev) => {
+      const next = [...prev.youtubeUrls];
+      next[index] = val;
+      return { ...prev, youtubeUrls: next };
+    });
+  };
+
+  const handleRemoveVideoUrlField = (index: number) => {
+    setVideoForm((prev) => ({
+      ...prev,
+      youtubeUrls: prev.youtubeUrls.filter((_, i) => i !== index),
+    }));
+  };
+
   const handleSaveVideo = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!videoForm.title || !videoForm.youtubeUrl) {
-      alert("Please enter a title and valid YouTube URL.");
+    const cleanUrls = videoForm.youtubeUrls.map((u) => u.trim()).filter(Boolean);
+
+    if (!videoForm.title || cleanUrls.length === 0) {
+      alert("Please enter a title and at least one valid YouTube URL.");
       return;
     }
 
+    const payload = {
+      title: videoForm.title,
+      description: videoForm.description,
+      youtubeUrl: cleanUrls[0],
+      youtubeUrls: cleanUrls,
+      order: videoForm.order,
+    };
+
     try {
       if (editingVideo) {
-        const res = await request.put(`/outreach/videos/${editingVideo._id}`, videoForm);
+        const res = await request.put(`/outreach/videos/${editingVideo._id}`, payload);
         setVideos((prev) => prev.map((v) => (v._id === editingVideo._id ? res.data : v)));
-        showNotification("Video updated successfully!");
+        showNotification("Revelation video(s) updated successfully!");
       } else {
-        const res = await request.post("/outreach/videos", videoForm);
+        const res = await request.post("/outreach/videos", payload);
         setVideos((prev) => [res.data, ...prev]);
-        showNotification("New Revelation video added successfully!");
+        showNotification("New Revelation video(s) added successfully!");
       }
       setVideoModalOpen(false);
     } catch (err) {
@@ -252,8 +312,10 @@ export default function OutreachManagerPage() {
     }
   };
 
-  // 4. Project CRUD
+  // 4. Project CRUD (Multi-Image + Multi-Video URLs)
   const handleOpenProjectModal = (project?: ChurchProjectData) => {
+    setLiveImageUrlInput("");
+    setLiveVideoUrlInput("");
     if (project) {
       setEditingProject(project);
       setProjectForm({
@@ -263,6 +325,7 @@ export default function OutreachManagerPage() {
         currency: project.currency || "NGN",
         status: project.status || "Active",
         images: project.images || [],
+        videoUrls: project.videoUrls || [],
       });
     } else {
       setEditingProject(null);
@@ -273,6 +336,7 @@ export default function OutreachManagerPage() {
         currency: "NGN",
         status: "Active",
         images: [],
+        videoUrls: [],
       });
     }
     setProjectModalOpen(true);
@@ -296,10 +360,37 @@ export default function OutreachManagerPage() {
     });
   };
 
+  const handleAddLiveImageUrl = () => {
+    const trimmed = liveImageUrlInput.trim();
+    if (!trimmed) return;
+    setProjectForm((prev) => ({
+      ...prev,
+      images: [...prev.images, trimmed],
+    }));
+    setLiveImageUrlInput("");
+  };
+
   const handleRemoveImage = (indexToRemove: number) => {
     setProjectForm((prev) => ({
       ...prev,
       images: prev.images.filter((_, idx) => idx !== indexToRemove),
+    }));
+  };
+
+  const handleAddLiveVideoUrl = () => {
+    const trimmed = liveVideoUrlInput.trim();
+    if (!trimmed) return;
+    setProjectForm((prev) => ({
+      ...prev,
+      videoUrls: [...prev.videoUrls, trimmed],
+    }));
+    setLiveVideoUrlInput("");
+  };
+
+  const handleRemoveVideoUrl = (indexToRemove: number) => {
+    setProjectForm((prev) => ({
+      ...prev,
+      videoUrls: prev.videoUrls.filter((_, idx) => idx !== indexToRemove),
     }));
   };
 
@@ -317,6 +408,7 @@ export default function OutreachManagerPage() {
       currency: projectForm.currency,
       status: projectForm.status,
       images: projectForm.images,
+      videoUrls: projectForm.videoUrls,
     };
 
     try {
@@ -365,14 +457,14 @@ export default function OutreachManagerPage() {
         <div>
           <h1 className={styles.title}>Global Kingdom Outreach Manager</h1>
           <p className={styles.subtitle}>
-            Manage outreach headlines, Revelation videos, church bank accounts, and fundraising projects
+            Manage outreach headlines, Revelation video stacks, church bank accounts, and live project assets
           </p>
         </div>
 
         {activeTab === "videos" && (
           <button type="button" className={styles.actionBtn} onClick={() => handleOpenVideoModal()}>
             <FaPlus />
-            <span>Add Video</span>
+            <span>Add Revelation Videos</span>
           </button>
         )}
 
@@ -504,19 +596,27 @@ export default function OutreachManagerPage() {
             <div className={styles.emptyState}>
               <FaVideo style={{ fontSize: 36, opacity: 0.4 }} />
               <h3 className={styles.emptyStateTitle}>No Revelation Videos Found</h3>
-              <p>Add YouTube videos showcasing your church outreaches and community impact.</p>
+              <p>Add YouTube video stacks showcasing your church outreaches and community impact.</p>
               <button
                 type="button"
                 className={styles.actionBtn}
                 style={{ marginTop: 12 }}
                 onClick={() => handleOpenVideoModal()}
               >
-                + Add First Video
+                + Add Revelation Video Stack
               </button>
             </div>
           ) : (
             videos.map((vid) => {
-              const thumbUrl = getYouTubeThumbnailUrl(vid.youtubeUrl);
+              const videoUrls =
+                vid.youtubeUrls && vid.youtubeUrls.length > 0
+                  ? vid.youtubeUrls
+                  : vid.youtubeUrl
+                  ? [vid.youtubeUrl]
+                  : [];
+              const primaryUrl = videoUrls[0] || "";
+              const thumbUrl = getYouTubeThumbnailUrl(primaryUrl);
+
               return (
                 <div key={vid._id} className={styles.card}>
                   <div className={styles.cardImageWrap}>
@@ -536,19 +636,32 @@ export default function OutreachManagerPage() {
                     )}
                   </div>
                   <div className={styles.cardBody}>
-                    <h3 className={styles.cardTitle}>{vid.title}</h3>
-                    <p className={styles.cardDesc}>{vid.description}</p>
-                    <div className={styles.cardMeta}>
-                      <a
-                        href={vid.youtubeUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        style={{ color: "#38bdf8", display: "inline-flex", alignItems: "center", gap: 4 }}
-                      >
-                        <span>Open YouTube</span>
-                        <FaExternalLinkAlt size={11} />
-                      </a>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                      <h3 className={styles.cardTitle}>{vid.title}</h3>
+                      {videoUrls.length > 1 && (
+                        <span className={styles.badgeStacked}>
+                          <FaVideo size={10} />
+                          <span>{videoUrls.length} Videos</span>
+                        </span>
+                      )}
                     </div>
+
+                    <p className={styles.cardDesc}>{vid.description}</p>
+
+                    <div className={styles.cardMeta}>
+                      {primaryUrl && (
+                        <a
+                          href={primaryUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: "#38bdf8", display: "inline-flex", alignItems: "center", gap: 4 }}
+                        >
+                          <span>Open Primary Video</span>
+                          <FaExternalLinkAlt size={11} />
+                        </a>
+                      )}
+                    </div>
+
                     <div className={styles.cardActions}>
                       <button
                         type="button"
@@ -663,7 +776,7 @@ export default function OutreachManagerPage() {
             <div className={styles.emptyState}>
               <FaHandHoldingHeart style={{ fontSize: 36, opacity: 0.4 }} />
               <h3 className={styles.emptyStateTitle}>No Church Projects Found</h3>
-              <p>Add fundraising campaigns like the Church Bus, sanctuary building, or outreach gear.</p>
+              <p>Add fundraising campaigns with images and video walkthroughs.</p>
               <button
                 type="button"
                 className={styles.actionBtn}
@@ -676,6 +789,9 @@ export default function OutreachManagerPage() {
           ) : (
             projects.map((proj) => {
               const hasImage = proj.images && proj.images.length > 0;
+              const hasVideos = proj.videoUrls && proj.videoUrls.length > 0;
+              const totalMedia = (proj.images?.length || 0) + (proj.videoUrls?.length || 0);
+
               return (
                 <div key={proj._id} className={styles.card}>
                   <div className={styles.cardImageWrap}>
@@ -688,14 +804,29 @@ export default function OutreachManagerPage() {
                         sizes="(max-width: 768px) 100vw, 33vw"
                         className={styles.cardImage}
                       />
+                    ) : hasVideos ? (
+                      <iframe
+                        src={getYouTubeEmbedUrl(proj.videoUrls![0])}
+                        title={proj.title}
+                        style={{ width: "100%", height: "100%", border: "none" }}
+                      />
                     ) : (
                       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "#666" }}>
-                        No Image
+                        No Media
                       </div>
                     )}
                   </div>
                   <div className={styles.cardBody}>
-                    <h3 className={styles.cardTitle}>{proj.title}</h3>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
+                      <h3 className={styles.cardTitle}>{proj.title}</h3>
+                      {totalMedia > 1 && (
+                        <span className={styles.badgeStacked}>
+                          <span>{proj.images?.length || 0} 📷</span>
+                          <span>{proj.videoUrls?.length || 0} 🎬</span>
+                        </span>
+                      )}
+                    </div>
+
                     <p className={styles.cardDesc}>{proj.description}</p>
                     <div className={styles.cardMeta}>
                       <span>Status: <strong style={{ color: "#4ade80" }}>{proj.status}</strong></span>
@@ -732,17 +863,17 @@ export default function OutreachManagerPage() {
       )}
 
       {/* ========================================= */}
-      {/* MODAL 1: ADD / EDIT VIDEO */}
+      {/* MODAL 1: ADD / EDIT VIDEO (MULTI-VIDEO STACK) */}
       {/* ========================================= */}
       {videoModalOpen && (
         <div className={styles.modalOverlay} onClick={() => setVideoModalOpen(false)}>
           <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
             <h2 className={styles.modalTitle}>
-              {editingVideo ? "Edit Revelation Video" : "Add Revelation Video"}
+              {editingVideo ? "Edit Revelation Video Stack" : "Add Revelation Video Stack"}
             </h2>
             <form onSubmit={handleSaveVideo}>
               <div className={styles.formGroup}>
-                <label className={styles.label}>Video Title *</label>
+                <label className={styles.label}>Revelation Title *</label>
                 <input
                   type="text"
                   className={styles.input}
@@ -753,28 +884,62 @@ export default function OutreachManagerPage() {
                 />
               </div>
 
+              {/* Stacked YouTube URLs */}
               <div className={styles.formGroup}>
-                <label className={styles.label}>YouTube URL *</label>
-                <input
-                  type="text"
-                  className={styles.input}
-                  value={videoForm.youtubeUrl}
-                  onChange={(e) => setVideoForm({ ...videoForm, youtubeUrl: e.target.value })}
-                  placeholder="e.g. https://www.youtube.com/watch?v=... or https://youtu.be/..."
-                  required
-                />
-                <span className={styles.hint}>Supports standard videos, shorts, live streams, or embed links.</span>
+                <label className={styles.label}>
+                  YouTube Video Links * ({videoForm.youtubeUrls.length} stacked)
+                </label>
+                <span className={styles.hint} style={{ display: "block", marginBottom: 8 }}>
+                  You can stack multiple video URLs for this revelation. Users will be able to slide through them on the donate page.
+                </span>
+
+                {videoForm.youtubeUrls.map((url, idx) => (
+                  <div key={idx} className={styles.multiUrlRow}>
+                    <input
+                      type="text"
+                      className={styles.input}
+                      value={url}
+                      onChange={(e) => handleVideoUrlChange(idx, e.target.value)}
+                      placeholder={`Video Link #${idx + 1} (e.g. https://www.youtube.com/watch?v=...)`}
+                      required={idx === 0}
+                    />
+                    {videoForm.youtubeUrls.length > 1 && (
+                      <button
+                        type="button"
+                        className={styles.deleteBtn}
+                        style={{ padding: "8px 12px", borderRadius: 6, cursor: "pointer", border: "1px solid rgba(239,68,68,0.3)" }}
+                        onClick={() => handleRemoveVideoUrlField(idx)}
+                        title="Remove Video"
+                      >
+                        ✕
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  className={styles.secondaryBtn}
+                  onClick={handleAddVideoUrlField}
+                  style={{ marginTop: 6 }}
+                >
+                  <FaPlus size={10} />
+                  <span>Add Another Video URL</span>
+                </button>
               </div>
 
-              {/* Live Preview */}
-              {getYouTubeEmbedUrl(videoForm.youtubeUrl) && (
-                <div className={styles.previewBox}>
-                  <iframe
-                    className={styles.previewIframe}
-                    src={getYouTubeEmbedUrl(videoForm.youtubeUrl)}
-                    title="Live Preview"
-                    allowFullScreen
-                  />
+              {/* Live Preview for the first valid video URL */}
+              {videoForm.youtubeUrls.some((u) => getYouTubeEmbedUrl(u)) && (
+                <div style={{ marginTop: 14 }}>
+                  <label className={styles.label}>Preview (First Video)</label>
+                  <div className={styles.previewBox}>
+                    <iframe
+                      className={styles.previewIframe}
+                      src={getYouTubeEmbedUrl(videoForm.youtubeUrls.find((u) => getYouTubeEmbedUrl(u)) || "")}
+                      title="Live Preview"
+                      allowFullScreen
+                    />
+                  </div>
                 </div>
               )}
 
@@ -794,7 +959,7 @@ export default function OutreachManagerPage() {
                   Cancel
                 </button>
                 <button type="submit" className={styles.submitBtn}>
-                  {editingVideo ? "Update Video" : "Create Video"}
+                  {editingVideo ? "Update Video Stack" : "Create Video Stack"}
                 </button>
               </div>
             </form>
@@ -896,7 +1061,7 @@ export default function OutreachManagerPage() {
       )}
 
       {/* ========================================= */}
-      {/* MODAL 3: ADD / EDIT PROJECT */}
+      {/* MODAL 3: ADD / EDIT PROJECT (MULTI-IMAGE + MULTI-VIDEO) */}
       {/* ========================================= */}
       {projectModalOpen && (
         <div className={styles.modalOverlay} onClick={() => setProjectModalOpen(false)}>
@@ -959,8 +1124,11 @@ export default function OutreachManagerPage() {
                 </select>
               </div>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Project Images</label>
+              {/* 1. PROJECT IMAGES SECTION */}
+              <div className={styles.formGroup} style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 14 }}>
+                <label className={styles.label}>Project Images (Upload or paste live URLs)</label>
+
+                {/* Local file uploader */}
                 <input
                   type="file"
                   accept="image/*"
@@ -969,6 +1137,25 @@ export default function OutreachManagerPage() {
                   className={styles.input}
                 />
 
+                {/* Paste Live Image URL */}
+                <div className={styles.inputWithBtnRow}>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    value={liveImageUrlInput}
+                    onChange={(e) => setLiveImageUrlInput(e.target.value)}
+                    placeholder="Or paste live image URL (https://...)"
+                  />
+                  <button
+                    type="button"
+                    className={styles.secondaryBtn}
+                    onClick={handleAddLiveImageUrl}
+                  >
+                    + Add URL
+                  </button>
+                </div>
+
+                {/* Image Previews */}
                 {projectForm.images.length > 0 && (
                   <div className={styles.imagePreviewRow}>
                     {projectForm.images.map((img, idx) => (
@@ -979,6 +1166,60 @@ export default function OutreachManagerPage() {
                           className={styles.imageRemoveBtn}
                           onClick={() => handleRemoveImage(idx)}
                           title="Remove Image"
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* 2. PROJECT VIDEO URLS SECTION */}
+              <div className={styles.formGroup} style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: 14 }}>
+                <label className={styles.label}>Project Video Walkthroughs (YouTube URLs)</label>
+                <div className={styles.inputWithBtnRow}>
+                  <input
+                    type="text"
+                    className={styles.input}
+                    value={liveVideoUrlInput}
+                    onChange={(e) => setLiveVideoUrlInput(e.target.value)}
+                    placeholder="Paste YouTube video URL (https://www.youtube.com/...)"
+                  />
+                  <button
+                    type="button"
+                    className={styles.secondaryBtn}
+                    onClick={handleAddLiveVideoUrl}
+                  >
+                    + Add Video
+                  </button>
+                </div>
+
+                {projectForm.videoUrls.length > 0 && (
+                  <div style={{ marginTop: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                    {projectForm.videoUrls.map((url, idx) => (
+                      <div
+                        key={idx}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "6px 10px",
+                          borderRadius: 6,
+                          background: "rgba(0,0,0,0.3)",
+                          border: "1px solid rgba(255,255,255,0.08)",
+                          fontSize: 13,
+                        }}
+                      >
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "85%" }}>
+                          🎬 {url}
+                        </span>
+                        <button
+                          type="button"
+                          className={styles.deleteBtn}
+                          style={{ padding: "3px 8px", borderRadius: 4, cursor: "pointer", border: "none" }}
+                          onClick={() => handleRemoveVideoUrl(idx)}
+                          title="Remove Video"
                         >
                           ✕
                         </button>

@@ -6,6 +6,7 @@ import Link from "next/link";
 import styles from "./donation.module.css";
 import request from "../utils/axios";
 import { getYouTubeEmbedUrl } from "../utils/youtube";
+import LoadingSpinner from "../components/loading-spinner";
 import {
   OutreachSettingsData,
   BankAccountData,
@@ -21,6 +22,9 @@ import {
   FaCheck,
   FaYoutube,
   FaQuoteLeft,
+  FaChevronLeft,
+  FaChevronRight,
+  FaImage as FaImageIcon,
 } from "react-icons/fa";
 
 interface DonationSectionProps {
@@ -42,7 +46,266 @@ const resolveLogo = (logo?: string) => {
   return `/src/img/donations/${logo}`;
 };
 
+// 1. REVELATION MULTI-VIDEO CARD COMPONENT
+function RevelationVideoCard({ video }: { video: OutreachVideoData }) {
+  const videoUrls =
+    video.youtubeUrls && video.youtubeUrls.length > 0
+      ? video.youtubeUrls
+      : video.youtubeUrl
+      ? [video.youtubeUrl]
+      : [];
+
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const totalVideos = videoUrls.length;
+  const currentUrl = videoUrls[activeIdx] || "";
+  const embedUrl = getYouTubeEmbedUrl(currentUrl);
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveIdx((prev) => (prev > 0 ? prev - 1 : totalVideos - 1));
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveIdx((prev) => (prev < totalVideos - 1 ? prev + 1 : 0));
+  };
+
+  return (
+    <article className={styles.videoCard}>
+      {/* Header bar if multiple videos stacked */}
+      {totalVideos > 1 && (
+        <div className={styles.sliderControls}>
+          <button
+            type="button"
+            className={styles.sliderArrowBtn}
+            onClick={handlePrev}
+            aria-label="Previous video"
+            title="Previous Video"
+          >
+            <FaChevronLeft size={11} />
+          </button>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <span className={styles.sliderBadge}>
+              <FaVideo size={11} />
+              <span>
+                Video {activeIdx + 1} of {totalVideos}
+              </span>
+            </span>
+
+            <div className={styles.sliderDots}>
+              {videoUrls.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`${styles.sliderDot} ${
+                    idx === activeIdx ? styles.sliderDotActive : ""
+                  }`}
+                  onClick={() => setActiveIdx(idx)}
+                  aria-label={`Jump to video ${idx + 1}`}
+                />
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="button"
+            className={styles.sliderArrowBtn}
+            onClick={handleNext}
+            aria-label="Next video"
+            title="Next Video"
+          >
+            <FaChevronRight size={11} />
+          </button>
+        </div>
+      )}
+
+      {/* Video Container */}
+      <div className={styles.videoWrapper}>
+        {embedUrl ? (
+          <iframe
+            key={embedUrl}
+            className={styles.videoEmbed}
+            src={embedUrl}
+            title={`${video.title} - Video ${activeIdx + 1}`}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <div className={styles.projectPlaceholderImage}>
+            <FaVideo className={styles.projectPlaceholderIcon} />
+            <span>Invalid or Missing Video Link</span>
+          </div>
+        )}
+      </div>
+
+      <div className={styles.videoInfo}>
+        <h3 className={styles.videoTitle}>{video.title}</h3>
+        <p className={styles.videoDescription}>{video.description}</p>
+        <div className={styles.videoFooter}>
+          {currentUrl && (
+            <Link
+              href={currentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.youtubeLink}
+            >
+              <FaYoutube />
+              <span>Watch Video {totalVideos > 1 ? `#${activeIdx + 1}` : ""} on YouTube</span>
+            </Link>
+          )}
+        </div>
+      </div>
+    </article>
+  );
+}
+
+// 2. PROJECT MULTI-ASSET CARD COMPONENT (Images + Videos)
+function ProjectCardItem({
+  project,
+  onSupport,
+  formatAmount,
+}: {
+  project: ChurchProjectData;
+  onSupport: () => void;
+  formatAmount: (amount?: number | null, currency?: string) => string | null;
+}) {
+  // Combine images and video URLs into unified media list
+  const imageAssets = (project.images || []).map((url) => ({
+    type: "image" as const,
+    url,
+  }));
+  const videoAssets = (project.videoUrls || []).map((url) => ({
+    type: "video" as const,
+    url,
+  }));
+  const allAssets = [...imageAssets, ...videoAssets];
+
+  const [activeMediaIdx, setActiveMediaIdx] = useState(0);
+  const totalAssets = allAssets.length;
+  const currentAsset = allAssets[activeMediaIdx];
+
+  const handlePrevMedia = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveMediaIdx((prev) => (prev > 0 ? prev - 1 : totalAssets - 1));
+  };
+
+  const handleNextMedia = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setActiveMediaIdx((prev) => (prev < totalAssets - 1 ? prev + 1 : 0));
+  };
+
+  const formattedTarget = formatAmount(project.amount, project.currency);
+
+  return (
+    <article className={styles.projectCard}>
+      <div className={styles.projectMediaWrapper}>
+        {totalAssets === 0 ? (
+          <div className={styles.projectPlaceholderImage}>
+            <span className={styles.projectPlaceholderIcon}>🏗️</span>
+            <span>Church Project</span>
+          </div>
+        ) : currentAsset.type === "video" ? (
+          <iframe
+            key={currentAsset.url}
+            src={getYouTubeEmbedUrl(currentAsset.url)}
+            title={`${project.title} - Video`}
+            style={{ width: "100%", height: "100%", border: "none" }}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+          />
+        ) : (
+          <Image
+            src={currentAsset.url}
+            alt={`${project.title} - Asset ${activeMediaIdx + 1}`}
+            fill
+            unoptimized
+            sizes="(max-width: 768px) 100vw, 33vw"
+            className={styles.projectImage}
+          />
+        )}
+
+        {/* Status Badge */}
+        <span
+          className={`${styles.projectStatusBadge} ${
+            project.status === "Active"
+              ? styles.statusActive
+              : project.status === "Ongoing"
+              ? styles.statusOngoing
+              : styles.statusCompleted
+          }`}
+        >
+          {project.status || "Active"}
+        </span>
+
+        {/* Media counter indicator if multiple */}
+        {totalAssets > 1 && (
+          <span className={styles.mediaCounterBadge}>
+            {currentAsset?.type === "video" ? "🎬" : "📷"} {activeMediaIdx + 1} / {totalAssets}
+          </span>
+        )}
+
+        {/* Target Amount */}
+        {formattedTarget && (
+          <span className={styles.projectAmountTag}>Target: {formattedTarget}</span>
+        )}
+
+        {/* Slide controls overlay if multiple assets */}
+        {totalAssets > 1 && (
+          <>
+            <div className={styles.mediaOverlayNav}>
+              <button
+                type="button"
+                className={styles.overlayArrowBtn}
+                onClick={handlePrevMedia}
+                aria-label="Previous Media"
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className={styles.overlayArrowBtn}
+                onClick={handleNextMedia}
+                aria-label="Next Media"
+              >
+                ›
+              </button>
+            </div>
+
+            <div className={styles.mediaBottomBar}>
+              {allAssets.map((asset, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className={`${styles.sliderDot} ${
+                    idx === activeMediaIdx ? styles.sliderDotActive : ""
+                  }`}
+                  onClick={() => setActiveMediaIdx(idx)}
+                  aria-label={`Jump to asset ${idx + 1} (${asset.type})`}
+                />
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
+      <div className={styles.projectBody}>
+        <h3 className={styles.projectTitle}>{project.title}</h3>
+        <p className={styles.projectDescription}>{project.description}</p>
+
+        <button type="button" className={styles.supportBtn} onClick={onSupport}>
+          <span>Support This Project</span>
+          <span>→</span>
+        </button>
+      </div>
+    </article>
+  );
+}
+
+// 3. MAIN DONATION / OUTREACH COMPONENT
 export default function DonationSection({ initialData }: DonationSectionProps) {
+  const [loading, setLoading] = useState(!initialData);
   const [activeTab, setActiveTab] = useState<"revelation" | "accounts" | "projects">("revelation");
   const [settings, setSettings] = useState<OutreachSettingsData>(
     initialData?.settings || {
@@ -86,6 +349,8 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
         }
       } catch (err) {
         console.error("Error fetching outreach data:", err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -108,7 +373,6 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
 
   const handleSupportProject = () => {
     setActiveTab("accounts");
-    // Smooth scroll to account section
     setTimeout(() => {
       const el = document.getElementById("account-details-target");
       if (el) {
@@ -134,314 +398,239 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
           <p className={styles.subtitle}>{settings.subtitle}</p>
         </header>
 
-        {/* Tab Navigation */}
-        <nav className={styles.tabNav} aria-label="Outreach sections">
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === "revelation" ? styles.tabBtnActive : ""}`}
-            onClick={() => setActiveTab("revelation")}
-          >
-            <FaVideo className={styles.tabIcon} />
-            <span>Revelation</span>
-            {videos.length > 0 && <span className={styles.tabCount}>{videos.length}</span>}
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === "accounts" ? styles.tabBtnActive : ""}`}
-            onClick={() => setActiveTab("accounts")}
-          >
-            <FaCreditCard className={styles.tabIcon} />
-            <span>Account Details</span>
-            {accounts.length > 0 && <span className={styles.tabCount}>{accounts.length}</span>}
-          </button>
-
-          <button
-            type="button"
-            className={`${styles.tabBtn} ${activeTab === "projects" ? styles.tabBtnActive : ""}`}
-            onClick={() => setActiveTab("projects")}
-          >
-            <FaHandHoldingHeart className={styles.tabIcon} />
-            <span>Projects</span>
-            {projects.length > 0 && <span className={styles.tabCount}>{projects.length}</span>}
-          </button>
-        </nav>
-
-        {/* ========================================= */}
-        {/* TAB 1: REVELATION (VIDEOS) */}
-        {/* ========================================= */}
-        {activeTab === "revelation" && (
-          <div>
-            <div className={styles.sectionIntro}>
-              <div>
-                <h2 className={styles.sectionIntroTitle}>Outreach & Ministry Revelations</h2>
-                <p className={styles.sectionIntroDesc}>
-                  Watch the tangible impact of our missions, community evangelism, crusades, and
-                  hospital outreach programs in spreading the Love and Power of Jesus Christ.
-                </p>
-              </div>
-            </div>
-
-            {videos.length === 0 ? (
-              <div className={styles.emptyState}>
-                <span className={styles.emptyIcon}>🎬</span>
-                <h3 className={styles.emptyTitle}>No Revelation Videos Available</h3>
-                <p className={styles.emptyText}>
-                  Video records of our latest global kingdom outreaches will appear here. Check back
-                  soon or view our accounts to partner with us!
-                </p>
-              </div>
-            ) : (
-              <div className={styles.videoGrid}>
-                {videos.map((vid) => {
-                  const embedUrl = getYouTubeEmbedUrl(vid.youtubeUrl);
-                  return (
-                    <article key={vid._id} className={styles.videoCard}>
-                      <div className={styles.videoWrapper}>
-                        {embedUrl ? (
-                          <iframe
-                            className={styles.videoEmbed}
-                            src={embedUrl}
-                            title={vid.title}
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                            allowFullScreen
-                          />
-                        ) : (
-                          <div className={styles.projectPlaceholderImage}>
-                            <FaVideo className={styles.projectPlaceholderIcon} />
-                            <span>Invalid YouTube URL</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className={styles.videoInfo}>
-                        <h3 className={styles.videoTitle}>{vid.title}</h3>
-                        <p className={styles.videoDescription}>{vid.description}</p>
-                        <div className={styles.videoFooter}>
-                          <Link
-                            href={vid.youtubeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className={styles.youtubeLink}
-                          >
-                            <FaYoutube />
-                            <span>Watch on YouTube</span>
-                          </Link>
-                        </div>
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
+        {/* Loading Spinner State */}
+        {loading ? (
+          <div style={{ padding: "80px 20px", textAlign: "center" }}>
+            <LoadingSpinner size="large" text="Loading Kingdom Outreach details..." />
           </div>
-        )}
+        ) : (
+          <>
+            {/* Tab Navigation */}
+            <nav className={styles.tabNav} aria-label="Outreach sections">
+              <button
+                type="button"
+                className={`${styles.tabBtn} ${activeTab === "revelation" ? styles.tabBtnActive : ""}`}
+                onClick={() => setActiveTab("revelation")}
+              >
+                <FaVideo className={styles.tabIcon} />
+                <span>Revelation</span>
+                {videos.length > 0 && <span className={styles.tabCount}>{videos.length}</span>}
+              </button>
 
-        {/* ========================================= */}
-        {/* TAB 2: ACCOUNT DETAILS */}
-        {/* ========================================= */}
-        {activeTab === "accounts" && (
-          <div id="account-details-target">
-            <div className={styles.accountLayout}>
-              {/* Left Column: Scripture + Bank Cards */}
-              <div className={styles.accountLeft}>
-                {/* Scripture Card */}
-                <div className={styles.verseCard}>
-                  <div className={styles.verseQuoteIcon}>
-                    <FaQuoteLeft />
+              <button
+                type="button"
+                className={`${styles.tabBtn} ${activeTab === "accounts" ? styles.tabBtnActive : ""}`}
+                onClick={() => setActiveTab("accounts")}
+              >
+                <FaCreditCard className={styles.tabIcon} />
+                <span>Account Details</span>
+                {accounts.length > 0 && <span className={styles.tabCount}>{accounts.length}</span>}
+              </button>
+
+              <button
+                type="button"
+                className={`${styles.tabBtn} ${activeTab === "projects" ? styles.tabBtnActive : ""}`}
+                onClick={() => setActiveTab("projects")}
+              >
+                <FaHandHoldingHeart className={styles.tabIcon} />
+                <span>Projects</span>
+                {projects.length > 0 && <span className={styles.tabCount}>{projects.length}</span>}
+              </button>
+            </nav>
+
+            {/* ========================================= */}
+            {/* TAB 1: REVELATION (VIDEOS) */}
+            {/* ========================================= */}
+            {activeTab === "revelation" && (
+              <div>
+                <div className={styles.sectionIntro}>
+                  <div>
+                    <h2 className={styles.sectionIntroTitle}>Outreach & Ministry Revelations</h2>
+                    <p className={styles.sectionIntroDesc}>
+                      Watch the tangible impact of our missions, community evangelism, crusades, and
+                      hospital outreach programs in spreading the Love and Power of Jesus Christ. Slide
+                      through each revelation to view all recorded videos.
+                    </p>
                   </div>
-                  <p className={styles.verseText}>&ldquo;{settings.verseText}&rdquo;</p>
-                  <p className={styles.verseRef}>{settings.verseRef}</p>
                 </div>
 
-                {/* Bank Grid */}
-                <div className={styles.bankGrid}>
-                  {accounts.map((acc) => (
-                    <div key={acc._id} className={styles.bankCard}>
-                      <div className={styles.bankHeader}>
-                        <div className={styles.bankLogoWrap}>
-                          <Image
-                            src={resolveLogo(acc.logo)}
-                            alt={`${acc.bank} logo`}
-                            width={52}
-                            height={52}
-                            unoptimized
-                            className={styles.bankLogo}
-                          />
-                        </div>
-                        <div className={styles.bankHeaderText}>
-                          <h3 className={styles.bankName}>{acc.bank}</h3>
-                          {acc.type && (
-                            <span className={styles.bankAccountType}>{acc.type}</span>
+                {videos.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <span className={styles.emptyIcon}>🎬</span>
+                    <h3 className={styles.emptyTitle}>No Revelation Videos Available</h3>
+                    <p className={styles.emptyText}>
+                      Video records of our latest global kingdom outreaches will appear here. Check back
+                      soon or view our accounts to partner with us!
+                    </p>
+                  </div>
+                ) : (
+                  <div className={styles.videoGrid}>
+                    {videos.map((vid) => (
+                      <RevelationVideoCard key={vid._id} video={vid} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* ========================================= */}
+            {/* TAB 2: ACCOUNT DETAILS */}
+            {/* ========================================= */}
+            {activeTab === "accounts" && (
+              <div id="account-details-target">
+                <div className={styles.accountLayout}>
+                  {/* Left Column: Scripture + Bank Cards */}
+                  <div className={styles.accountLeft}>
+                    {/* Scripture Card */}
+                    <div className={styles.verseCard}>
+                      <div className={styles.verseQuoteIcon}>
+                        <FaQuoteLeft />
+                      </div>
+                      <p className={styles.verseText}>&ldquo;{settings.verseText}&rdquo;</p>
+                      <p className={styles.verseRef}>{settings.verseRef}</p>
+                    </div>
+
+                    {/* Bank Grid */}
+                    <div className={styles.bankGrid}>
+                      {accounts.map((acc) => (
+                        <div key={acc._id} className={styles.bankCard}>
+                          <div className={styles.bankHeader}>
+                            <div className={styles.bankLogoWrap}>
+                              <Image
+                                src={resolveLogo(acc.logo)}
+                                alt={`${acc.bank} logo`}
+                                width={52}
+                                height={52}
+                                unoptimized
+                                className={styles.bankLogo}
+                              />
+                            </div>
+                            <div className={styles.bankHeaderText}>
+                              <h3 className={styles.bankName}>{acc.bank}</h3>
+                              {acc.type && (
+                                <span className={styles.bankAccountType}>{acc.type}</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <div className={styles.bankDetailsBox}>
+                            <div className={styles.bankRow}>
+                              <span className={styles.bankLabel}>Account Name</span>
+                              <span className={styles.bankValue}>{acc.name}</span>
+                            </div>
+
+                            <div className={styles.accountNumberBox}>
+                              <div>
+                                <span className={styles.bankLabel} style={{ display: "block" }}>
+                                  Account Number
+                                </span>
+                                <span className={styles.accountNumber}>{acc.accountNumber}</span>
+                              </div>
+                              <button
+                                type="button"
+                                className={`${styles.copyBtn} ${
+                                  copiedId === acc._id ? styles.copyBtnCopied : ""
+                                }`}
+                                onClick={() => handleCopyAccount(acc.accountNumber, acc._id)}
+                                title="Copy Account Number"
+                              >
+                                {copiedId === acc._id ? (
+                                  <>
+                                    <FaCheck />
+                                    <span>Copied</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <FaCopy />
+                                    <span>Copy</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+
+                          {acc.accepts && acc.accepts.length > 0 && (
+                            <div className={styles.acceptsRow}>
+                              <span className={styles.bankLabel}>Accepted Purposes:</span>
+                              <div className={styles.acceptsBadges}>
+                                {acc.accepts.map((tag) => (
+                                  <span key={tag} className={styles.acceptsBadge}>
+                                    <span>•</span>
+                                    <span>{tag}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
                           )}
                         </div>
-                      </div>
-
-                      <div className={styles.bankDetailsBox}>
-                        <div className={styles.bankRow}>
-                          <span className={styles.bankLabel}>Account Name</span>
-                          <span className={styles.bankValue}>{acc.name}</span>
-                        </div>
-
-                        <div className={styles.accountNumberBox}>
-                          <div>
-                            <span className={styles.bankLabel} style={{ display: "block" }}>
-                              Account Number
-                            </span>
-                            <span className={styles.accountNumber}>{acc.accountNumber}</span>
-                          </div>
-                          <button
-                            type="button"
-                            className={`${styles.copyBtn} ${
-                              copiedId === acc._id ? styles.copyBtnCopied : ""
-                            }`}
-                            onClick={() => handleCopyAccount(acc.accountNumber, acc._id)}
-                            title="Copy Account Number"
-                          >
-                            {copiedId === acc._id ? (
-                              <>
-                                <FaCheck />
-                                <span>Copied</span>
-                              </>
-                            ) : (
-                              <>
-                                <FaCopy />
-                                <span>Copy</span>
-                              </>
-                            )}
-                          </button>
-                        </div>
-                      </div>
-
-                      {acc.accepts && acc.accepts.length > 0 && (
-                        <div className={styles.acceptsRow}>
-                          <span className={styles.bankLabel}>Accepted Purposes:</span>
-                          <div className={styles.acceptsBadges}>
-                            {acc.accepts.map((tag) => (
-                              <span key={tag} className={styles.acceptsBadge}>
-                                <span>•</span>
-                                <span>{tag}</span>
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  </div>
+
+                  {/* Right Column: Donation Types Reference */}
+                  <aside className={styles.accountRight}>
+                    <div className={styles.typesCard}>
+                      <h3 className={styles.typesCardTitle}>
+                        <span>💝</span>
+                        <span>Giving Categories</span>
+                      </h3>
+                      <ul className={styles.typesList}>
+                        {types.map((t) => (
+                          <li key={t._id} className={styles.typeItem}>
+                            <div className={styles.typeHeader}>
+                              <span className={styles.typeIcon}>{t.icon || "🔸"}</span>
+                              <h4 className={styles.typeTitle}>{t.title}</h4>
+                            </div>
+                            {t.description && <p className={styles.typeDesc}>{t.description}</p>}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </aside>
                 </div>
-              </div>
-
-              {/* Right Column: Donation Types Reference */}
-              <aside className={styles.accountRight}>
-                <div className={styles.typesCard}>
-                  <h3 className={styles.typesCardTitle}>
-                    <span>💝</span>
-                    <span>Giving Categories</span>
-                  </h3>
-                  <ul className={styles.typesList}>
-                    {types.map((t) => (
-                      <li key={t._id} className={styles.typeItem}>
-                        <div className={styles.typeHeader}>
-                          <span className={styles.typeIcon}>{t.icon || "🔸"}</span>
-                          <h4 className={styles.typeTitle}>{t.title}</h4>
-                        </div>
-                        {t.description && <p className={styles.typeDesc}>{t.description}</p>}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </aside>
-            </div>
-          </div>
-        )}
-
-        {/* ========================================= */}
-        {/* TAB 3: PROJECTS */}
-        {/* ========================================= */}
-        {activeTab === "projects" && (
-          <div>
-            <div className={styles.sectionIntro}>
-              <div>
-                <h2 className={styles.sectionIntroTitle}>Ongoing Church Projects</h2>
-                <p className={styles.sectionIntroDesc}>
-                  Partner with CAC Mount Zion in fulfilling strategic kingdom initiatives — from
-                  missionary vehicles and bus acquisitions to facility enhancements and evangelism
-                  gear.
-                </p>
-              </div>
-            </div>
-
-            {projects.length === 0 ? (
-              <div className={styles.emptyState}>
-                <span className={styles.emptyIcon}>🏗️</span>
-                <h3 className={styles.emptyTitle}>No Ongoing Projects Listed</h3>
-                <p className={styles.emptyText}>
-                  Upcoming capital campaigns and building/outreach projects will be listed here. You
-                  can support general church operations in Account Details.
-                </p>
-              </div>
-            ) : (
-              <div className={styles.projectGrid}>
-                {projects.map((proj) => {
-                  const hasImage = proj.images && proj.images.length > 0;
-                  const formattedTarget = formatAmount(proj.amount, proj.currency);
-
-                  return (
-                    <article key={proj._id} className={styles.projectCard}>
-                      <div className={styles.projectImageWrap}>
-                        {hasImage ? (
-                          <Image
-                            src={proj.images[0]}
-                            alt={proj.title}
-                            fill
-                            unoptimized
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            className={styles.projectImage}
-                          />
-                        ) : (
-                          <div className={styles.projectPlaceholderImage}>
-                            <span className={styles.projectPlaceholderIcon}>🏗️</span>
-                            <span>Church Project</span>
-                          </div>
-                        )}
-
-                        <span
-                          className={`${styles.projectStatusBadge} ${
-                            proj.status === "Active"
-                              ? styles.statusActive
-                              : proj.status === "Ongoing"
-                              ? styles.statusOngoing
-                              : styles.statusCompleted
-                          }`}
-                        >
-                          {proj.status || "Active"}
-                        </span>
-
-                        {formattedTarget && (
-                          <span className={styles.projectAmountTag}>
-                            Target: {formattedTarget}
-                          </span>
-                        )}
-                      </div>
-
-                      <div className={styles.projectBody}>
-                        <h3 className={styles.projectTitle}>{proj.title}</h3>
-                        <p className={styles.projectDescription}>{proj.description}</p>
-
-                        <button
-                          type="button"
-                          className={styles.supportBtn}
-                          onClick={handleSupportProject}
-                        >
-                          <span>Support This Project</span>
-                          <span>→</span>
-                        </button>
-                      </div>
-                    </article>
-                  );
-                })}
               </div>
             )}
-          </div>
+
+            {/* ========================================= */}
+            {/* TAB 3: PROJECTS */}
+            {/* ========================================= */}
+            {activeTab === "projects" && (
+              <div>
+                <div className={styles.sectionIntro}>
+                  <div>
+                    <h2 className={styles.sectionIntroTitle}>Ongoing Church Projects</h2>
+                    <p className={styles.sectionIntroDesc}>
+                      Partner with CAC Mount Zion in fulfilling strategic kingdom initiatives — from
+                      missionary vehicles and bus acquisitions to facility enhancements and evangelism
+                      gear. Slide to explore all images and video walkthroughs for each project.
+                    </p>
+                  </div>
+                </div>
+
+                {projects.length === 0 ? (
+                  <div className={styles.emptyState}>
+                    <span className={styles.emptyIcon}>🏗️</span>
+                    <h3 className={styles.emptyTitle}>No Ongoing Projects Listed</h3>
+                    <p className={styles.emptyText}>
+                      Upcoming capital campaigns and building/outreach projects will be listed here. You
+                      can support general church operations in Account Details.
+                    </p>
+                  </div>
+                ) : (
+                  <div className={styles.projectGrid}>
+                    {projects.map((proj) => (
+                      <ProjectCardItem
+                        key={proj._id}
+                        project={proj}
+                        onSupport={handleSupportProject}
+                        formatAmount={formatAmount}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </>
         )}
 
         {/* Copy Notification Toast */}

@@ -19,7 +19,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, images, amount, currency, status, order } = body;
+    const { title, description, images, videoUrls, amount, currency, status, order } = body;
 
     if (!title || !description) {
       return NextResponse.json(
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
       title,
       description,
       images: Array.isArray(images) ? images : [],
+      videoUrls: Array.isArray(videoUrls) ? videoUrls : [],
       amount: typeof amount === "number" ? amount : null,
       currency: currency || "NGN",
       status: status || "Active",

@@ -10,7 +10,8 @@ export interface OutreachVideoData {
   _id: string;
   title: string;
   description: string;
-  youtubeUrl: string;
+  youtubeUrl?: string;
+  youtubeUrls?: string[];
   order?: number;
   createdAt?: string;
   updatedAt?: string;
@@ -39,6 +40,7 @@ export interface ChurchProjectData {
   title: string;
   description: string;
   images: string[];
+  videoUrls?: string[];
   amount?: number | null;
   currency?: string;
   status: "Active" | "Ongoing" | "Completed";

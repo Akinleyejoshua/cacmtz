@@ -19,11 +19,17 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { title, description, youtubeUrl, order } = body;
+    const { title, description, youtubeUrl, youtubeUrls, order } = body;
 
-    if (!title || !youtubeUrl) {
+    const urls = Array.isArray(youtubeUrls)
+      ? youtubeUrls.filter(Boolean)
+      : youtubeUrl
+      ? [youtubeUrl]
+      : [];
+
+    if (!title || urls.length === 0) {
       return NextResponse.json(
-        { error: "Title and YouTube URL are required" },
+        { error: "Title and at least one YouTube URL are required" },
         { status: 400 }
       );
     }
@@ -31,7 +37,8 @@ export async function POST(request: Request) {
     const video = await createVideo({
       title,
       description: description || "",
-      youtubeUrl,
+      youtubeUrl: urls[0],
+      youtubeUrls: urls,
       order: typeof order === "number" ? order : 0,
     });
 
