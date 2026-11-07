@@ -45,6 +45,11 @@ const MinisterSchema: Schema = new Schema(
     }
 );
 
+// Indexes for fast ordering, filtering, and retrieval
+MinisterSchema.index({ displayOrder: 1, createdAt: -1 });
+MinisterSchema.index({ isVisible: 1, displayOrder: 1 });
+MinisterSchema.index({ department: 1 });
+
 const Minister: Model<IMinister> =
     mongoose.models.Minister || mongoose.model<IMinister>('Minister', MinisterSchema);
 

@@ -59,6 +59,8 @@ const OutreachVideoSchema: Schema<IOutreachVideo> = new Schema(
   { timestamps: true }
 );
 
+OutreachVideoSchema.index({ order: 1, createdAt: -1 });
+
 export const OutreachVideo: Model<IOutreachVideo> =
   (mongoose.models.OutreachVideo as Model<IOutreachVideo>) ||
   mongoose.model<IOutreachVideo>("OutreachVideo", OutreachVideoSchema);
@@ -88,6 +90,8 @@ const BankAccountSchema: Schema<IBankAccount> = new Schema(
   },
   { timestamps: true }
 );
+
+BankAccountSchema.index({ order: 1, createdAt: -1 });
 
 export const BankAccount: Model<IBankAccount> =
   (mongoose.models.BankAccount as Model<IBankAccount>) ||
@@ -141,6 +145,9 @@ const ChurchProjectSchema: Schema<IChurchProject> = new Schema(
   },
   { timestamps: true }
 );
+
+ChurchProjectSchema.index({ order: 1, createdAt: -1 });
+ChurchProjectSchema.index({ status: 1 });
 
 export const ChurchProject: Model<IChurchProject> =
   (mongoose.models.ChurchProject as Model<IChurchProject>) ||

@@ -57,7 +57,14 @@ const EventSchema: Schema<IEvent> = new Schema({
   eventMinisters: [{ type: Schema.Types.ObjectId, ref: 'Minister' }],
   bulletinId: { type: Schema.Types.ObjectId, ref: 'Bulletin' },
   isPublicDetailedView: { type: Boolean, default: false },
+}, {
+  timestamps: true,
 });
+
+// Indexes for fast date-based and status queries
+EventSchema.index({ date: 1, time: 1 });
+EventSchema.index({ createdAt: -1 });
+
 // 3. Create/Retrieve the Mongoose Model
 // This check prevents the "OverwriteModelError" in Next.js
 const Event: Model<IEvent> = (mongoose.models.Event as Model<IEvent>) || mongoose.model<IEvent>('Event', EventSchema);

@@ -31,40 +31,59 @@ function formatDuration(minutes: number): string {
   return `${mins}m`;
 }
 
+// In-memory client cache to prevent repeated loading spinners on route changes
+let memoryCache: {
+  events: any[];
+  generalSettings: any;
+  latestSermon: any;
+  ministers: any[];
+} | null = null;
+
 export const useLandingPage = () => {
-  const [loading, setLoading] = useState(true);
-  const [events, setEvents] = useState([]);
-  const [generalSettings, setGeneralSettings] = useState<any>(null);
-  const [latestSermon, setLatestSermon] = useState<any>(null);
-  const [ministers, setMinisters] = useState<any[]>([]);
+  const [loading, setLoading] = useState(!memoryCache);
+  const [events, setEvents] = useState<any[]>(memoryCache?.events || []);
+  const [generalSettings, setGeneralSettings] = useState<any>(memoryCache?.generalSettings || null);
+  const [latestSermon, setLatestSermon] = useState<any>(memoryCache?.latestSermon || null);
+  const [ministers, setMinisters] = useState<any[]>(memoryCache?.ministers || []);
 
   const get_events = async () => {
     try {
-      const [eventsRes, generalRes, sermonsRes, ministersRes] = await Promise.all([
+      const [eventsRes, generalRes, sermonRes, ministersRes] = await Promise.all([
         request.get("/get-events"),
         request.get("/general"),
-        request.get("/sermon"),
+        request.get("/sermon/latest"),
         request.get("/ministers")
       ]);
-      setEvents(eventsRes.data);
-      setGeneralSettings(generalRes.data);
-      setMinisters(ministersRes.data);
 
-      if (sermonsRes.data && sermonsRes.data.length > 0) {
-        setLatestSermon(sermonsRes.data[0]);
-      }
+      const fetchedEvents = eventsRes.data || [];
+      const fetchedGeneral = generalRes.data || null;
+      const fetchedSermon = sermonRes.data || null;
+      const fetchedMinisters = ministersRes.data || [];
 
+      setEvents(fetchedEvents);
+      setGeneralSettings(fetchedGeneral);
+      setLatestSermon(fetchedSermon);
+      setMinisters(fetchedMinisters);
+
+      memoryCache = {
+        events: fetchedEvents,
+        generalSettings: fetchedGeneral,
+        latestSermon: fetchedSermon,
+        ministers: fetchedMinisters,
+      };
     } catch (error) {
       console.error("Error fetching landing page data:", error);
     } finally {
       setLoading(false);
-      sessionStorage.setItem("landingPageLoaded", "true")
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem("landingPageLoaded", "true");
+      }
     }
-  }
+  };
 
   useEffect(() => {
     get_events();
-  }, [])
+  }, []);
 
-  return { loading, events, generalSettings, latestSermon, ministers, formatRelativeTime, formatTime, formatDuration }
-}
+  return { loading, events, generalSettings, latestSermon, ministers, formatRelativeTime, formatTime, formatDuration };
+};

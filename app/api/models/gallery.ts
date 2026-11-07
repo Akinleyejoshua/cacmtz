@@ -19,6 +19,10 @@ const GalleryItemSchema: Schema = new Schema(
     }
 );
 
+// Indexes for fast category browsing and date sorting
+GalleryItemSchema.index({ createdAt: -1 });
+GalleryItemSchema.index({ category: 1, createdAt: -1 });
+
 const GalleryItem: Model<IGalleryItem> = mongoose.models.GalleryItem || mongoose.model<IGalleryItem>('GalleryItem', GalleryItemSchema);
 
 export default GalleryItem;

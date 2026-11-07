@@ -351,14 +351,24 @@ function ProjectCardItem({
   );
 }
 
+// Memory cache for instantaneous client transitions
+let outreachMemoryCache: {
+  settings?: OutreachSettingsData;
+  accounts?: BankAccountData[];
+  types?: DonationTypeData[];
+  videos?: OutreachVideoData[];
+  projects?: ChurchProjectData[];
+} | null = null;
+
 // 3. MAIN DONATION / OUTREACH COMPONENT
 export default function DonationSection({ initialData }: DonationSectionProps) {
-  const [loading, setLoading] = useState(!initialData);
+  const cachedOrInitial = initialData || outreachMemoryCache;
+  const [loading, setLoading] = useState(!cachedOrInitial);
   const [activeTab, setActiveTab] = useState<"revelation" | "accounts" | "projects">("revelation");
   const [highlightedId, setHighlightedId] = useState<string | null>(null);
 
   const [settings, setSettings] = useState<OutreachSettingsData>(
-    initialData?.settings || {
+    cachedOrInitial?.settings || {
       heading: "CAC MOUNT ZION GLOBAL KINGDOM OUTREACH",
       subtitle:
         "Partnering together to impact lives, spread the Gospel, and build God's Kingdom.",
@@ -367,10 +377,10 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
       verseRef: "2 Corinthians 9:7",
     }
   );
-  const [accounts, setAccounts] = useState<BankAccountData[]>(initialData?.accounts || []);
-  const [types, setTypes] = useState<DonationTypeData[]>(initialData?.types || []);
-  const [videos, setVideos] = useState<OutreachVideoData[]>(initialData?.videos || []);
-  const [projects, setProjects] = useState<ChurchProjectData[]>(initialData?.projects || []);
+  const [accounts, setAccounts] = useState<BankAccountData[]>(cachedOrInitial?.accounts || []);
+  const [types, setTypes] = useState<DonationTypeData[]>(cachedOrInitial?.types || []);
+  const [videos, setVideos] = useState<OutreachVideoData[]>(cachedOrInitial?.videos || []);
+  const [projects, setProjects] = useState<ChurchProjectData[]>(cachedOrInitial?.projects || []);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [shareData, setShareData] = useState<{
@@ -430,6 +440,14 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
           if (res.data.types) setTypes(res.data.types);
           if (res.data.videos) setVideos(res.data.videos);
           if (res.data.projects) setProjects(res.data.projects);
+
+          outreachMemoryCache = {
+            settings: res.data.settings,
+            accounts: res.data.accounts,
+            types: res.data.types,
+            videos: res.data.videos,
+            projects: res.data.projects,
+          };
         }
       } catch (err) {
         console.error("Error fetching outreach data:", err);

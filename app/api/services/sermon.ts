@@ -28,10 +28,12 @@ export default class SermonService {
 
     async get_sermons() {
         try {
+            await connectDB();
             const sermons = await Sermon.find()
                 .populate('minister')
                 .populate('bulletinId')
-                .sort({ date: -1 });
+                .sort({ date: -1 })
+                .lean();
             return sermons;
         } catch (error) {
             console.log(error);
@@ -41,9 +43,11 @@ export default class SermonService {
 
     async get_sermon(id: string) {
         try {
+            await connectDB();
             const sermon = await Sermon.findById(id)
                 .populate('minister')
-                .populate('bulletinId');
+                .populate('bulletinId')
+                .lean();
             return sermon;
         } catch (error) {
             console.log(error);
@@ -74,10 +78,12 @@ export default class SermonService {
 
     async get_latest_sermon() {
         try {
+            await connectDB();
             const sermon = await Sermon.findOne()
                 .populate('minister')
                 .populate('bulletinId')
-                .sort({ date: -1 });
+                .sort({ date: -1 })
+                .lean();
             return sermon;
         } catch (error) {
             console.log(error);

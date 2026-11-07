@@ -1,14 +1,14 @@
 import Minister, { IMinister } from '../models/minister';
 import connectDB from '../db';
 
-export const getAllMinisters = async (): Promise<IMinister[]> => {
+export const getAllMinisters = async (): Promise<any[]> => {
     await connectDB();
-    return await Minister.find({}).sort({ displayOrder: 1, createdAt: -1 });
+    return await Minister.find({}).sort({ displayOrder: 1, createdAt: -1 }).lean();
 };
 
-export const getMinisterById = async (id: string): Promise<IMinister | null> => {
+export const getMinisterById = async (id: string): Promise<any | null> => {
     await connectDB();
-    return await Minister.findById(id);
+    return await Minister.findById(id).lean();
 };
 
 export const createMinister = async (data: Partial<IMinister>): Promise<IMinister> => {

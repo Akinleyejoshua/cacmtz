@@ -24,6 +24,10 @@ const SermonSchema: Schema = new Schema({
     timestamps: true
 });
 
+// Indexes for fast sermon sorting by date and recency
+SermonSchema.index({ date: -1 });
+SermonSchema.index({ createdAt: -1 });
+
 const Sermon: Model<ISermon> = mongoose.models.Sermon || mongoose.model<ISermon>('Sermon', SermonSchema);
 
 export default Sermon;

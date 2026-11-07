@@ -121,8 +121,18 @@ const INITIAL_TYPES = [
 export async function getOutreachPageData() {
   await dbConnect();
 
-  // 1. Settings
-  let settings = await OutreachSettings.findOne().lean();
+  // Run all queries concurrently in parallel with connection pool
+  let [settings, accounts, types, rawVideos, rawProjects, donatePageViews] =
+    await Promise.all([
+      OutreachSettings.findOne().lean(),
+      BankAccount.find().sort({ order: 1, createdAt: -1 }).lean(),
+      DonationType.find().lean(),
+      OutreachVideo.find().sort({ order: 1, createdAt: -1 }).lean(),
+      ChurchProject.find().sort({ order: 1, createdAt: -1 }).lean(),
+      Analytics.countDocuments({ pageUrl: /^\/donate/ }).catch(() => 0),
+    ]);
+
+  // Seed on initial boot if empty
   if (!settings) {
     const created = await OutreachSettings.create({
       heading: "CAC MOUNT ZION GLOBAL KINGDOM OUTREACH",
@@ -135,44 +145,31 @@ export async function getOutreachPageData() {
     settings = created.toObject();
   }
 
-  // 2. Bank Accounts (Seed if empty)
-  let accounts = await BankAccount.find().sort({ order: 1, createdAt: -1 }).lean();
   if (!accounts || accounts.length === 0) {
     await BankAccount.insertMany(INITIAL_BANKS);
     accounts = await BankAccount.find().sort({ order: 1, createdAt: -1 }).lean();
   }
 
-  // 3. Donation Types (Seed if empty)
-  let types = await DonationType.find().lean();
   if (!types || types.length === 0) {
     await DonationType.insertMany(INITIAL_TYPES);
     types = await DonationType.find().lean();
   }
 
-  // 4. Videos (Revelation)
-  const rawVideos = await OutreachVideo.find().sort({ order: 1, createdAt: -1 }).lean();
-  const videos = rawVideos.map((v: any) => ({
+  const videos = (rawVideos || []).map((v: any) => ({
     ...v,
-    youtubeUrls: v.youtubeUrls && v.youtubeUrls.length > 0 ? v.youtubeUrls : v.youtubeUrl ? [v.youtubeUrl] : [],
+    youtubeUrls:
+      v.youtubeUrls && v.youtubeUrls.length > 0
+        ? v.youtubeUrls
+        : v.youtubeUrl
+        ? [v.youtubeUrl]
+        : [],
   }));
 
-  // 5. Projects
-  const rawProjects = await ChurchProject.find().sort({ order: 1, createdAt: -1 }).lean();
-  const projects = rawProjects.map((p: any) => ({
+  const projects = (rawProjects || []).map((p: any) => ({
     ...p,
     images: p.images || [],
     videoUrls: p.videoUrls || [],
   }));
-
-  // 6. Metrics & Stats
-  let donatePageViews = 0;
-  try {
-    donatePageViews = await Analytics.countDocuments({
-      pageUrl: { $regex: /^\/donate/i },
-    });
-  } catch (err) {
-    // Non-fatal if analytics query fails
-  }
 
   const totalStackedVideos = videos.reduce((acc: number, v: any) => {
     const count = v.youtubeUrls?.length || (v.youtubeUrl ? 1 : 0);

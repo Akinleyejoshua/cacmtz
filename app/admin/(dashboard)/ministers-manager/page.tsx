@@ -15,6 +15,7 @@ type Minister = {
   email: string;
   phone: string;
   bio: string;
+  images?: string[];
   displayOrder: number;
 };
 
@@ -25,6 +26,9 @@ export default function MinistersManagerPage() {
   const [filterDepartment, setFilterDepartment] = useState("");
   const [hasOrderChanges, setHasOrderChanges] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
+  const [activePhotoMinister, setActivePhotoMinister] = useState<Minister | null>(null);
+  const [photoDeletingIdx, setPhotoDeletingIdx] = useState<number | null>(null);
+  const [photoUploading, setPhotoUploading] = useState(false);
 
   const fetchMinisters = async () => {
     try {
