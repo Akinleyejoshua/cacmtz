@@ -9,6 +9,7 @@ import {
   BankAccountData,
   OutreachVideoData,
   ChurchProjectData,
+  OutreachStatsData,
 } from "@/app/types/outreach";
 import {
   FaVideo,
@@ -21,6 +22,8 @@ import {
   FaSave,
   FaExternalLinkAlt,
   FaImage as FaImageIcon,
+  FaEye,
+  FaCoins,
 } from "react-icons/fa";
 import styles from "./page.module.css";
 
@@ -49,6 +52,18 @@ export default function OutreachManagerPage() {
   const [videos, setVideos] = useState<OutreachVideoData[]>([]);
   const [accounts, setAccounts] = useState<BankAccountData[]>([]);
   const [projects, setProjects] = useState<ChurchProjectData[]>([]);
+  const [stats, setStats] = useState<OutreachStatsData>({
+    totalRevelations: 0,
+    totalVideosStacked: 0,
+    totalAccounts: 0,
+    totalCategories: 0,
+    totalProjects: 0,
+    activeProjects: 0,
+    completedProjects: 0,
+    totalTargetAmount: 0,
+    totalProjectAssets: 0,
+    donatePageViews: 0,
+  });
 
   // Modals state
   const [videoModalOpen, setVideoModalOpen] = useState(false);
@@ -115,6 +130,7 @@ export default function OutreachManagerPage() {
         if (res.data.videos) setVideos(res.data.videos);
         if (res.data.accounts) setAccounts(res.data.accounts);
         if (res.data.projects) setProjects(res.data.projects);
+        if (res.data.stats) setStats(res.data.stats);
       }
     } catch (err) {
       console.error("Failed to load outreach manager data:", err);
@@ -484,6 +500,97 @@ export default function OutreachManagerPage() {
       </div>
 
       {successMessage && <div className={styles.noticeSuccess}>{successMessage}</div>}
+
+      {/* Metrics Dashboard Grid */}
+      <div className={styles.metricsGrid}>
+        {/* Metric 1: Traffic */}
+        <div className={styles.metricCard}>
+          <div className={`${styles.metricIconWrap} ${styles.iconPurple}`}>
+            <FaEye />
+          </div>
+          <div className={styles.metricContent}>
+            <span className={styles.metricLabel}>Page Traffic</span>
+            <span className={styles.metricValue}>{stats.donatePageViews.toLocaleString()}</span>
+            <span className={styles.metricSubtext}>Visits to /donate page</span>
+          </div>
+        </div>
+
+        {/* Metric 2: Revelation Videos */}
+        <div className={styles.metricCard}>
+          <div className={`${styles.metricIconWrap} ${styles.iconBlue}`}>
+            <FaVideo />
+          </div>
+          <div className={styles.metricContent}>
+            <span className={styles.metricLabel}>Revelation Videos</span>
+            <span className={styles.metricValue}>{stats.totalVideosStacked}</span>
+            <span className={styles.metricSubtext}>Across {stats.totalRevelations} outreach stories</span>
+          </div>
+        </div>
+
+        {/* Metric 3: Bank Accounts */}
+        <div className={styles.metricCard}>
+          <div className={`${styles.metricIconWrap} ${styles.iconGreen}`}>
+            <FaCreditCard />
+          </div>
+          <div className={styles.metricContent}>
+            <span className={styles.metricLabel}>Giving Accounts</span>
+            <span className={styles.metricValue}>{stats.totalAccounts}</span>
+            <span className={styles.metricSubtext}>{stats.totalCategories} donation purposes</span>
+          </div>
+        </div>
+
+        {/* Metric 4: Projects & Target Goal */}
+        <div className={styles.metricCard}>
+          <div className={`${styles.metricIconWrap} ${styles.iconAmber}`}>
+            <FaCoins />
+          </div>
+          <div className={styles.metricContent}>
+            <span className={styles.metricLabel}>Projects & Goals</span>
+            <span className={styles.metricValue}>
+              {stats.totalTargetAmount > 0
+                ? `₦${stats.totalTargetAmount.toLocaleString()}`
+                : `${stats.totalProjects} Projects`}
+            </span>
+            <span className={styles.metricSubtext}>
+              {stats.activeProjects} active ({stats.totalProjectAssets} media assets)
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Public View Links */}
+      <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 20 }}>
+        <span style={{ fontSize: 13, color: "rgba(255,255,255,0.6)", alignSelf: "center" }}>
+          Live Section Links:
+        </span>
+        <a
+          href="/donate?section=revelation"
+          target="_blank"
+          rel="noreferrer"
+          className={styles.secondaryBtn}
+        >
+          <span>Open Revelation</span>
+          <FaExternalLinkAlt size={10} />
+        </a>
+        <a
+          href="/donate?section=accounts"
+          target="_blank"
+          rel="noreferrer"
+          className={styles.secondaryBtn}
+        >
+          <span>Open Account Details</span>
+          <FaExternalLinkAlt size={10} />
+        </a>
+        <a
+          href="/donate?section=projects"
+          target="_blank"
+          rel="noreferrer"
+          className={styles.secondaryBtn}
+        >
+          <span>Open Projects</span>
+          <FaExternalLinkAlt size={10} />
+        </a>
+      </div>
 
       {/* Tabs */}
       <div className={styles.tabs}>
