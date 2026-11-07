@@ -25,6 +25,9 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaShareAlt,
+  FaWhatsapp,
+  FaEnvelope,
+  FaTimes,
 } from "react-icons/fa";
 
 interface DonationSectionProps {
@@ -370,6 +373,25 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
   const [projects, setProjects] = useState<ChurchProjectData[]>(initialData?.projects || []);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [shareData, setShareData] = useState<{
+    title: string;
+    url: string;
+    description?: string;
+  } | null>(null);
+  const [modalCopied, setModalCopied] = useState(false);
+
+  // Close share modal on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShareData(null);
+      }
+    };
+    if (shareData) {
+      window.addEventListener("keydown", handleKeyDown);
+    }
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [shareData]);
 
   // Sync section & id from URL query parameters and hash
   useEffect(() => {
@@ -443,8 +465,13 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
     }, 100);
   };
 
-  // Universal Share Function (Web Share API with Clipboard Fallback)
-  const handleShare = async (params: { section: string; id?: string; title: string }) => {
+  // Share Dialog Trigger (supports WhatsApp, Email, Direct Link Copy, and Device Share)
+  const handleOpenShare = (params: {
+    section: string;
+    id?: string;
+    title: string;
+    description?: string;
+  }) => {
     if (typeof window === "undefined") return;
     const url = new URL(window.location.origin + "/donate");
     url.searchParams.set("section", params.section);
@@ -452,24 +479,37 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
       url.searchParams.set("id", params.id);
     }
     const shareUrl = url.toString();
+    setModalCopied(false);
+    setShareData({
+      title: params.title,
+      url: shareUrl,
+      description: params.description,
+    });
+  };
 
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: params.title || "CAC Mount Zion Global Kingdom Outreach",
-          text: `Check out ${params.title} on CAC Mount Zion Global Kingdom Outreach:`,
-          url: shareUrl,
-        });
-        return;
-      } catch (err) {
-        // User cancelled or share dismissed, proceed to copy
-      }
-    }
-
+  const handleCopyShareLink = () => {
+    if (!shareData) return;
     if (navigator?.clipboard) {
-      await navigator.clipboard.writeText(shareUrl);
-      setToastMessage(`Shareable link to "${params.title}" copied! Share with anyone.`);
+      navigator.clipboard.writeText(shareData.url);
+      setModalCopied(true);
+      setToastMessage("Direct link copied to clipboard!");
+      setTimeout(() => setModalCopied(false), 2500);
       setTimeout(() => setToastMessage(null), 3500);
+    }
+  };
+
+  const handleDeviceNativeShare = async () => {
+    if (!shareData || !navigator.share) return;
+    try {
+      await navigator.share({
+        title: shareData.title,
+        text: shareData.description
+          ? `${shareData.title}\n${shareData.description}`
+          : shareData.title,
+        url: shareData.url,
+      });
+    } catch {
+      // User cancelled or dismissed
     }
   };
 
@@ -549,7 +589,12 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                     type="button"
                     className={styles.shareSectionBtn}
                     onClick={() =>
-                      handleShare({ section: "revelation", title: "Outreach & Revelations" })
+                      handleOpenShare({
+                        section: "revelation",
+                        title: "CAC Mount Zion - Outreach Revelations",
+                        description:
+                          "Watch recorded ministry revelations, crusades, and hospital evangelism in spreading the Gospel.",
+                      })
                     }
                     title="Share this section with friends"
                   >
@@ -575,10 +620,11 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                         video={vid}
                         isHighlighted={highlightedId === vid._id}
                         onShare={() =>
-                          handleShare({
+                          handleOpenShare({
                             section: "revelation",
                             id: vid._id,
                             title: vid.title,
+                            description: vid.description,
                           })
                         }
                       />
@@ -606,9 +652,11 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                     type="button"
                     className={styles.shareSectionBtn}
                     onClick={() =>
-                      handleShare({
+                      handleOpenShare({
                         section: "accounts",
-                        title: "CAC Mount Zion Account Details & Giving",
+                        title: "CAC Mount Zion - Bank Giving Details",
+                        description:
+                          "Direct your tithes, general offerings, divine partnerships, and kingdom contributions into verified church accounts.",
                       })
                     }
                     title="Share church bank account details"
@@ -666,26 +714,44 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                                 </span>
                                 <span className={styles.accountNumber}>{acc.accountNumber}</span>
                               </div>
-                              <button
-                                type="button"
-                                className={`${styles.copyBtn} ${
-                                  copiedId === acc._id ? styles.copyBtnCopied : ""
-                                }`}
-                                onClick={() => handleCopyAccount(acc.accountNumber, acc._id)}
-                                title="Copy Account Number"
-                              >
-                                {copiedId === acc._id ? (
-                                  <>
-                                    <FaCheck />
-                                    <span>Copied</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <FaCopy />
-                                    <span>Copy</span>
-                                  </>
-                                )}
-                              </button>
+                              <div style={{ display: "flex", gap: 6 }}>
+                                <button
+                                  type="button"
+                                  className={`${styles.copyBtn} ${
+                                    copiedId === acc._id ? styles.copyBtnCopied : ""
+                                  }`}
+                                  onClick={() => handleCopyAccount(acc.accountNumber, acc._id)}
+                                  title="Copy Account Number"
+                                >
+                                  {copiedId === acc._id ? (
+                                    <>
+                                      <FaCheck />
+                                      <span>Copied</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <FaCopy />
+                                      <span>Copy</span>
+                                    </>
+                                  )}
+                                </button>
+                                <button
+                                  type="button"
+                                  className={styles.copyBtn}
+                                  onClick={() =>
+                                    handleOpenShare({
+                                      section: "accounts",
+                                      id: acc._id,
+                                      title: `${acc.bank} Account - CAC Mount Zion`,
+                                      description: `Account Name: ${acc.name} | Account Number: ${acc.accountNumber} (${acc.bank}). Accepted for: ${acc.accepts?.join(", ") || "Church Giving"}`,
+                                    })
+                                  }
+                                  title="Share this bank account"
+                                >
+                                  <FaShareAlt size={11} />
+                                  <span>Share</span>
+                                </button>
+                              </div>
                             </div>
                           </div>
 
@@ -750,7 +816,12 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                     type="button"
                     className={styles.shareSectionBtn}
                     onClick={() =>
-                      handleShare({ section: "projects", title: "Ongoing Church Projects" })
+                      handleOpenShare({
+                        section: "projects",
+                        title: "CAC Mount Zion - Ongoing Church Projects",
+                        description:
+                          "Partner with CAC Mount Zion in fulfilling strategic kingdom initiatives — from missionary vehicles and bus acquisitions to facility enhancements.",
+                      })
                     }
                     title="Share ongoing church projects"
                   >
@@ -777,10 +848,11 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                         isHighlighted={highlightedId === proj._id}
                         onSupport={handleSupportProject}
                         onShare={() =>
-                          handleShare({
+                          handleOpenShare({
                             section: "projects",
                             id: proj._id,
                             title: proj.title,
+                            description: proj.description,
                           })
                         }
                         formatAmount={formatAmount}
@@ -791,6 +863,116 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
               </div>
             )}
           </>
+        )}
+
+        {/* Share Modal Dialog (WhatsApp, Email, Copy Link, Native Share) */}
+        {shareData && (
+          <div
+            className={styles.shareModalOverlay}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setShareData(null);
+            }}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Share dialog"
+          >
+            <div className={styles.shareModal}>
+              <div className={styles.shareModalHeader}>
+                <div>
+                  <h3 className={styles.shareModalTitle}>{shareData.title}</h3>
+                  <p className={styles.shareModalSubtitle}>
+                    Share with brethren and friends across WhatsApp, Email, or direct link.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  className={styles.shareCloseBtn}
+                  onClick={() => setShareData(null)}
+                  aria-label="Close share dialog"
+                >
+                  <FaTimes size={14} />
+                </button>
+              </div>
+
+              {/* Quick Action Channels: WhatsApp & Email */}
+              <div className={styles.shareChannelsGrid}>
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
+                    `${shareData.title}\n${
+                      shareData.description ? `${shareData.description}\n\n` : "\n"
+                    }Partner with CAC Mount Zion Global Kingdom Outreach:\n${shareData.url}`
+                  )}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`${styles.shareChannelBtn} ${styles.shareWhatsappBtn}`}
+                >
+                  <FaWhatsapp size={19} />
+                  <span>WhatsApp</span>
+                </a>
+
+                <a
+                  href={`mailto:?subject=${encodeURIComponent(
+                    `CAC Mount Zion: ${shareData.title}`
+                  )}&body=${encodeURIComponent(
+                    `Grace and peace,\n\nI want to share this with you from CAC Mount Zion Global Kingdom Outreach:\n\n${
+                      shareData.title
+                    }\n${
+                      shareData.description ? `${shareData.description}\n\n` : "\n"
+                    }View full details and partner here:\n${shareData.url}\n\nGod bless you!`
+                  )}`}
+                  className={`${styles.shareChannelBtn} ${styles.shareEmailBtn}`}
+                >
+                  <FaEnvelope size={17} />
+                  <span>Email</span>
+                </a>
+              </div>
+
+              {/* Direct Link Copy Box */}
+              <div className={styles.shareBox}>
+                <span className={styles.shareBoxLabel}>Shareable Direct Link</span>
+                <div className={styles.shareLinkInputRow}>
+                  <input
+                    type="text"
+                    readOnly
+                    value={shareData.url}
+                    className={styles.shareLinkInput}
+                    onClick={(e) => (e.target as HTMLInputElement).select()}
+                  />
+                  <button
+                    type="button"
+                    className={`${styles.shareCopyBtn} ${
+                      modalCopied ? styles.shareCopyBtnCopied : ""
+                    }`}
+                    onClick={handleCopyShareLink}
+                  >
+                    {modalCopied ? (
+                      <>
+                        <FaCheck size={12} />
+                        <span>Copied!</span>
+                      </>
+                    ) : (
+                      <>
+                        <FaCopy size={12} />
+                        <span>Copy</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* System Native Share Button (Mobile / Supported devices) */}
+              {typeof navigator !== "undefined" && typeof navigator.share === "function" && (
+                <button
+                  type="button"
+                  className={styles.moreShareBtn}
+                  onClick={handleDeviceNativeShare}
+                >
+                  <FaShareAlt size={13} />
+                  <span>More Sharing Options (Device Menu)</span>
+                </button>
+              )}
+            </div>
+          </div>
         )}
 
         {/* Copy Notification Toast */}

@@ -884,6 +884,212 @@
   }
 }
 
+/* Share Modal Dialog */
+.shareModalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  padding: 20px;
+}
+
+.shareModal {
+  background: #111420;
+  border: 1px solid rgba(168, 85, 247, 0.35);
+  border-radius: 20px;
+  width: 100%;
+  max-width: 480px;
+  padding: 26px;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9), 0 0 35px rgba(124, 58, 237, 0.25);
+  animation: modalScale 0.25s ease-out;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+@keyframes modalScale {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.shareModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.shareModalTitle {
+  font-size: 19px;
+  font-weight: 800;
+  color: #ffffff !important;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.shareModalSubtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.65) !important;
+  margin: 0;
+}
+
+.shareCloseBtn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.shareCloseBtn:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444 !important;
+  border-color: rgba(239, 68, 68, 0.4);
+}
+
+.shareChannelsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.shareChannelBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.shareWhatsappBtn {
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(37, 211, 102, 0.3);
+}
+
+.shareWhatsappBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(37, 211, 102, 0.45);
+}
+
+.shareEmailBtn {
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+}
+
+.shareEmailBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.45);
+}
+
+.shareBox {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.shareBoxLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.shareLinkInputRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.shareLinkInput {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: #c084fc !important;
+  outline: none;
+  font-family: monospace;
+}
+
+.shareCopyBtn {
+  padding: 10px 16px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  border: 1px solid rgba(167, 139, 250, 0.5);
+  color: #ffffff !important;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.shareCopyBtn:hover {
+  background: linear-gradient(135deg, #6d28d9, #4338ca);
+}
+
+.shareCopyBtnCopied {
+  background: #16a34a !important;
+  border-color: #22c55e !important;
+}
+
+.moreShareBtn {
+  width: 100%;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.moreShareBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff !important;
+}
+
 /* Toast */
 .toast {
   position: fixed;
