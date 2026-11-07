@@ -49,10 +49,24 @@ export interface ChurchProjectData {
   updatedAt?: string;
 }
 
+export interface OutreachStatsData {
+  totalRevelations: number;
+  totalVideosStacked: number;
+  totalAccounts: number;
+  totalCategories: number;
+  totalProjects: number;
+  activeProjects: number;
+  completedProjects: number;
+  totalTargetAmount: number;
+  totalProjectAssets: number;
+  donatePageViews: number;
+}
+
 export interface OutreachPagePayload {
   settings: OutreachSettingsData;
   accounts: BankAccountData[];
   types: DonationTypeData[];
   videos: OutreachVideoData[];
   projects: ChurchProjectData[];
+  stats?: OutreachStatsData;
 }

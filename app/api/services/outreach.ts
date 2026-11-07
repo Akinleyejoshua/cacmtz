@@ -6,6 +6,7 @@ import {
   ChurchProject,
   IOutreachSettings,
 } from "../models/outreach";
+import Analytics from "../models/analytics";
 import dbConnect from "../db";
 
 // Default initial accounts for seed
@@ -163,12 +164,57 @@ export async function getOutreachPageData() {
     videoUrls: p.videoUrls || [],
   }));
 
+  // 6. Metrics & Stats
+  let donatePageViews = 0;
+  try {
+    donatePageViews = await Analytics.countDocuments({
+      pageUrl: { $regex: /^\/donate/i },
+    });
+  } catch (err) {
+    // Non-fatal if analytics query fails
+  }
+
+  const totalStackedVideos = videos.reduce((acc: number, v: any) => {
+    const count = v.youtubeUrls?.length || (v.youtubeUrl ? 1 : 0);
+    return acc + count;
+  }, 0);
+
+  const totalTargetAmount = projects.reduce((acc: number, p: any) => {
+    return acc + (Number(p.amount) || 0);
+  }, 0);
+
+  const totalProjectAssets = projects.reduce((acc: number, p: any) => {
+    return acc + (p.images?.length || 0) + (p.videoUrls?.length || 0);
+  }, 0);
+
+  const activeProjectsCount = projects.filter(
+    (p: any) => p.status === "Active" || !p.status
+  ).length;
+
+  const completedProjectsCount = projects.filter(
+    (p: any) => p.status === "Completed"
+  ).length;
+
+  const stats = {
+    totalRevelations: videos.length,
+    totalVideosStacked: totalStackedVideos,
+    totalAccounts: accounts.length,
+    totalCategories: types.length,
+    totalProjects: projects.length,
+    activeProjects: activeProjectsCount,
+    completedProjects: completedProjectsCount,
+    totalTargetAmount,
+    totalProjectAssets,
+    donatePageViews,
+  };
+
   return {
     settings,
     accounts,
     types,
     videos,
     projects,
+    stats,
   };
 }
 

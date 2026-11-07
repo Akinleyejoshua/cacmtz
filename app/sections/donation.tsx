@@ -24,7 +24,7 @@ import {
   FaQuoteLeft,
   FaChevronLeft,
   FaChevronRight,
-  FaImage as FaImageIcon,
+  FaShareAlt,
 } from "react-icons/fa";
 
 interface DonationSectionProps {
@@ -47,7 +47,15 @@ const resolveLogo = (logo?: string) => {
 };
 
 // 1. REVELATION MULTI-VIDEO CARD COMPONENT
-function RevelationVideoCard({ video }: { video: OutreachVideoData }) {
+function RevelationVideoCard({
+  video,
+  onShare,
+  isHighlighted,
+}: {
+  video: OutreachVideoData;
+  onShare: () => void;
+  isHighlighted?: boolean;
+}) {
   const videoUrls =
     video.youtubeUrls && video.youtubeUrls.length > 0
       ? video.youtubeUrls
@@ -72,7 +80,10 @@ function RevelationVideoCard({ video }: { video: OutreachVideoData }) {
   };
 
   return (
-    <article className={styles.videoCard}>
+    <article
+      id={`item-${video._id}`}
+      className={`${styles.videoCard} ${isHighlighted ? styles.highlightCard : ""}`}
+    >
       {/* Header bar if multiple videos stacked */}
       {totalVideos > 1 && (
         <div className={styles.sliderControls}>
@@ -144,17 +155,29 @@ function RevelationVideoCard({ video }: { video: OutreachVideoData }) {
         <h3 className={styles.videoTitle}>{video.title}</h3>
         <p className={styles.videoDescription}>{video.description}</p>
         <div className={styles.videoFooter}>
-          {currentUrl && (
-            <Link
-              href={currentUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.youtubeLink}
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+            <button
+              type="button"
+              className={styles.cardShareBtn}
+              onClick={onShare}
+              title="Share this revelation video"
             >
-              <FaYoutube />
-              <span>Watch Video {totalVideos > 1 ? `#${activeIdx + 1}` : ""} on YouTube</span>
-            </Link>
-          )}
+              <FaShareAlt size={11} />
+              <span>Share</span>
+            </button>
+
+            {currentUrl && (
+              <Link
+                href={currentUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={styles.youtubeLink}
+              >
+                <FaYoutube />
+                <span>Watch Video {totalVideos > 1 ? `#${activeIdx + 1}` : ""} on YouTube</span>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </article>
@@ -165,13 +188,16 @@ function RevelationVideoCard({ video }: { video: OutreachVideoData }) {
 function ProjectCardItem({
   project,
   onSupport,
+  onShare,
   formatAmount,
+  isHighlighted,
 }: {
   project: ChurchProjectData;
   onSupport: () => void;
+  onShare: () => void;
   formatAmount: (amount?: number | null, currency?: string) => string | null;
+  isHighlighted?: boolean;
 }) {
-  // Combine images and video URLs into unified media list
   const imageAssets = (project.images || []).map((url) => ({
     type: "image" as const,
     url,
@@ -199,7 +225,10 @@ function ProjectCardItem({
   const formattedTarget = formatAmount(project.amount, project.currency);
 
   return (
-    <article className={styles.projectCard}>
+    <article
+      id={`item-${project._id}`}
+      className={`${styles.projectCard} ${isHighlighted ? styles.highlightCard : ""}`}
+    >
       <div className={styles.projectMediaWrapper}>
         {totalAssets === 0 ? (
           <div className={styles.projectPlaceholderImage}>
@@ -294,10 +323,26 @@ function ProjectCardItem({
         <h3 className={styles.projectTitle}>{project.title}</h3>
         <p className={styles.projectDescription}>{project.description}</p>
 
-        <button type="button" className={styles.supportBtn} onClick={onSupport}>
-          <span>Support This Project</span>
-          <span>→</span>
-        </button>
+        <div style={{ display: "flex", gap: 10, marginTop: "auto" }}>
+          <button
+            type="button"
+            className={styles.supportBtn}
+            style={{ flex: 1 }}
+            onClick={onSupport}
+          >
+            <span>Support This Project</span>
+            <span>→</span>
+          </button>
+          <button
+            type="button"
+            className={styles.cardShareBtn}
+            onClick={onShare}
+            title="Share this project"
+            style={{ padding: "0 14px", height: "44px" }}
+          >
+            <FaShareAlt size={13} />
+          </button>
+        </div>
       </div>
     </article>
   );
@@ -307,6 +352,8 @@ function ProjectCardItem({
 export default function DonationSection({ initialData }: DonationSectionProps) {
   const [loading, setLoading] = useState(!initialData);
   const [activeTab, setActiveTab] = useState<"revelation" | "accounts" | "projects">("revelation");
+  const [highlightedId, setHighlightedId] = useState<string | null>(null);
+
   const [settings, setSettings] = useState<OutreachSettingsData>(
     initialData?.settings || {
       heading: "CAC MOUNT ZION GLOBAL KINGDOM OUTREACH",
@@ -324,14 +371,29 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Sync hash from URL if present
+  // Sync section & id from URL query parameters and hash
   useEffect(() => {
     if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const sectionParam = params.get("section")?.toLowerCase();
+      const targetId = params.get("id");
       const hash = window.location.hash.replace("#", "").toLowerCase();
-      if (hash === "revelation") setActiveTab("revelation");
-      else if (hash === "accounts" || hash === "account-details" || hash === "give")
+
+      const active = sectionParam || hash;
+      if (active === "revelation") setActiveTab("revelation");
+      else if (active === "accounts" || active === "account-details" || active === "give")
         setActiveTab("accounts");
-      else if (hash === "projects") setActiveTab("projects");
+      else if (active === "projects") setActiveTab("projects");
+
+      if (targetId) {
+        setHighlightedId(targetId);
+        setTimeout(() => {
+          const el = document.getElementById(`item-${targetId}`);
+          if (el) {
+            el.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        }, 600);
+      }
     }
   }, []);
 
@@ -379,6 +441,36 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
         el.scrollIntoView({ behavior: "smooth" });
       }
     }, 100);
+  };
+
+  // Universal Share Function (Web Share API with Clipboard Fallback)
+  const handleShare = async (params: { section: string; id?: string; title: string }) => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.origin + "/donate");
+    url.searchParams.set("section", params.section);
+    if (params.id) {
+      url.searchParams.set("id", params.id);
+    }
+    const shareUrl = url.toString();
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: params.title || "CAC Mount Zion Global Kingdom Outreach",
+          text: `Check out ${params.title} on CAC Mount Zion Global Kingdom Outreach:`,
+          url: shareUrl,
+        });
+        return;
+      } catch (err) {
+        // User cancelled or share dismissed, proceed to copy
+      }
+    }
+
+    if (navigator?.clipboard) {
+      await navigator.clipboard.writeText(shareUrl);
+      setToastMessage(`Shareable link to "${params.title}" copied! Share with anyone.`);
+      setTimeout(() => setToastMessage(null), 3500);
+    }
   };
 
   const formatAmount = (amount?: number | null, currency = "NGN") => {
@@ -452,6 +544,18 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                       through each revelation to view all recorded videos.
                     </p>
                   </div>
+
+                  <button
+                    type="button"
+                    className={styles.shareSectionBtn}
+                    onClick={() =>
+                      handleShare({ section: "revelation", title: "Outreach & Revelations" })
+                    }
+                    title="Share this section with friends"
+                  >
+                    <FaShareAlt />
+                    <span>Share Section</span>
+                  </button>
                 </div>
 
                 {videos.length === 0 ? (
@@ -466,7 +570,18 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                 ) : (
                   <div className={styles.videoGrid}>
                     {videos.map((vid) => (
-                      <RevelationVideoCard key={vid._id} video={vid} />
+                      <RevelationVideoCard
+                        key={vid._id}
+                        video={vid}
+                        isHighlighted={highlightedId === vid._id}
+                        onShare={() =>
+                          handleShare({
+                            section: "revelation",
+                            id: vid._id,
+                            title: vid.title,
+                          })
+                        }
+                      />
                     ))}
                   </div>
                 )}
@@ -478,6 +593,31 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
             {/* ========================================= */}
             {activeTab === "accounts" && (
               <div id="account-details-target">
+                <div className={styles.sectionIntro} style={{ marginBottom: 22 }}>
+                  <div>
+                    <h2 className={styles.sectionIntroTitle}>Bank Giving Accounts & Details</h2>
+                    <p className={styles.sectionIntroDesc}>
+                      Direct your tithes, general offerings, divine partnerships, and building fund
+                      contributions into the verified church accounts below.
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    className={styles.shareSectionBtn}
+                    onClick={() =>
+                      handleShare({
+                        section: "accounts",
+                        title: "CAC Mount Zion Account Details & Giving",
+                      })
+                    }
+                    title="Share church bank account details"
+                  >
+                    <FaShareAlt />
+                    <span>Share Details</span>
+                  </button>
+                </div>
+
                 <div className={styles.accountLayout}>
                   {/* Left Column: Scripture + Bank Cards */}
                   <div className={styles.accountLeft}>
@@ -605,6 +745,18 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                       gear. Slide to explore all images and video walkthroughs for each project.
                     </p>
                   </div>
+
+                  <button
+                    type="button"
+                    className={styles.shareSectionBtn}
+                    onClick={() =>
+                      handleShare({ section: "projects", title: "Ongoing Church Projects" })
+                    }
+                    title="Share ongoing church projects"
+                  >
+                    <FaShareAlt />
+                    <span>Share Section</span>
+                  </button>
                 </div>
 
                 {projects.length === 0 ? (
@@ -622,7 +774,15 @@ export default function DonationSection({ initialData }: DonationSectionProps) {
                       <ProjectCardItem
                         key={proj._id}
                         project={proj}
+                        isHighlighted={highlightedId === proj._id}
                         onSupport={handleSupportProject}
+                        onShare={() =>
+                          handleShare({
+                            section: "projects",
+                            id: proj._id,
+                            title: proj.title,
+                          })
+                        }
                         formatAmount={formatAmount}
                       />
                     ))}
