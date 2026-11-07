@@ -23,10 +23,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.8,
         },
         {
-            url: `${baseUrl}/give`,
+            url: `${baseUrl}/donate`,
             lastModified: new Date(),
             changeFrequency: 'yearly',
-            priority: 0.5,
+            priority: 0.8,
         },
         // We can add dynamic routes here later by fetching from API
     ]

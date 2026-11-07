@@ -41,8 +41,8 @@ We are blessed to welcome you to our church.`,
 			"https://images.unsplash.com/photo-1483729558449-99ef09a8c325?auto=format&fit=crop&w=2000&q=60",
 		title: "Give & Support God's Work",
 		subtitle: "Your generous gifts extend God's kingdom and transform lives. Whether you're responding to His call through tithes, offerings, or mission support, your contributions fuel our outreach, strengthen our community, and help us reach those in need with hope and healing.",
-		cta: { label: "Give Now", href: "/give" },
-		secondary: { label: "Learn How Your Gift Helps", href: "/give" },
+		cta: { label: "Give Now", href: "/donate" },
+		secondary: { label: "Learn How Your Gift Helps", href: "/donate" },
 	},
 ];
 
