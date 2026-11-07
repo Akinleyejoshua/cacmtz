@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./admin-sidebar.module.css";
@@ -27,6 +27,7 @@ const NAV_GROUPS: NavGroup[] = [
         title: "Content",
         items: [
             { href: "/admin/general", label: "General", icon: "⚙️" },
+            { href: "/admin/outreach-manager", label: "Outreach & Giving", icon: "🌍" },
             { href: "/admin/event-manager", label: "Events", icon: "📅" },
             { href: "/admin/sermon-manager", label: "Sermons", icon: "🎬" },
             { href: "/admin/ministers-manager", label: "Ministers", icon: "👥" },

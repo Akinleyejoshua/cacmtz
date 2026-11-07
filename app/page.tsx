@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useLandingPage } from "./hooks/use-landing-page";
 import MainHeader from "./components/main-header";
@@ -10,6 +10,7 @@ import ContactSection from "./sections/contact";
 import Footer from "./sections/footer";
 import AboutSection from "./sections/about";
 import MinistersSection from "./sections/ministers";
+import DonationSection from "./sections/donation";
 import { SplashScreen } from "./components/splash-screen";
 import PageTracker from "./components/page-tracker";
 
@@ -36,6 +37,7 @@ export default function Home() {
         subtitle="Dedicated leaders serving our community"
       />
       <AboutSection generalSettings={generalSettings} />
+      <DonationSection />
       <ContactSection generalSettings={generalSettings} />
       <Footer generalSettings={generalSettings} />
     </div>
